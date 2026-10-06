@@ -42,18 +42,21 @@ jobs:
         run: cargo fmt --all --check
 
       - name: Clippy
-        run: cargo clippy --workspace --exclude qingjian-macos --all-targets --locked -- -D warnings
+        run: cargo clippy --workspace --exclude lightbookinput-macos --all-targets --locked -- -D warnings
 
       - name: Test
-        run: cargo test --workspace --exclude qingjian-macos --locked
+        run: cargo test --workspace --exclude lightbookinput-macos --locked
 
       - name: Build and test Fcitx5 default panel
         run: |
-          cargo build -p qingjian-linux-server --locked
+          cargo build -p lightbookinput-linux-server --locked
           cmake -S apps/linux/fcitx5 -B target/fcitx5-stage1 -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
           cmake --build target/fcitx5-stage1 --parallel 2
           env -u DBUS_SESSION_BUS_ADDRESS ctest --test-dir target/fcitx5-stage1 --output-on-failure
-          bash -n apps/linux/scripts/install.sh apps/linux/scripts/uninstall.sh apps/linux/scripts/package.sh apps/linux/scripts/package-install.sh
+          # bash -n 只认第一个脚本，后面的都是位置参数：打包脚本在别的 runner 上才真跑，这里逐个查语法
+          for script in apps/*/scripts/*.sh tools/release/data-fetch.sh; do
+            bash -n "$script"
+          done
           python3 apps/linux/tests/installation.py
 
   macos:
@@ -71,16 +74,16 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
 
       - name: Clippy (IMK shell)
-        run: cargo clippy -p qingjian-macos --all-targets --locked -- -D warnings
+        run: cargo clippy -p lightbookinput-macos --all-targets --locked -- -D warnings
 
       - name: Test (IMK shell)
-        run: cargo test -p qingjian-macos --locked
+        run: cargo test -p lightbookinput-macos --locked
 
   windows:
     runs-on: windows-latest
     env:
       # Server 的 build.rs 嵌 uiAccess manifest，没签名的 exe（含测试二进制）起不来（os error 740）；与 release.yml 一样关掉
-      QINGJIAN_UIACCESS: '0'
+      LIGHTBOOKINPUT_UIACCESS: '0'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -95,11 +98,11 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
 
       - name: Clippy (Server, TSF DLL, Settings)
-        run: cargo clippy -p qingjian-windows-server -p qingjian-windows-tsf -p qingjian-windows-settings --all-targets --locked -- -D warnings
+        run: cargo clippy -p lightbookinput-windows-server -p lightbookinput-windows-tsf -p lightbookinput-windows-settings --all-targets --locked -- -D warnings
 
       - name: Test (Server, TSF DLL, Settings)
-        run: cargo test -p qingjian-windows-server -p qingjian-windows-tsf -p qingjian-windows-settings --locked
+        run: cargo test -p lightbookinput-windows-server -p lightbookinput-windows-tsf -p lightbookinput-windows-settings --locked
 
       # 安装包另带一份 32 位 DLL（企业微信 / WPS 这类 32 位应用只能加载它）
       - name: Check (TSF DLL, 32-bit)
-        run: cargo check -p qingjian-windows-tsf --target i686-pc-windows-msvc --locked
+        run: cargo check -p lightbookinput-windows-tsf --target i686-pc-windows-msvc --locked

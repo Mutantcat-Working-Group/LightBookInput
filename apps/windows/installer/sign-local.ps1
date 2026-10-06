@@ -1,4 +1,4 @@
-﻿<#
+﻿ï»¿<#
 .SYNOPSIS
     开发期自签：造 / 复用一张自签代码签名证书，装进本机受信任根，用它给指定文件签名。
 .DESCRIPTION
@@ -11,12 +11,12 @@
 .PARAMETER Path
     要签名的文件（.exe / .dll），可多个。
 .PARAMETER CertSubject
-    自签证书主题，缺省 "CN=Qingjian Dev CodeSign"。
+    自签证书主题，缺省 "CN=LIGHTBOOKINPUT Dev CodeSign"。
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][string[]]$Path,
-    [string]$CertSubject = 'CN=Qingjian Dev CodeSign'
+    [string]$CertSubject = 'CN=LIGHTBOOKINPUT Dev CodeSign'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -47,7 +47,7 @@ foreach ($store in @('Root', 'TrustedPublisher')) {
     if (-not $exists) {
         Write-Host "装证书进 LocalMachine\$store…" -ForegroundColor Cyan
         # 只导公钥（.cer），不带私钥。
-        $tmp = Join-Path $env:TEMP 'qingjian-dev-codesign.cer'
+        $tmp = Join-Path $env:TEMP 'LIGHTBOOKINPUT-dev-codesign.cer'
         Export-Certificate -Cert $cert -FilePath $tmp -Type CERT | Out-Null
         Import-Certificate -FilePath $tmp -CertStoreLocation $storePath | Out-Null
         Remove-Item $tmp -Force -ErrorAction SilentlyContinue

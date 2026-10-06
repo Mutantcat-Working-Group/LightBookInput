@@ -7,7 +7,7 @@
 
 长版与理由见 [design/architecture.md](design/architecture.md)。
 
-- **Core 与平台层严格解耦。** `qingjian-core` 及其兄弟 crate 必须平台无关：词库、拼音解析、候选生成、排序、学习、翻译、文本变换全部属于 Core。
+- **Core 与平台层严格解耦。** `lightbookinput-core` 及其兄弟 crate 必须平台无关：词库、拼音解析、候选生成、排序、学习、翻译、文本变换全部属于 Core。
   平台层（IMK / TSF / IBus-Fcitx）只做两件事：把系统输入事件翻译成 Core 的输入，把 Core 返回的帧画到候选窗口。
   **平台层里不允许出现排序逻辑、词库访问、翻译调用或文本变换。** 判断标准：把 IMK 换成 TSF，不应该需要改 Core 的任何一行。
 - **一个候选词只显示一种辅助语言。** 用户配置 Primary Language + 单个 Learning Language。不要设计成 `translations: Vec<Translation>` 或
@@ -46,12 +46,14 @@
 
 - `crates/*` 用 `version.workspace = true`；**`apps/*` 各壳是独立发布的产品，写死自己的 `version`**（Windows 读 `server/Cargo.toml`）。
 - 发版之间带 `-dev`（两端都是 `0.1.3-dev`），打包脚本再接 git 短哈希成 `0.1.3-dev-1a2b3c4`（脏加 `+`，Cargo.toml 里只写 `-dev`）。
-- 发版提交去掉 `-dev` 打标签 `v<版本>`（三个平台共用一个 Release；单平台补丁用 `macos-v` / `windows-v` / `linux-v<版本>`），标签后再改成下一个 `-dev`；带 `-dev` 的标签 CI 拒绝；pkg / Inno 只认数字点号。
+- 正式版本号用「语义版本 + 日期」：`1.0.20261006`（`主.次.年月日`），打标签 `v1.0.20261006`。三个平台共用一个 Release，产物名带架构与系统。
+- NSIS 的 `VIProductVersion` 只认 `a.b.c.d` 四点数字，日期段 `20261006` 拆成 `2026.1006`（见 `apps/windows/installer/build-nsis.ps1`）。
+- 发版提交去掉 `-dev` 打标签 `v<版本>`（三个平台共用一个 Release；单平台补丁用 `macos-v` / `windows-v` / `linux-v<版本>`），标签后再改成下一个 `-dev`；带 `-dev` 的标签 CI 拒绝；pkg 与 NSIS 的 `VIProductVersion` 只认数字点号。
 
 ## 提交信息
 
 - [Conventional Commits](https://www.conventionalcommits.org/zh-hans/)：第一行 `<类型>(<范围>): <说明>`，类型与范围英文小写，说明用中文，例如
-  `fix(core): 修自绘输入框吞数字`、`feat(windows): 三进程日志统一到 %LOCALAPPDATA%\Qingjian\logs`、`docs(changelog): 补 0.1.3 条目`。
+  `fix(core): 修自绘输入框吞数字`、`feat(windows): 三进程日志统一到 %LOCALAPPDATA%\LightBookInput\logs`、`docs(changelog): 补 0.1.3 条目`。
   - 类型：`feat` 新功能 / `fix` 修 bug / `docs` 只改文档 / `refactor` 不改行为的整理 / `perf` 性能 / `test` 只改测试 /
     `build` 打包与构建脚本 / `ci` 工作流 / `chore` 版本号、依赖、仓库杂务 / `style` 只改格式 / `revert` 还原。
   - 范围：crate 或壳的名字——`core` `platform` `render` `dictionary` `translate` `learning` `predict` `lm` `neural` `format` `cli`
@@ -69,8 +71,8 @@
 ## 提交前检查
 
 - 钩子：`.githooks/pre-commit`（禁装饰性分隔注释 + fmt + clippy）、`.githooks/commit-msg`（提交信息格式）、`.githooks/pre-push`（全 workspace 测试）；`git config core.hooksPath .githooks` 启用一次。
-  两个跑编译的钩子按 `uname` 划平台范围：**非 Apple 平台排除 `qingjian-macos`**（IMK 壳依赖 objc2，在别的平台上是硬 `compile_error!`，
-  排除不掉就整条命令失败），与 [ci.yml](../.github/workflows/ci.yml) 三个 job 的划分一致；Windows 上 pre-push 另设 `QINGJIAN_UIACCESS=0`
+  两个跑编译的钩子按 `uname` 划平台范围：**非 Apple 平台排除 `lightbookinput-macos`**（IMK 壳依赖 objc2，在别的平台上是硬 `compile_error!`，
+  排除不掉就整条命令失败），与 [ci.yml](../.github/workflows/ci.yml) 三个 job 的划分一致；Windows 上 pre-push 另设 `LIGHTBOOKINPUT_UIACCESS=0`
   （Server 的 build.rs 嵌 uiAccess manifest，没签名的测试二进制起不来，os error 740）。
 - 排序 / 整句 / 纠错的改动先跑 `apps/cli` 再合。
 
@@ -88,4 +90,4 @@
   PR 的「怎么验证的」写明系统版本、应用与操作步骤。编译与 CI 通过不算验证。没验过的修复发出去，报 issue 的人升级后还得再报一次。
   复现不了的（没有那个应用或系统）不提修复：把分析写在 issue 里，或者提只加日志、不改行为的 PR。
   不改行为的改动（日志、注释、文档）与有测试 / 回放兜底的 Core 逻辑不受此限。
-- 主题与自绘渲染器（`crates/qingjian-render`、各壳的贴图路径、主题文件）还在测试，这部分暂不接受 PR；稳定一版后再开。
+- 主题与自绘渲染器（`crates/lightbookinput-render`、各壳的贴图路径、主题文件）还在测试，这部分暂不接受 PR；稳定一版后再开。

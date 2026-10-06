@@ -1,6 +1,9 @@
 | `.github/workflows/ci.yml` | push main、PR | `core`（Linux）fmt / clippy / 全 workspace 测试（排除 IMK 壳）；`macos` 编 IMK 壳并跑它的测试；`windows` 编 Server / TSF DLL / Settings 并跑测试。仓库公开，Actions 不计费 |
 | `.github/workflows/audit.yml` | 每周一、Cargo.lock 变动 | `cargo audit`（RustSec 已知漏洞） |
-| `.github/dependabot.yml` | 每周一 | Cargo 依赖与钉 commit 的 actions 的更新 PR |# 发版流程
+| `.github/workflows/package.yml` | 推 `v*` 标签 | 下载产品数据 → 三平台打「可直接装」的包（Linux AppImage、macOS 双架构 dmg、Windows 双架构 NSIS）→ 建 Release、上传、传 `SHA256SUMS`。不签名索引、不触发官网，见下文 |
+| `.github/dependabot.yml` | 每周一 | Cargo 依赖与钉 commit 的 actions 的更新 PR |
+
+# 发版流程
 
 2026-09-07 搭起来的：GitHub Actions 按标签打包、建 Release、生成官网下载页用的 `releases.json`。
 这里记怎么发一版、各环节的依赖，以及官网怎么消费产物。
@@ -9,11 +12,13 @@
 
 0.1.4 起三个平台共用版本号、共用一个 GitHub Release（标签 `v<版本>`）：同一个版本号、同一份更新日志只出现一次，三个平台的安装包都挂在上面。
 
+**版本号格式**：`1.0.20261006`（`主.次.年月日`）。日期段让打出来的包一眼看得出新旧，也不用为「这个大版本号从哪天开始算」费口舌；语义部分留给不兼容的改动。
+
 1. 改版本号，把 `-dev` 去掉：`apps/macos/Cargo.toml`（Info.plist 与 pkg 文件名从这里取）、`apps/windows/{server,tsf,settings}/Cargo.toml`（三个一起改，打包读 `server`）、
    `apps/linux/server/Cargo.toml`，然后 `cargo update --workspace --offline` 同步 `Cargo.lock`。
    **发版之间版本号一直带 `-dev`**（Rust nightly / Firefox Nightly 那套）：Cargo.toml 写 `0.1.5-dev`，打包脚本再接上 git 短哈希，
    本地装的、CI 中间构建的都显示 `0.1.5-dev-1a2b3c4`（工作区有改动加 `+`），测试时一眼知道装的是哪个提交；版本号干净的一定是线上包；带 `-dev` 的标签 CI 直接拒绝。
-   pkg 的 `--version`、Inno 的 `VersionInfoVersion` 只认数字点号，`bundle.sh` / `build.ps1` 去掉后缀再传，文件名保留完整版本。
+   pkg 的 `--version` 与 NSIS 的 `VIProductVersion` 只认数字点号，`bundle.sh` / `build-nsis.ps1` 去掉后缀再传，文件名保留完整版本；日期段 `20261006` 在 NSIS 里拆成 `2026.1006` 凑够四段。
 2. `CHANGELOG.md` 顶上那一节把「未发布」换成日期：`## <版本> · <日期> · <渠道>`，一行一条、面向用户的措辞；只属于一个平台的条目加「macOS：」「Windows：」「Linux：」前缀。
    渠道是**更新渠道**（2026-09-17 定）：定期发的版本标 `stable`、版本号干净（`0.1.4`）；中间放给测试者的版本标 `alpha` / `beta` / `rc`，
    版本号带同名预发布后缀（`0.1.5-beta.1`），`release.yml` 见到后缀就把 GitHub Release 标成预发布、不抢 latest。
@@ -21,7 +26,7 @@
    **更新日志手写，不由提交自动生成**：发版前按上个标签以来的 `git log` 起草几条，人审一遍再定稿。
    标题下可以写一行 `网盘：[夸克网盘](链接)`（GitHub 下载不方便的用户用）：它不算更新条目，Release 说明把它放在最前面，`releases.json` 单独输出成 `mirrors`，官网显示成按钮。
    网盘文件在 CI 跑完后手动上传。
-3. 提交，打注释标签并推：`git tag -a v0.1.4 -m "青简 0.1.4" && git push origin main v0.1.4`。
+3. 提交，打注释标签并推：`git tag -a v0.1.4 -m "轻书 0.1.4" && git push origin main v0.1.4`。
 4. 标签推出去之后紧接一个普通提交把版本号改成下一个开发版（`0.1.5-dev`），CHANGELOG 顶上加 `## 0.1.5 · 未发布 · stable`；-dev 版本永远没有标签与 Release。
 
 `release.yml` 的流程：
@@ -35,11 +40,14 @@
 
 **单平台补丁**（只修一个平台的急事）：只改那个平台的版本号，打 `macos-v<版本>` / `windows-v<版本>` / `linux-v<版本>`，同一套流程只打那一个平台，Release 标题带平台名。
 
-发版后 GitHub Release 上有：`qingjian-<版本>-macos-arm64.pkg`、`-macos-x86_64.pkg`、`-windows-x86_64-setup.exe`、`-linux-x86_64.tar.gz`、`SHA256SUMS`、`build-info.json`、`releases.json` 与 `.sig`。
+发版后 GitHub Release 上有：`lightbookinput-<版本>-macos-arm64.pkg`、`-macos-x86_64.pkg`、`-windows-x86_64-setup.exe`、`-linux-x86_64.tar.gz`、`SHA256SUMS`、`build-info.json`、`releases.json` 与 `.sig`。
+
+`package.yml` 出来的另一套是给用户「下载就能装」的：`lightbookinput-<版本>-linux-x86_64.AppImage`、`-macos-arm64.dmg`、`-macos-x86_64.dmg`、`-windows-x86_64-setup.exe`、`-windows-x86-setup.exe` 加 `SHA256SUMS`。
+它和 `release.yml` 用同一份产品数据、同一个版本号，但不碰索引签名与官网，所以适合内测分发与验证打包链路本身。
 
 官网由 Cloudflare Workers Builds 按官网仓库的提交自动构建，没有可调用的构建钩子，所以主仓库靠**往官网仓库推一个小提交**来触发：
-`tools/release/bump-website.sh` 把版本标签与文档提交号写进官网的 `src/content/upstream.json` 并提交推送（提交者 qingjian-ci）。
-配了 `QINGJIAN_WEB_TOKEN`（对 qingjian-web 有 Contents: read and write 的 fine-grained PAT）release.yml 末尾自动做；
+`tools/release/bump-website.sh` 把版本标签与文档提交号写进官网的 `src/content/upstream.json` 并提交推送（提交者 lightbookinput-ci）。
+配了 `LIGHTBOOKINPUT_WEB_TOKEN`（对 lightbookinput-web 有 Contents: read and write 的 fine-grained PAT）release.yml 末尾自动做；
 官网文档只随发版更新（`docs/user/` 平时改动不推官网，免得文档领先于用户装到的版本）。没配就在官网仓库随便提交一次（或本地跑这个脚本）。
 官网构建时才拉最新 Release 的 `releases.json` 与主仓库 `docs/user`，所以提交内容本身不重要，`upstream.json` 只是留个记录、顺便让文档按记下的提交号拉（版本对得上）。
 
@@ -47,10 +55,11 @@ Rust 工具链由 `rust-toolchain.toml` 钉版本（现在 1.96.0），两个 wo
 
 ## 各平台的特别之处
 
-- **Windows**：没有代码签名证书时 workflow 设 `QINGJIAN_UIACCESS=0`：没签名的 exe 带 uiAccess=true 起不来。
+- **Windows**：没有代码签名证书时 workflow 设 `LIGHTBOOKINPUT_UIACCESS=0`：没签名的 exe 带 uiAccess=true 起不来。
   代价是候选窗在任务栏搜索 / 设置这类 UWP 宿主里可能被盖住，用户文档与 CHANGELOG 已列为已知问题。
-  Certum 开源证书办下来后：在 `build.ps1` 加 signtool 一步（`sign-local.ps1` 是本机自签的参考），workflow 去掉那个环境变量；SmartScreen 对无签名安装包的拦截也一并消失。
-  Inno Setup 钉 7.1.0（与开发机同版本、钉死 GitHub Release 上的安装程序与哈希）。
+  Certum 开源证书办下来后：在 `build-nsis.ps1` 加 signtool 一步（`sign-local.ps1` 是本机自签的参考），workflow 去掉那个环境变量；SmartScreen 对无签名安装包的拦截也一并消失。
+  NSIS 用 `choco install nsis` 装（`package.yml` 与 `release.yml` 都是），拿 `makensis.exe` 装好后先 `/VERSION` 验一下再打。`build-nsis.ps1` 一次出两个架构的安装包，
+  各自 release 构建 → 自签证书签名 → makensis 编译 → 签名安装包；安装界面是简体中文（`MUI2` + `SimpChinese.nsh`），左下角由 `BrandingText` 显示「轻书 + 版本号」。
 - **Linux**：`apps/linux/scripts/package.sh` 打的包里是编好的 Server 与 Fcitx5 插件、产品数据压缩包、`install.sh` / `uninstall.sh` / `files.py`，按仓库相对路径放，
   安装与源码安装走同一份清单与校验；打完先装进临时目录冒烟测试（文件齐、校验过、`ldd` 无缺库）再上传。
   插件链接构建机的 Fcitx5（`build-info.json` 的 `platforms.linux.runner` 记了版本），所以只承诺 Ubuntu 26.04，其他发行版走源码安装。
@@ -62,17 +71,18 @@ Rust 工具链由 `rust-toolchain.toml` 钉版本（现在 1.96.0），两个 wo
 `.githooks/pre-push` 在推之前跑全 workspace 测试。外部 PR 走同一套 `ci.yml`，不过不合。
 
 供应链：workflow 里的 actions 一律钉到 commit（注释写对应标签），`.github/dependabot.yml` 每周一提 Cargo 与 actions 的更新 PR；`audit.yml` 每周与 Cargo.lock 变动时跑 `cargo audit`；
-cargo 命令全 `--locked`（含 `bundle.sh` 与 `build.ps1`）。普通 CI 只有 `contents: read`，checkout 不留凭据；release 的 secrets 不放顶层 env，只注入用它的那一步。
+cargo 命令全 `--locked`（含 `bundle.sh`、`build-dmg.sh` 与 `build-nsis.ps1`）。普通 CI 只有 `contents: read`，checkout 不留凭据；release 的 secrets 不放顶层 env，只注入用它的那一步。
 
 发版门禁（`release.yml` 第一步）：版本号与标签一致且不带 `-dev`；标签指向的提交必须在 `main` 上（`git merge-base --is-ancestor`）；产品数据下载后按 `data` Release 的 `SHA256SUMS` 校验，摘要写进 `build-info.json` 的 `data_sha256`。
 **正式版前还欠**：产品数据改成不可变 tag 并在仓库里锁定版本（现在滚动覆盖，同一源码 tag 重跑可能拿到不同数据）、安装包内容验证（词库 / 模型 / 许可齐不齐、签名校验）。
 
-## 两个 workflow
+## 三个 workflow
 
 | 文件 | 触发 | 做什么 |
 |---|---|---|
-| `.github/workflows/ci.yml` | push main、PR | Linux 上 `cargo fmt --check` / clippy / test，排除 `qingjian-macos`（IMK 外壳只能在 macOS 编译，macOS runner 计费是 Linux 的 10 倍） |
+| `.github/workflows/ci.yml` | push main、PR | Linux 上 `cargo fmt --check` / clippy / test，排除 `lightbookinput-macos`（IMK 外壳只能在 macOS 编译，macOS runner 计费是 Linux 的 10 倍） |
 | `.github/workflows/release.yml` | 推 `v*`（三个平台）或 `macos-v*` / `windows-v*` / `linux-v*`（单平台）标签 | `prepare` 门禁并建草稿 Release → `macos` / `windows` / `linux` 并行打包上传 → `publish` 合并摘要、转正、生成 `releases.json`、触发官网构建（见上文） |
+| `.github/workflows/package.yml` | 推 `v*` 标签（三个平台）或 `macos-v*` / `windows-v*` / `linux-v*`（单平台） | 三平台打可直接安装的包——Linux AppImage、macOS 双架构 dmg（ad-hoc 签名、带 Applications 快捷方式）、Windows 双架构 NSIS——各平台传 `SHA256SUMS-<平台>` 片段，`checksums` job 合成一份 `SHA256SUMS`。不碰索引签名与官网，正式发版仍走 `release.yml` |
 
 ## 产品数据从哪来
 
@@ -81,11 +91,11 @@ cargo 命令全 `--locked`（含 `bundle.sh` 与 `build.ps1`）。普通 CI 只�
 （预发布不会成为 GitHub 的 latest，官网取 latest 时不会拿到它）。仓库里 `tools/release/data.lock` 钉住当前要用的标签与资产的 SHA-256，
 跟用到新数据的代码同一个提交进去：checkout 哪个提交就拿到它对应的那版数据，离线自编译的人不会因为我们改了数据而编出坏包。
 
-- `tools/release/data-bundle.sh`：把 `data/generated/`、含章·知微 `hanzhang-zhiwei-small.qjm` 与含章·通变 `hanzhang-tongbian-small.qjm` 装进唯一附件 `qingjian-data.tar.gz`
+- `tools/release/data-bundle.sh`：把 `data/generated/`、含章·知微 `hanzhang-zhiwei-small.qjm` 与含章·通变 `hanzhang-tongbian-small.qjm` 装进唯一附件 `lightbookinput-data.tar.gz`
   （导出的三件套放各自模型目录，`tools/release/pack-model.sh` 打成 `.qjm` 容器）。训练中间产物不进入公开包；发到下一个 `data-vN`（`--tag` 可指定，已存在就拒绝），然后改写 `data.lock`。
 - `tools/release/data-fetch.sh`：按 `data.lock` 下载（有 gh 用 gh，没有就 curl 直连）、按锁文件里的哈希校验，
   数据包解到 `data/generated/` 与两份模型各自的 `data/models/<标识>/`。旧锁仍可读取分离附件。`release.yml` 三个平台的 job 和离线自编译走同一个脚本；
-  `bundle.sh`、`qingjian.iss` 与 Linux 打包脚本将两份模型分别装入对应目录，产品端优先使用通变。
+  `bundle.sh`、`build-dmg.sh`、`lightbookinput.nsi` 与 Linux 打包脚本将两份模型分别装入对应目录，产品端优先使用通变。
   标签与各资产哈希记进 `build-info.json`（`data_tag` / `data_sha256` / `model_sha256` / `p2c_model_sha256`）。
 
 数据重生成之后（重跑 lexicon / bigram / gloss-gen export）或模型重训之后跑一次 `data-bundle.sh`（三件套比 `.qjm` 新会自动重打），
@@ -95,10 +105,10 @@ cargo 命令全 `--locked`（含 `bundle.sh` 与 `build.ps1`）。普通 CI 只�
 ## 版本索引的签名
 
 软件内「检查更新」只认签过名的 `releases.json`（设计见 `docs/design/update.md`）。`publish-releases-json.sh` 生成索引后用 `tools/release-sign` 签出 `releases.json.sig`，
-两个文件一起挂到本次 Release 与 GitHub latest；官网构建时原样拷到 `https://qingjian.app/releases.json` 与 `.sig`。
+两个文件一起挂到本次 Release 与 GitHub latest；官网构建时原样拷到 `https://lightbookinput.app/releases.json` 与 `.sig`。
 
-- 私钥是仓库 Secret `QINGJIAN_INDEX_SIGNING_KEY`（base64 的 32 字节）；没配时 `release.yml` 的门禁直接失败。维护者本机留一份在 `~/.config/qingjian/index-signing.key`（不进仓库）。
-- 换钥：`cargo run -p qingjian-release-sign -- keygen --out <新文件>`，把打印的公钥加进 `crates/qingjian-update/src/index/signature.rs` 的 `PUBLIC_KEYS`（新旧并列），
+- 私钥是仓库 Secret `LIGHTBOOKINPUT_INDEX_SIGNING_KEY`（base64 的 32 字节）；没配时 `release.yml` 的门禁直接失败。维护者本机留一份在 `~/.config/lightbookinput/index-signing.key`（不进仓库）。
+- 换钥：`cargo run -p lightbookinput-release-sign -- keygen --out <新文件>`，把打印的公钥加进 `crates/lightbookinput-update/src/index/signature.rs` 的 `PUBLIC_KEYS`（新旧并列），
   发一两个版本后再换 Secret、去掉旧公钥。直接换 Secret 会让所有已装版本收不到更新。
 - 改了 CHANGELOG 后用 `publish-releases-json.sh` 重刷索引同样要带这个环境变量。
 
@@ -106,8 +116,8 @@ cargo 命令全 `--locked`（含 `bundle.sh` 与 `build.ps1`）。普通 CI 只�
 
 没有证书时 CI 照样出包（ad-hoc 签名，Release 说明里自动加一句「首次打开要在隐私与安全性里放行」）。
 Apple Developer 账号有了以后，在仓库 Secrets 里配齐 `release.yml` 头部注释列的七个值（.p12 与 .p8 都 base64），
-下一次发版就是签名 + 公证 + 钉票据的包，用户下载双击即装。`bundle.sh` 本身通过 `QINGJIAN_SIGN_IDENTITY` /
-`QINGJIAN_INSTALLER_IDENTITY` / `QINGJIAN_NOTARY_PROFILE` 三个环境变量工作，本机有证书也能这样打。
+下一次发版就是签名 + 公证 + 钉票据的包，用户下载双击即装。`bundle.sh` 本身通过 `LIGHTBOOKINPUT_SIGN_IDENTITY` /
+`LIGHTBOOKINPUT_INSTALLER_IDENTITY` / `LIGHTBOOKINPUT_NOTARY_PROFILE` 三个环境变量工作，本机有证书也能这样打。
 
 ## releases.json：官网下载页的数据源
 
@@ -121,7 +131,7 @@ Apple Developer 账号有了以后，在仓库 Secrets 里配齐 `release.yml` �
 {
   "schema_version": 1,
   "generated": "2026-09-07T12:00:00Z",
-  "repository": "owner/qingjian",
+  "repository": "owner/lightbookinput",
   "latest": "0.1.3",
   "releases": [
     {
@@ -134,10 +144,10 @@ Apple Developer 账号有了以后，在仓库 Secrets 里配齐 `release.yml` �
       "built_at": "2026-09-07T08:38:12Z",
       "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)",
       "assets": [
-        { "platform": "macos", "arch": "Apple Silicon", "cpu": "arm64", "file": "qingjian-0.1.3-macos-arm64.pkg",
-          "url": "https://github.com/owner/qingjian/releases/download/macos-v0.1.3/qingjian-0.1.3-macos-arm64.pkg",
+        { "platform": "macos", "arch": "Apple Silicon", "cpu": "arm64", "file": "lightbookinput-0.1.3-macos-arm64.pkg",
+          "url": "https://github.com/owner/lightbookinput/releases/download/macos-v0.1.3/lightbookinput-0.1.3-macos-arm64.pkg",
           "size": 35989277, "sha256": "…" },
-        { "platform": "macos", "arch": "Intel", "cpu": "x86_64", "file": "qingjian-0.1.3-macos-x86_64.pkg", "url": "…", "size": 36172871, "sha256": "…" }
+        { "platform": "macos", "arch": "Intel", "cpu": "x86_64", "file": "lightbookinput-0.1.3-macos-x86_64.pkg", "url": "…", "size": 36172871, "sha256": "…" }
       ]
     }
   ]
@@ -146,8 +156,8 @@ Apple Developer 账号有了以后，在仓库 Secrets 里配齐 `release.yml` �
 
 - `releases` 从新到旧，`latest` 是第一条的版本号；官网「当前版本」取它，历史版本列表就是整个数组。
 - `channel` 是 `alpha` / `beta` / `rc` / `stable`，显示成什么字由官网定；`commit` / `built_at` / `sha256` 给用户核对下载的包，下载页应显示 sha256 与提交短哈希。
-- 安装包文件名固定为 `qingjian-<版本>-<平台>-<cpu>[-setup].<扩展名>`（全小写；平台 `macos` / `windows` / `linux`，cpu `arm64` / `x86_64`，2026-09-17 定，
-  包管理器的地址模板与检查更新都靠它稳定）。平台与架构由文件名判定（`ASSET_KINDS`，同时认 0.1.2 及更早的 `Qingjian-<版本>-arm64.pkg` / `-Setup.exe` 旧名），
+- 安装包文件名固定为 `lightbookinput-<版本>-<平台>-<cpu>[-setup].<扩展名>`（全小写；平台 `macos` / `windows` / `linux`，cpu `arm64` / `x86_64`，2026-09-17 定，
+  包管理器的地址模板与检查更新都靠它稳定）。平台与架构由文件名判定（`ASSET_KINDS`，同时认 0.1.2 及更早的 `LightBookInput-<版本>-arm64.pkg` / `-Setup.exe` 旧名），
   `arch` 给人看（Apple Silicon / Intel / x64），`cpu` 给程序比对。
 - `schema_version` 现在是 1：只加字段不用动，改了已有字段的含义或结构才加一。
 - `mirrors` 来自 CHANGELOG 那一节的「网盘：」行，没有就是空数组；官网在下载按钮旁单独显示。
@@ -157,5 +167,5 @@ Apple Developer 账号有了以后，在仓库 Secrets 里配齐 `release.yml` �
 
 ## 本机打包
 
-`apps/macos/scripts/bundle.sh --pkg` 打本机架构；`QINGJIAN_TARGET=x86_64-apple-darwin` 交叉编译 Intel 包（要先 `rustup target add`，
-本机不需要时不必装，CI 上两个都打）。成品在 `target/pkg/qingjian-<版本>-macos-<arch>.pkg`，每个架构一个工作目录，连着打互不覆盖。
+`apps/macos/scripts/bundle.sh --pkg` 打本机架构；`LIGHTBOOKINPUT_TARGET=x86_64-apple-darwin` 交叉编译 Intel 包（要先 `rustup target add`，
+本机不需要时不必装，CI 上两个都打）。成品在 `target/pkg/lightbookinput-<版本>-macos-<arch>.pkg`，每个架构一个工作目录，连着打互不覆盖。

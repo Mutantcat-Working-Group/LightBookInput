@@ -1,0 +1,238 @@
+# 多平台打包 CI：推 v<版本> 标签触发，产出 macOS DMG（双架构）、Windows NSIS 安装包（双架构）、Linux AppImage，
+# 全部传到同一个 GitHub Release（草稿，人工核对后再发布）。版本号格式：1.0.20261006（语义版本 + 日期）。
+#
+# 安装包都带自签名：macOS 是 ad-hoc 签名（带图标与 Applications 快捷方式），Windows 是自签名证书；
+# 分发时用户侧分别要过 Gatekeeper / SmartScreen，正式发版流水线（签名索引、公证）见 release.yml。
+# 单平台补打可用 macos-v / windows-v / linux-v<版本> 标签，只跑那一个平台。
+# 每个平台传一个 SHA256SUMS-<平台> 片段，checksums job 合成一份 SHA256SUMS 挂到 Release 上。
+name: package
+
+on:
+  push:
+    tags: ['v*', 'macos-v*', 'windows-v*', 'linux-v*']
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  prepare:
+    runs-on: ubuntu-26.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      macos: ${{ steps.version.outputs.macos }}
+      windows: ${{ steps.version.outputs.windows }}
+      linux: ${{ steps.version.outputs.linux }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Parse version and platforms
+        id: version
+        run: |
+          case "$GITHUB_REF_NAME" in
+            v*) PLATFORMS="macos windows linux"; VERSION="${GITHUB_REF_NAME#v}" ;;
+            *-v*) PLATFORMS="${GITHUB_REF_NAME%%-v*}"; VERSION="${GITHUB_REF_NAME#*-v}" ;;
+            *) echo "标签得是 v<版本> 或 <平台>-v<版本>：$GITHUB_REF_NAME" >&2; exit 1 ;;
+          esac
+          # 版本号格式：1.0.20261006（语义版本 + 日期）
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "版本号格式错误：$VERSION（应为 1.0.20261006 格式）" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          for platform in macos windows linux; do
+            [[ " $PLATFORMS " == *" $platform "* ]] && on=true || on=false
+            echo "$platform=$on" >> "$GITHUB_OUTPUT"
+          done
+
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          # 同一标签重跑或补打平台时 Release 已存在，create 失败也照常往下传
+          gh release create "$GITHUB_REF_NAME" --draft --verify-tag \
+            --title "轻书 $VERSION" \
+            --notes "轻书 $VERSION 安装包：macOS DMG（arm64 / x86_64）、Windows 安装包（64 位 / 32 位）、Linux AppImage。" || true
+
+  macos:
+    needs: prepare
+    if: needs.prepare.outputs.macos == 'true'
+    runs-on: macos-26
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # bundle.sh 用提交数当构建号
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # v1
+        with:
+          toolchain: 1.96.0
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+
+      - name: Fetch product data
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tools/release/data-fetch.sh
+          ls -la data/generated data/generated/dicts data/models/hanzhang-zhiwei data/models/hanzhang-tongbian
+
+      - name: Build DMG (arm64)
+        run: |
+          export LIGHTBOOKINPUT_VERSION="$VERSION"
+          export LIGHTBOOKINPUT_TARGET=aarch64-apple-darwin
+          apps/macos/scripts/build-dmg.sh
+
+      - name: Build DMG (x86_64)
+        run: |
+          export LIGHTBOOKINPUT_VERSION="$VERSION"
+          export LIGHTBOOKINPUT_TARGET=x86_64-apple-darwin
+          apps/macos/scripts/build-dmg.sh
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          (cd target/pkg && sha256sum *.dmg) | tee "$RUNNER_TEMP/SHA256SUMS-macos"
+          gh release upload "$GITHUB_REF_NAME" target/pkg/*.dmg "$RUNNER_TEMP/SHA256SUMS-macos" --clobber
+
+  windows:
+    needs: prepare
+    if: needs.prepare.outputs.windows == 'true'
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      PYTHON: python
+      # Windows 上 Python 的标准输出缺省 cp1252，中文输出会编码失败
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # v1
+        with:
+          toolchain: 1.96.0
+          # 安装包另带一份 32 位 TSF DLL，build-nsis.ps1 会编
+          targets: i686-pc-windows-msvc
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+
+      - name: Fetch product data
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tools/release/data-fetch.sh
+          ls -la data/generated data/generated/dicts data/models/hanzhang-zhiwei data/models/hanzhang-tongbian
+
+      - name: Install NSIS
+        run: |
+          choco install nsis -y --no-progress
+          "/c/Program Files (x86)/NSIS/makensis.exe" /VERSION
+
+      - name: Build NSIS installer
+        run: |
+          export LIGHTBOOKINPUT_VERSION="$VERSION"
+          # 一次出两个架构：64 位包含 32 位 TSF DLL，另有纯 32 位包；uiAccess 由脚本固定为 0
+          powershell -NoProfile -ExecutionPolicy Bypass -File apps/windows/installer/build-nsis.ps1
+
+      # 摘要片段。Git Bash 不带 sha256sum，用 PowerShell 的 Get-FileHash。
+      - name: Compute checksums
+        shell: pwsh
+        run: |
+          $packages = @(Get-ChildItem 'target/installer/lightbookinput-*-windows-*-setup.exe' | ForEach-Object { $_.FullName })
+          if ($packages.Count -eq 0) { throw '没找到安装包' }
+          $sums = Join-Path $env:RUNNER_TEMP 'SHA256SUMS-windows'
+          $packages | ForEach-Object {
+            '{0}  {1}' -f (Get-FileHash $_ -Algorithm SHA256).Hash.ToLower(), (Split-Path $_ -Leaf)
+          } | Set-Content -Path $sums -Encoding UTF8
+          Get-Content $sums
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$GITHUB_REF_NAME" target/installer/lightbookinput-*-windows-*-setup.exe "$RUNNER_TEMP/SHA256SUMS-windows" --clobber
+
+  linux:
+    needs: prepare
+    if: needs.prepare.outputs.linux == 'true'
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # v1
+        with:
+          toolchain: 1.96.0
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          # desktop-file-utils 给 appimagetool 校验 .desktop；fcitx5 只让 runner 上有 Fcitx5，构建不依赖它
+          sudo apt-get install -y cmake g++ pkg-config libssl-dev libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev nlohmann-json3-dev fcitx5 squashfs-tools file desktop-file-utils
+
+      - name: Fetch product data
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tools/release/data-fetch.sh
+          ls -la data/generated data/generated/dicts data/models/hanzhang-zhiwei data/models/hanzhang-tongbian
+
+      - name: Build AppImage
+        run: |
+          export LIGHTBOOKINPUT_VERSION="$VERSION"
+          apps/linux/scripts/build-appimage.sh
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          (cd target/linux-package && sha256sum *.AppImage) | tee "$RUNNER_TEMP/SHA256SUMS-linux"
+          gh release upload "$GITHUB_REF_NAME" target/linux-package/*.AppImage "$RUNNER_TEMP/SHA256SUMS-linux" --clobber
+
+  # 三个平台的片段合成一份 SHA256SUMS（与 finish-release.sh 同一格式）；有平台失败就停在草稿，不出半套包。
+  # 只下载片段、不下载安装包本身，所以不用 checkout。
+  checksums:
+    needs: [prepare, macos, windows, linux]
+    if: ${{ !cancelled() && needs.prepare.result == 'success' && !contains(needs.*.result, 'failure') }}
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write
+    steps:
+      - name: Merge checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          work="$(mktemp -d)"
+          gh release download "$GITHUB_REF_NAME" --pattern 'SHA256SUMS-*' --dir "$work" --clobber
+          cat "$work"/SHA256SUMS-* | sort -k2 | tee "$work/SHA256SUMS"
+          gh release upload "$GITHUB_REF_NAME" "$work/SHA256SUMS" --clobber
+          for fragment in "$work"/SHA256SUMS-*; do
+            gh release delete-asset "$GITHUB_REF_NAME" "$(basename "$fragment")" --yes
+          done
