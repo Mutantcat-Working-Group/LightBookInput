@@ -20,7 +20,7 @@ def main():
     if not prefix.is_absolute() or prefix == Path('/'):
         raise SystemExit('需要非根绝对安装路径')
     prefix = prefix.resolve()
-    manifest = prefix / 'share/qingjian/install-manifest.json'
+    manifest = prefix / 'share/lightbookinput/install-manifest.json'
     old = json.loads(manifest.read_text()) if manifest.is_file() else {}
     if action == 'uninstall':
         for filename, checksum in old.items():
@@ -36,14 +36,14 @@ def main():
     data = Path(os.environ.get('XDG_DATA_HOME', str(Path.home() / '.local/share')))
     if not data.is_absolute():
         raise SystemExit('XDG_DATA_HOME 必须是绝对路径')
-    files = {prefix / 'share/licenses/qingjian/LICENSE': root / 'LICENSE',
-             prefix / 'share/licenses/qingjian/LICENSE-CNS11643.txt': root / 'assets/stroke/LICENSE-CNS11643.txt',
-             data / 'icons/hicolor/128x128/apps/qingjian.png': root / 'assets/icon/logo.png',
-             prefix / 'bin/qingjian-linux-server': Path(server),
-             prefix / 'lib/fcitx5/qingjian.so': Path(plugin)}
+    files = {prefix / 'share/licenses/lightbookinput/LICENSE': root / 'LICENSE',
+             prefix / 'share/licenses/lightbookinput/LICENSE-CNS11643.txt': root / 'assets/stroke/LICENSE-CNS11643.txt',
+             data / 'icons/hicolor/128x128/apps/lightbookinput.png': root / 'icon.png',
+             prefix / 'bin/lightbookinput-linux-server': Path(server),
+             prefix / 'lib/fcitx5/lightbookinput.so': Path(plugin)}
     for kind in ('addon', 'inputmethod'):
-        files[data / f'fcitx5/{kind}/qingjian.conf'] = root / f'apps/linux/fcitx5/data/{kind}/qingjian.conf'
-    resources = prefix / 'share/qingjian/resources'
+        files[data / f'fcitx5/{kind}/lightbookinput.conf'] = root / f'apps/linux/fcitx5/data/{kind}/lightbookinput.conf'
+    resources = prefix / 'share/lightbookinput/resources'
     for kind in ('sample', 'glossary', 'levels', 'emoji'):
         for source in (root / 'assets' / kind).rglob('*'):
             if source.is_file():
@@ -51,11 +51,11 @@ def main():
     if sample != 'true':
         generated = root / 'data/generated'
         dictionary = generated / 'dict.qj'
-        archive = root / 'target/release-data/qingjian-data.tar.gz'
+        archive = root / 'target/release-data/lightbookinput-data.tar.gz'
         lock = dict(line.strip().split(' = ', 1) for line in (root / 'tools/release/data.lock').read_text().splitlines() if ' = ' in line)
         if not dictionary.is_file() or not archive.is_file():
             raise SystemExit('缺少产品数据，请先运行 tools/release/data-fetch.sh，或用 --sample 体验样例词库')
-        if digest(archive) != lock.get('qingjian-data.tar.gz'):
+        if digest(archive) != lock.get('lightbookinput-data.tar.gz'):
             raise SystemExit('产品数据包与 tools/release/data.lock 校验值不符')
         verified = {}
         with tarfile.open(archive) as bundle:
@@ -92,10 +92,10 @@ def main():
     installed = {}
     for target, source in files.items():
         target.parent.mkdir(parents=True, exist_ok=True)
-        temporary = target.with_name(target.name + '.qingjian-tmp')
+        temporary = target.with_name(target.name + '.lightbookinput-tmp')
         shutil.copy2(source, temporary)
-        if target == data / 'fcitx5/addon/qingjian.conf':
-            temporary.write_text(temporary.read_text().replace('Library=qingjian\n', f'Library={prefix}/lib/fcitx5/qingjian\n'))
+        if target == data / 'fcitx5/addon/lightbookinput.conf':
+            temporary.write_text(temporary.read_text().replace('Library=lightbookinput\n', f'Library={prefix}/lib/fcitx5/lightbookinput\n'))
         temporary.replace(target)
         installed[str(target)] = digest(target)
     for filename, checksum in old.items():
