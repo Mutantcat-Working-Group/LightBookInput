@@ -176,7 +176,8 @@ mod tests {
 
     #[test]
     fn round_trips_through_the_file_in_glossary_format() {
-        let dir = std::env::temp_dir().join(format!("lightbookinput-personal-{}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("lightbookinput-personal-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("user-glossary-ja.tsv");
         std::fs::write(&path, "# 头\n开放\tadj. 開放的|かいほうてき\n坏行\n").unwrap();

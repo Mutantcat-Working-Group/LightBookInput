@@ -7,6 +7,8 @@ use crate::preferences::{
     setting::Setting,
     target::PreferencesTarget,
 };
+use lightbookinput_core::CustomPhrase;
+use lightbookinput_platform::Config;
 use objc2::{MainThreadMarker, rc::Retained, runtime::ProtocolObject, sel};
 use objc2_app_kit::{
     NSBackingStoreType, NSBorderType, NSButton, NSColor, NSControlStateValueOn, NSPopUpButton,
@@ -14,8 +16,6 @@ use objc2_app_kit::{
     NSWindowStyleMask,
 };
 use objc2_foundation::{NSIndexSet, NSPoint, NSRect, NSSize, NSString};
-use lightbookinput_core::CustomPhrase;
-use lightbookinput_platform::Config;
 use std::cell::{Cell, RefCell};
 use table::PhraseTableSource;
 

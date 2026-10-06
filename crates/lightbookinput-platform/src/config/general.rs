@@ -237,7 +237,11 @@ impl GeneralConfig {
     pub fn aux_code_key(&self) -> char {
         let mut chars = self.aux_code_key.chars();
         match (chars.next(), chars.next()) {
-            (Some(key), None) if lightbookinput_core::is_valid_aux_code_key(key, self.page_keys()) => key,
+            (Some(key), None)
+                if lightbookinput_core::is_valid_aux_code_key(key, self.page_keys()) =>
+            {
+                key
+            }
             _ => lightbookinput_core::DEFAULT_AUX_CODE_KEY,
         }
     }

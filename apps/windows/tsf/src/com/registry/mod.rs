@@ -79,7 +79,9 @@ fn register_profile() -> Result<()> {
         let category: ITfCategoryMgr =
             unsafe { CoCreateInstance(&CLSID_TF_CategoryMgr, None, CLSCTX_INPROC_SERVER)? };
         for catid in CATEGORIES {
-            unsafe { category.RegisterCategory(&CLSID_LIGHTBOOKINPUT, catid, &CLSID_LIGHTBOOKINPUT)? };
+            unsafe {
+                category.RegisterCategory(&CLSID_LIGHTBOOKINPUT, catid, &CLSID_LIGHTBOOKINPUT)?
+            };
         }
         Ok(())
     })
@@ -91,8 +93,9 @@ fn unregister_profile() -> Result<()> {
             CoCreateInstance::<_, ITfCategoryMgr>(&CLSID_TF_CategoryMgr, None, CLSCTX_INPROC_SERVER)
         } {
             for catid in CATEGORIES {
-                let _ =
-                    unsafe { category.UnregisterCategory(&CLSID_LIGHTBOOKINPUT, catid, &CLSID_LIGHTBOOKINPUT) };
+                let _ = unsafe {
+                    category.UnregisterCategory(&CLSID_LIGHTBOOKINPUT, catid, &CLSID_LIGHTBOOKINPUT)
+                };
             }
         }
         if let Ok(profiles) = unsafe {
@@ -103,8 +106,11 @@ fn unregister_profile() -> Result<()> {
             )
         } {
             unsafe {
-                let _ =
-                    profiles.RemoveLanguageProfile(&CLSID_LIGHTBOOKINPUT, LANGID_ZH_CN, &GUID_PROFILE);
+                let _ = profiles.RemoveLanguageProfile(
+                    &CLSID_LIGHTBOOKINPUT,
+                    LANGID_ZH_CN,
+                    &GUID_PROFILE,
+                );
                 let _ = profiles.Unregister(&CLSID_LIGHTBOOKINPUT);
             }
         }

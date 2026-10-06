@@ -1,10 +1,10 @@
 //! 「通用」页：学习语言、每页候选数、输入方案、英文模式候选。
 
+use lightbookinput_core::Language;
+use lightbookinput_platform::{Config, MAX_PAGE_SIZE, Scheme};
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSButton, NSPopUpButton};
-use lightbookinput_core::Language;
-use lightbookinput_platform::{Config, MAX_PAGE_SIZE, Scheme};
 
 use crate::preferences::controls::{
     checkbox, language_label, note, row_checkbox, row_popup, select, set_checked,

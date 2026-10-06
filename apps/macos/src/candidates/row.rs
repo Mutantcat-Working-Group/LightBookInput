@@ -61,7 +61,10 @@ impl Row {
         }
         Self {
             index: (position + 1).to_string(),
-            text: if matches!(candidate.kind, lightbookinput_core::CandidateKind::Custom(_)) {
+            text: if matches!(
+                candidate.kind,
+                lightbookinput_core::CandidateKind::Custom(_)
+            ) {
                 lightbookinput_core::CustomPhrase::preview(&candidate.text, 60)
             } else {
                 candidate.text.clone()

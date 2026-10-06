@@ -18,9 +18,6 @@ mod settings;
 use std::cell::RefCell;
 use std::path::PathBuf;
 
-use objc2::MainThreadMarker;
-use objc2_app_kit::{NSPasteboard, NSPasteboardTypeString};
-use objc2_foundation::{NSProcessInfo, NSRect, NSString};
 use lightbookinput_core::{
     Candidate, CandidateKind, Cell, CloudWord, EmojiTable, Engine, FuzzyRules, Language, ModeKeys,
     NoGlossFiller, NoInputLogger, NoPredictor, NoTranslator, Prediction,
@@ -38,6 +35,9 @@ use lightbookinput_predict::{
     CloudGlossFiller, CloudPredictor, ConnectionTest, PredictConfig, PredictError,
 };
 use lightbookinput_translate::{Glossary, LayeredTranslator, LevelTable, PersonalGlossary};
+use objc2::MainThreadMarker;
+use objc2_app_kit::{NSPasteboard, NSPasteboardTypeString};
+use objc2_foundation::{NSProcessInfo, NSRect, NSString};
 
 use crate::app::BundleInfo;
 use crate::app::{Settings, logging, paths};
@@ -164,7 +164,10 @@ pub struct Host {
     /// 正在后台加载的模型；加载完接到 Engine 上就清掉。
     model_loader: Option<
         std::sync::mpsc::Receiver<
-            Result<Box<dyn lightbookinput_core::sentence::SentenceScorer>, lightbookinput_neural::NeuralError>,
+            Result<
+                Box<dyn lightbookinput_core::sentence::SentenceScorer>,
+                lightbookinput_neural::NeuralError,
+            >,
         >,
     >,
 

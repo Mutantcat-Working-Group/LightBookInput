@@ -250,8 +250,10 @@ fn shift_uppercase_while_composing_commits_raw_first() {
 #[test]
 fn learning_data_persists_to_user_dir() {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../..");
-    let user_dir =
-        std::env::temp_dir().join(format!("lightbookinput-windows-learning-{}", std::process::id()));
+    let user_dir = std::env::temp_dir().join(format!(
+        "lightbookinput-windows-learning-{}",
+        std::process::id()
+    ));
     let _ = std::fs::remove_dir_all(&user_dir);
     std::fs::create_dir_all(&user_dir).unwrap();
     let engine = assembly::assemble(&AssemblySpec {

@@ -43,7 +43,7 @@ pub use engine::{
 };
 pub use fuzzy::FuzzyRules;
 pub use history::InputHistory;
+pub use lightbookinput_dictionary as dictionary;
 pub use parser::{ParseError, Segmentation};
 pub use punctuation::Punctuation;
-pub use lightbookinput_dictionary as dictionary;
 pub use shuangpin::Scheme as ShuangpinScheme;

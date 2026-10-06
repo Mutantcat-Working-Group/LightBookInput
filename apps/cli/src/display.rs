@@ -226,7 +226,9 @@ fn format_candidate(candidate: &Candidate, width: usize) -> String {
         .map(|code| format!("[{code}] "))
         .unwrap_or_default();
     let marker = match candidate.kind {
-        lightbookinput_core::CandidateKind::Chinese | lightbookinput_core::CandidateKind::Code => "",
+        lightbookinput_core::CandidateKind::Chinese | lightbookinput_core::CandidateKind::Code => {
+            ""
+        }
         lightbookinput_core::CandidateKind::English => "[en] ",
         lightbookinput_core::CandidateKind::Cloud => "☁ ",
         lightbookinput_core::CandidateKind::Shortcut => "[v] ",

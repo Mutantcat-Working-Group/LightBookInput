@@ -1,13 +1,13 @@
 //! 偏好设置窗口本体：把各页（`pages/`）装进标签视图，底部一行状态；刷新时逐页同步。
 
+use lightbookinput_core::{Language, UsageSummary, VocabularySummary};
+use lightbookinput_platform::Config;
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{
     NSClipView, NSColor, NSScreen, NSScrollView, NSTabView, NSTabViewItem, NSTextField, NSView,
 };
 use objc2_foundation::{NSPoint, NSRect, NSSize, NSString};
-use lightbookinput_core::{Language, UsageSummary, VocabularySummary};
-use lightbookinput_platform::Config;
 
 use super::controls::{language_label, small_label};
 use super::layout::{Layout, PAGE_PADDING, PAGE_WIDTH};

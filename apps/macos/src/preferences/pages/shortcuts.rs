@@ -1,10 +1,10 @@
 //! 「快捷键」页：翻页键、模式键、译词上屏 / 删候选 / 翻译选中文字的组合键。
 
+use lightbookinput_core::ModeKeys;
+use lightbookinput_platform::{Config, PAGE_KEY_OPTIONS};
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSButton, NSPopUpButton};
-use lightbookinput_core::ModeKeys;
-use lightbookinput_platform::{Config, PAGE_KEY_OPTIONS};
 
 use crate::preferences::controls::{
     GROUP_GAP, button, checkbox, note, note_full, page_keys_label, row_checkbox, row_popup,

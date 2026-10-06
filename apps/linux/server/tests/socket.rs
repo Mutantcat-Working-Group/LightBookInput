@@ -81,7 +81,8 @@ fn commit(stream: &mut UnixStream) -> Option<String> {
 }
 #[test]
 fn connections_are_isolated_and_restart_reopens_cleanly() {
-    let directory = std::env::temp_dir().join(format!("lightbookinput-socket-{}", std::process::id()));
+    let directory =
+        std::env::temp_dir().join(format!("lightbookinput-socket-{}", std::process::id()));
     let mut server = Server::start(directory.clone());
     let mut first = server.connect();
     let mut second = server.connect();
@@ -124,7 +125,8 @@ fn connections_are_isolated_and_restart_reopens_cleanly() {
 }
 #[test]
 fn socket_path_does_not_replace_regular_files_or_symlinks() {
-    let directory = std::env::temp_dir().join(format!("lightbookinput-bind-{}", std::process::id()));
+    let directory =
+        std::env::temp_dir().join(format!("lightbookinput-bind-{}", std::process::id()));
     std::fs::create_dir_all(&directory).unwrap();
     let path = directory.join("server.sock");
     std::fs::write(&path, "keep").unwrap();
@@ -139,7 +141,8 @@ fn socket_path_does_not_replace_regular_files_or_symlinks() {
 #[test]
 fn linux_ui_negotiates_after_legacy_open_and_binds_ack_to_connection() {
     use serde_json::{Value, json};
-    let directory = std::env::temp_dir().join(format!("lightbookinput-ui-socket-{}", std::process::id()));
+    let directory =
+        std::env::temp_dir().join(format!("lightbookinput-ui-socket-{}", std::process::id()));
     let mut server = Server::start(directory.clone());
     let mut stream = server.connect();
     write_message(

@@ -33,7 +33,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .with_ansi(false)
         .with_writer(writer)
         .init();
-    let root = paths::resource_root().ok_or("product resources missing; set LIGHTBOOKINPUT_RESOURCES")?;
+    let root =
+        paths::resource_root().ok_or("product resources missing; set LIGHTBOOKINPUT_RESOURCES")?;
     let dictionary = std::env::var_os("LIGHTBOOKINPUT_DICT")
         .map(PathBuf::from)
         .or_else(|| paths::generated(&root, "dict.qj"))

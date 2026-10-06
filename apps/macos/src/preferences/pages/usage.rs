@@ -2,11 +2,11 @@
 //! 再把累计汉字数折成「几本《某书》」给个直观参照；下面一块是学习语言的词汇（见过 / 看熟 / 上屏过 / 打出过的译词数）。
 //! 数据来自 `Engine::usage_summary` / `Engine::vocabulary_summary`，打开窗口时更新。
 
+use lightbookinput_core::{FRESH_UNTIL, Usage, UsageSummary, VocabularySummary, book_scale};
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSFont, NSTextAlignment, NSTextField};
 use objc2_foundation::NSString;
-use lightbookinput_core::{FRESH_UNTIL, Usage, UsageSummary, VocabularySummary, book_scale};
 
 use crate::preferences::controls::{GROUP_GAP, caption, note_full, small_label};
 use crate::preferences::layout::{LABEL_WIDTH, Layout, PAGE_PADDING, ROW_HEIGHT};

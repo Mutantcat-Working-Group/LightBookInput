@@ -1,9 +1,9 @@
 //! 「高级」页：打开配置文件、详细日志、学习开关、输入日志。
 
+use lightbookinput_platform::{Config, LogLevel};
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::NSButton;
-use lightbookinput_platform::{Config, LogLevel};
 
 use crate::preferences::controls::{
     GROUP_GAP, button, checkbox, note_full, row_checkbox, set_checked,

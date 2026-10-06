@@ -85,8 +85,10 @@ mod tests {
     use super::*;
 
     fn write(name: &str, body: &str) -> PathBuf {
-        let path =
-            std::env::temp_dir().join(format!("lightbookinput-english-{}-{name}", std::process::id()));
+        let path = std::env::temp_dir().join(format!(
+            "lightbookinput-english-{}-{name}",
+            std::process::id()
+        ));
         std::fs::write(&path, body).unwrap();
         path
     }

@@ -160,8 +160,9 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             rescore: RescoreMonitor::new(mtm),
             model_loader: None,
             applied_model: None,
-            updates: paths::user_data_dir()
-                .map(|dir| lightbookinput_update::Checker::new(dir.join(UPDATE_STATE_FILE), version)),
+            updates: paths::user_data_dir().map(|dir| {
+                lightbookinput_update::Checker::new(dir.join(UPDATE_STATE_FILE), version)
+            }),
             update_status: UpdateStatus::default(),
             session: Session::default(),
             sentence: None,

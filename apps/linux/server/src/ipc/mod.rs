@@ -33,7 +33,9 @@ pub fn socket_path() -> PathBuf {
                 .filter(|p| !p.is_empty())
                 .map(PathBuf::from)
                 .unwrap_or_else(|| {
-                    PathBuf::from(format!("/tmp/lightbookinput-{}", unsafe { libc::geteuid() }))
+                    PathBuf::from(format!("/tmp/lightbookinput-{}", unsafe {
+                        libc::geteuid()
+                    }))
                 })
                 .join("lightbookinput.sock")
         })

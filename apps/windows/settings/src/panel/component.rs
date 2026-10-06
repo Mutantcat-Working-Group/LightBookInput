@@ -295,8 +295,11 @@ impl Component for Settings {
                 self.update_error = None;
                 let config = self.config.update.clone();
                 context.spawn_background(move |_cancel| {
-                    let result =
-                        lightbookinput_update::Checker::check_blocking(&path, about::VERSION, &config);
+                    let result = lightbookinput_update::Checker::check_blocking(
+                        &path,
+                        about::VERSION,
+                        &config,
+                    );
                     Message::UpdateChecked(result.map(|r| r.map_err(|error| error.to_string())))
                 });
             }

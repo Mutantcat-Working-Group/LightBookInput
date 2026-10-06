@@ -88,8 +88,10 @@ mod tests {
 
     /// 每个测试一个目录：测试并行跑，共用目录时一个测试的临时文件会被另一个测试的目录扫描撞见
     fn scratch(test: &str, name: &str) -> PathBuf {
-        let dir =
-            std::env::temp_dir().join(format!("lightbookinput-storage-{}-{test}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!(
+            "lightbookinput-storage-{}-{test}",
+            std::process::id()
+        ));
         fs::create_dir_all(&dir).unwrap();
         dir.join(name)
     }

@@ -22,5 +22,6 @@ pub fn config_path() -> Option<PathBuf> {
 
 /// 运行日志目录 `%LOCALAPPDATA%\LightBookInput\logs`，不负责创建。
 pub fn log_dir() -> Option<PathBuf> {
-    std::env::var_os("LOCALAPPDATA").map(|base| PathBuf::from(base).join("LightBookInput").join("logs"))
+    std::env::var_os("LOCALAPPDATA")
+        .map(|base| PathBuf::from(base).join("LightBookInput").join("logs"))
 }

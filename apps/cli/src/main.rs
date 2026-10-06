@@ -239,7 +239,9 @@ fn build_engine(args: &Args) -> Result<Engine, CliError> {
         };
         tracing::info!(
             load_ms = started.elapsed().as_millis(),
-            weight = args.neural_weight.unwrap_or(lightbookinput_core::NEURAL_WEIGHT),
+            weight = args
+                .neural_weight
+                .unwrap_or(lightbookinput_core::NEURAL_WEIGHT),
             kind = if p2c { "P2C" } else { "字级" },
             "神经重打分已启用"
         );

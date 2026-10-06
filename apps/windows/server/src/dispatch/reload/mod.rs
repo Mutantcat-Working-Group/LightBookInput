@@ -122,7 +122,10 @@ impl Router {
         let code_files = dirs.code_snapshot();
         let dictionary_files = dirs.dict_snapshot();
         let updates = dirs.user_root.as_deref().map(|dir| {
-            lightbookinput_update::Checker::new(dir.join(UPDATE_STATE_FILE), env!("CARGO_PKG_VERSION"))
+            lightbookinput_update::Checker::new(
+                dir.join(UPDATE_STATE_FILE),
+                env!("CARGO_PKG_VERSION"),
+            )
         });
         self.reload = Some(ConfigReload {
             config_path,

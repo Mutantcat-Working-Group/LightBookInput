@@ -1,9 +1,9 @@
+use lightbookinput_core::FuzzyRules;
+use lightbookinput_platform::Config;
 use objc2::rc::Retained;
 use objc2::{MainThreadMarker, sel};
 use objc2_app_kit::{NSControlStateValueOff, NSControlStateValueOn, NSMenu, NSMenuItem};
 use objc2_foundation::NSString;
-use lightbookinput_core::FuzzyRules;
-use lightbookinput_platform::Config;
 
 use super::MenuAction;
 use super::target::MenuTarget;

@@ -2,11 +2,11 @@
 //!
 //! 文案集中在这里的常量里，改措辞不用碰布局代码。第三方数据的许可证要求署名在分发物里可见，这一页就是放它的地方。
 
+use lightbookinput_platform::{Config, UpdateChannel};
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSButton, NSFont, NSPopUpButton, NSTextField};
 use objc2_foundation::NSString;
-use lightbookinput_platform::{Config, UpdateChannel};
 
 use crate::preferences::controls::{
     GROUP_GAP, button, checkbox, note_full, row_checkbox, row_popup, select, set_checked,

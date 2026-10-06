@@ -44,7 +44,8 @@ pub(super) fn export_logs() {
     };
     log::warn("用户导出日志");
     let mut sources = vec![format!("'{}\\*'", logs.display())];
-    if let Some(config) = lightbookinput_platform::dirs::config_path().filter(|path| path.is_file()) {
+    if let Some(config) = lightbookinput_platform::dirs::config_path().filter(|path| path.is_file())
+    {
         sources.push(format!("'{}'", config.display()));
     }
     let zip_name = format!(

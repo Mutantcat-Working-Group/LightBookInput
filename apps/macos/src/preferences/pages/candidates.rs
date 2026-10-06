@@ -1,9 +1,9 @@
 //! 「候选窗口」页：外观、排布、渲染引擎、字体（可搜索的列表）、拼音显示位置。
 
+use lightbookinput_platform::{CandidateRenderer, Config, LayoutMode, PreeditMode, ThemeMode};
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSButton, NSPopUpButton};
-use lightbookinput_platform::{CandidateRenderer, Config, LayoutMode, PreeditMode, ThemeMode};
 
 use crate::candidates::available_families;
 use crate::preferences::controls::{checkbox, note, row_checkbox, row_popup, select, set_checked};

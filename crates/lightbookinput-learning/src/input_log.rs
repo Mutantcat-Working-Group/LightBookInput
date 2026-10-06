@@ -113,7 +113,8 @@ mod tests {
 
     #[test]
     fn writes_one_json_line_per_entry_with_a_timestamp() {
-        let dir = std::env::temp_dir().join(format!("lightbookinput-input-log-{}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("lightbookinput-input-log-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("input-log.jsonl");
         let mut log = InputLog::open(&path);

@@ -7,6 +7,7 @@ mod matrix;
 
 use std::cell::{Cell, RefCell};
 
+use lightbookinput_platform::{CandidateRenderer, LayoutMode};
 use objc2::rc::Retained;
 use objc2::runtime::AnyObject;
 use objc2::{DefinedClass, MainThreadMarker, MainThreadOnly, define_class, msg_send};
@@ -18,7 +19,6 @@ use objc2_app_kit::{
 use objc2_foundation::{
     NSArray, NSAttributedString, NSDictionary, NSNumber, NSPoint, NSRect, NSSize, NSString,
 };
-use lightbookinput_platform::{CandidateRenderer, LayoutMode};
 
 use super::bitmap::BitmapPainter;
 use super::cloud_icon::CloudIcon;

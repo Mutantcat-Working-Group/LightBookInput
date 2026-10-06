@@ -149,8 +149,7 @@ pub(super) fn open_with_system(args: &[&str]) {
 mod tests {
     #[test]
     fn redaction_hides_key_values_only() {
-        let text =
-            "[predict]\napi_key = \"sk-secret\"\napi_key_env = \"LIGHTBOOKINPUT_API_KEY\"\nmodel = \"x\"";
+        let text = "[predict]\napi_key = \"sk-secret\"\napi_key_env = \"LIGHTBOOKINPUT_API_KEY\"\nmodel = \"x\"";
         let redacted = super::redact_secrets(text);
         assert!(!redacted.contains("sk-secret"));
         assert!(redacted.contains("api_key_env = \"LIGHTBOOKINPUT_API_KEY\""));

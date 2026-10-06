@@ -4,7 +4,9 @@ use std::path::{Path, PathBuf};
 
 use jiff::civil::Date;
 use lightbookinput_core::storage::{read_text_lossy, write_atomic_str};
-use lightbookinput_core::{FRESH_UNTIL, Language, LevelCount, VocabularySummary, VocabularyTracker};
+use lightbookinput_core::{
+    FRESH_UNTIL, Language, LevelCount, VocabularySummary, VocabularyTracker,
+};
 use lightbookinput_translate::LevelTable;
 
 use crate::error::LearningError;

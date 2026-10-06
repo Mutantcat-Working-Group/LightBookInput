@@ -147,7 +147,9 @@ impl Host {
                 let Some(path) = self.settings.path() else {
                     return;
                 };
-                if let Err(error) = lightbookinput_platform::Config::set_custom_phrases(path, &phrases) {
+                if let Err(error) =
+                    lightbookinput_platform::Config::set_custom_phrases(path, &phrases)
+                {
                     self.preferences.set_phrase_error(&error);
                     self.preferences.set_status(&error);
                     return;

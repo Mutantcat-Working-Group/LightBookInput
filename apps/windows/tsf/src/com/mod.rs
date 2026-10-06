@@ -38,7 +38,8 @@ use windows::core::{BOOL, GUID, HRESULT, HSTRING, Interface};
 use lightbookinput_platform::protocol::SessionId;
 
 /// 文本服务的 CLSID。注册表 InprocServer32、TSF profile、[`DllGetClassObject`] 都认它。
-pub(crate) const CLSID_LIGHTBOOKINPUT: GUID = GUID::from_u128(0x4fdca82d_e923_49bf_9e75_bb906b93b8bb);
+pub(crate) const CLSID_LIGHTBOOKINPUT: GUID =
+    GUID::from_u128(0x4fdca82d_e923_49bf_9e75_bb906b93b8bb);
 
 /// [`CLSID_LIGHTBOOKINPUT`] 的注册表字符串形式，两者必须同步改。
 pub(crate) const CLSID_LIGHTBOOKINPUT_STR: &str = "{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}";

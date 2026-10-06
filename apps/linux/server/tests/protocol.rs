@@ -77,7 +77,10 @@ fn linux_display_identity_round_trips_without_changing_shared_protocol() {
 /// Fcitx5 插件的 OpenSession 把协议版本写死在 C++ 里；Server 要求完全一致，升版本时两边得一起改。
 #[test]
 fn fcitx5_plugin_opens_sessions_with_the_current_protocol() {
-    let plugin = concat!(env!("CARGO_MANIFEST_DIR"), "/../fcitx5/src/lightbookinput.cpp");
+    let plugin = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../fcitx5/src/lightbookinput.cpp"
+    );
     let source = std::fs::read_to_string(plugin).unwrap();
     let expected = format!("{{\"protocol\", {PROTOCOL_VERSION}}}");
     assert!(

@@ -1,7 +1,10 @@
 use zerocopy::{FromBytes, Immutable, IntoBytes, KnownLayout};
 
 /// 文件头魔数。
-pub const MAGIC: [u8; 8] = *b"LIGHTBOOKINPUT";
+/// 这是与已发布数据资产（上游 data-vN release）绑定的线上格式契约：
+/// 数据包由上游 qingjian 代码生成，读侧与本常量严格比对，改名不随之改动，
+/// 否则已发布数据全部读不了。要改必须随数据包重发一起。
+pub const MAGIC: [u8; 8] = *b"QINGJIAN";
 
 /// 当前格式版本。布局不兼容时加一，读旧版本的代码按需保留。
 pub const FORMAT_VERSION: u16 = 1;

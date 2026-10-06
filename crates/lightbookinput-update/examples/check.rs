@@ -17,7 +17,8 @@ fn main() {
         check: true,
         channel,
     };
-    let state = std::env::temp_dir().join(format!("lightbookinput-update-{}.json", std::process::id()));
+    let state =
+        std::env::temp_dir().join(format!("lightbookinput-update-{}.json", std::process::id()));
     let checker = Checker::new(state.clone(), &current);
     checker.poll(&config);
     while checker.checking() {

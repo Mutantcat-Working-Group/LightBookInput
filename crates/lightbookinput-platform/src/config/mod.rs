@@ -95,7 +95,8 @@ fn deserialize_phrases<'de, D: serde::Deserializer<'de>>(
     deserializer: D,
 ) -> Result<Vec<lightbookinput_core::CustomPhrase>, D::Error> {
     let phrases = Vec::<lightbookinput_core::CustomPhrase>::deserialize(deserializer)?;
-    lightbookinput_core::custom_phrase::validate_phrases(&phrases).map_err(serde::de::Error::custom)?;
+    lightbookinput_core::custom_phrase::validate_phrases(&phrases)
+        .map_err(serde::de::Error::custom)?;
     Ok(phrases)
 }
 

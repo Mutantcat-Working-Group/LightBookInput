@@ -192,8 +192,10 @@ mod tests {
 
     #[test]
     fn p2c_precedes_old_model_and_user_precedes_bundled() {
-        let root =
-            std::env::temp_dir().join(format!("lightbookinput-model-choice-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!(
+            "lightbookinput-model-choice-{}",
+            std::process::id()
+        ));
         let user = root.join("user");
         let bundled = root.join("bundled");
         let _ = std::fs::remove_dir_all(&root);

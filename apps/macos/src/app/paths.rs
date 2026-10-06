@@ -48,7 +48,8 @@ pub fn config_file() -> Option<PathBuf> {
 
 /// 用户数据目录，不存在则创建。
 pub fn user_data_dir() -> Option<PathBuf> {
-    let dir = PathBuf::from(std::env::var_os("HOME")?).join("Library/Application Support/LightBookInput");
+    let dir =
+        PathBuf::from(std::env::var_os("HOME")?).join("Library/Application Support/LightBookInput");
     std::fs::create_dir_all(&dir).ok()?;
     Some(dir)
 }

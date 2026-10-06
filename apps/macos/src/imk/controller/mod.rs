@@ -3,14 +3,14 @@
 //! 只做两件事：把按键翻译成 Engine 的调用，把 Engine 返回的候选交给候选窗口。
 //! **这里不允许出现排序、词库或翻译逻辑。** 会话状态（候选、高亮、页码）在 [`crate::host::Session`]。
 
+use lightbookinput_core::{Candidate, QUESTION_PREFIX};
+use lightbookinput_platform::Modifiers;
 use objc2::rc::{Allocated, Retained};
 use objc2::runtime::{AnyObject, Sel};
 use objc2::{define_class, msg_send, sel};
 use objc2_app_kit::{NSEvent, NSEventModifierFlags, NSEventType, NSMenu};
 use objc2_foundation::NSObjectProtocol;
 use objc2_input_method_kit::{IMKInputController, IMKServer};
-use lightbookinput_core::{Candidate, QUESTION_PREFIX};
-use lightbookinput_platform::Modifiers;
 
 use super::{TextClient, catch_panic, modifiers, recover_from_panic, secure_input};
 use crate::candidates::Preedit;

@@ -97,7 +97,8 @@ mod tests {
 
     #[test]
     fn list_prefers_packed_over_tsv_with_same_stem() {
-        let dir = std::env::temp_dir().join(format!("lightbookinput-extra-dicts-{}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("lightbookinput-extra-dicts-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         for name in ["idioms.qj", "idioms.tsv", "food.tsv", "notes.txt"] {

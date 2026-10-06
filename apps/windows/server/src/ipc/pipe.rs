@@ -23,7 +23,9 @@ use windows::Win32::System::Pipes::{
 };
 use windows::core::{HRESULT, HSTRING};
 
-use lightbookinput_platform::protocol::{ClientMessage, ServerMessage, read_message, write_message};
+use lightbookinput_platform::protocol::{
+    ClientMessage, ServerMessage, read_message, write_message,
+};
 
 use super::Work;
 use crate::dispatch::Router;

@@ -83,7 +83,8 @@ mod tests {
 
     #[test]
     fn imports_tsv_and_rime_into_qj() {
-        let dir = std::env::temp_dir().join(format!("lightbookinput-import-{}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("lightbookinput-import-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         let tsv = dir.join("finance.tsv");

@@ -103,7 +103,10 @@ fn import_replace_and_remove_without_config_changes() {
 
 #[test]
 fn dictionary_changes_do_not_retry_broken_config() {
-    let dir = std::env::temp_dir().join(format!("lightbookinput-reload-broken-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!(
+        "lightbookinput-reload-broken-{}",
+        std::process::id()
+    ));
     std::fs::create_dir_all(&dir).unwrap();
     let config_path = dir.join("config.toml");
     std::fs::write(&config_path, "[general]\npage_size = 5\n").unwrap();
