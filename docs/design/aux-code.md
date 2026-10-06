@@ -42,7 +42,7 @@ v1 只支持**全拼 + 辅码**、**双拼 + 辅码**。简拼 + 辅码、整句
 
 ### 格式：Rime `.dict.yaml`
 
-沿用已有的 Rime 词库导入传统（`crates/qingjian-dictionary/src/import/rime.rs` 已能把 `.dict.yaml` 转成 `.qj`），码表用它同一套外形：
+沿用已有的 Rime 词库导入传统（`crates/lightbookinput-dictionary/src/import/rime.rs` 已能把 `.dict.yaml` 转成 `.qj`），码表用它同一套外形：
 
 - 头部 `---` … `...` 是 meta（`name` / `version` / `sort`），正文每行 `词\t码[\t权重]`，`#` 是注释。
 - `columns` **必须解析**：缺省是 `text` / `code` / `weight` 三列，但真实存在 `columns: [text, weight]` 的纯词表——照缺省解析会把词频当码，静默写坏数据。解析按 `columns` 列表的下标定位。
@@ -73,7 +73,7 @@ v1 只支持**全拼 + 辅码**、**双拼 + 辅码**。简拼 + 辅码、整句
 
 - **「导入码表…」**：接受 Rime `.dict.yaml`，走系统打开文件对话框 / 文件选择器；失败时在窗口底部红字一行说明（例如「这个文件里没有识别到码表（需要词 + 码两列）」）。
 - 导入完成给一份统计：读入多少条、多少词有码、多少词无码、跳过多少行。
-- 引导导入的文案要写清：码表由用户自己取得（例如小鹤形的官方码表），青简不随包分发第三方形码表。
+- 引导导入的文案要写清：码表由用户自己取得（例如小鹤形的官方码表），轻书不随包分发第三方形码表。
 
 ### 设置界面（两个壳都要做）
 
@@ -93,7 +93,7 @@ v1 只支持**全拼 + 辅码**、**双拼 + 辅码**。简拼 + 辅码、整句
 - **输入串（preedit）**：码段用**淡色 + 下划线**画法、`;` 不突出——与既有段样式同一套视觉词汇（敲的拼音正常色、剩余拼音画淡、被纠错改掉的画删除线）。Core 把码段作为新的段类型（`MarkedKind`）给出，两个壳各自落到自己的载体：macOS 走行内 marked text 与窗口拼音行，Windows 走 `protocol` 的 `PreeditSegment`（TSF DLL 交给系统）。
 - **候选**：辅码态只出命中码的词（无码词隐藏）；敲码筛空时候选窗口收起，只剩拼音行。
 - **显示码开关打开时**：码用方括号**紧跟在候选词后面**（`1 鹤[rbm] crane`，渲染器 `Row.code`，小字淡色）：码是词本身的属性，不进右侧的 annotation；译文仍是候选词的单条 annotation（`docs/design/architecture.md`）。开着时不用进辅码态：纯拼音打字与辅码态空码段也把词的**首条码**挂上（边打边认码），筛码时显示命中的那条。竖排会比纯译文挤、横排更难放下，这是这个开关的已知代价（缺省关）。
-- 窗口布局、视觉层级、翻页键等沿用 `docs/design/candidate-ui.md`；**绘制归各壳**（macOS 自绘 NSPanel，Windows Server 自绘候选窗与状态条）。渲染器 spike（`crates/qingjian-render`，分支 `renderer-spike`）落地后两个平台都只贴图。
+- 窗口布局、视觉层级、翻页键等沿用 `docs/design/candidate-ui.md`；**绘制归各壳**（macOS 自绘 NSPanel，Windows Server 自绘候选窗与状态条）。渲染器 spike（`crates/lightbookinput-render`，分支 `renderer-spike`）落地后两个平台都只贴图。
 
 ## 配置
 
@@ -109,9 +109,9 @@ v1 只支持**全拼 + 辅码**、**双拼 + 辅码**。简拼 + 辅码、整句
 
 | 层 | 放什么 |
 |---|---|
-| `qingjian-core` | 码段解析（触发键消歧、码段与拼音段分开记账）、码索引的两段式查询、过滤与重排、`MarkedKind` 新段；码表查询走 trait，不认识文件 |
-| `qingjian-dictionary` | 码表解析（`.dict.yaml` + `columns` / `import_tables` 规则）、独立码索引与落盘、导入统计 |
-| `qingjian-platform` | 配置项、码表与方案的目录与开关 |
+| `lightbookinput-core` | 码段解析（触发键消歧、码段与拼音段分开记账）、码索引的两段式查询、过滤与重排、`MarkedKind` 新段；码表查询走 trait，不认识文件 |
+| `lightbookinput-dictionary` | 码表解析（`.dict.yaml` + `columns` / `import_tables` 规则）、独立码索引与落盘、导入统计 |
+| `lightbookinput-platform` | 配置项、码表与方案的目录与开关 |
 | 平台壳 | macOS：`apps/macos`（IMK 偏好设置页、候选窗自绘）；Windows：`apps/windows/settings`（WinUI 3 设置页）与 `apps/windows/server`（自绘候选窗与状态条）。两边都只做两件事：把码段画出来、把设置界面画出来 |
 
 平台层不出现排序逻辑、词库访问或翻译调用（`docs/design/architecture.md` 的架构约束）。
@@ -143,7 +143,7 @@ v1 只支持**全拼 + 辅码**、**双拼 + 辅码**。简拼 + 辅码、整句
 
 | 步 | 范围 | 验证方式 |
 |---|---|---|
-| 1 | **Core**：码表解析、独立码索引、码段与两段式查询（单独一个 PR，不碰壳） | `cargo test -p qingjian-core` / `-p qingjian-dictionary`、`apps/cli` 手测、`--replay` |
+| 1 | **Core**：码表解析、独立码索引、码段与两段式查询（单独一个 PR，不碰壳） | `cargo test -p lightbookinput-core` / `-p lightbookinput-dictionary`、`apps/cli` 手测、`--replay` |
 | 2 | **Windows 壳**：Server / TSF 的 preedit 分段与候选绘制、`apps/windows/settings`（WinUI 3）的「辅码」页 | Windows 机器上 `cargo check --target x86_64-pc-windows-gnu` + 真机部署（Server + DLL + 设置程序） |
 | 3 | **macOS 壳**：IMK 的 marked text 分段、候选窗绘制、偏好设置页 | macOS 机器上 `bundle.sh --install` + 真机输入验证 |
 
@@ -157,6 +157,6 @@ v1 只支持**全拼 + 辅码**、**双拼 + 辅码**。简拼 + 辅码、整句
 
 - `docs/design/candidate-ui.md`：候选窗口与按键约定（本文的码段与注记沿用它的视觉词汇）。
 - `docs/design/architecture.md`：Core 与平台层的划分、翻译是单条 annotation 的约束。
-- 渲染器 spike（分支 `renderer-spike` 上的 `crates/qingjian-render` 与 `docs/design/rendering.md`）：候选窗一帧 + 主题 → 位图，各平台只贴图。
+- 渲染器 spike（分支 `renderer-spike` 上的 `crates/lightbookinput-render` 与 `docs/design/rendering.md`）：候选窗一帧 + 主题 → 位图，各平台只贴图。
 - `docs/notes/crate-notes.md`：各 crate / app / tool 的实现要点（改了实现要同步那里）。
 - `docs/plan/todo.md`：排期与进度。

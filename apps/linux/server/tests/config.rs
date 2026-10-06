@@ -2,7 +2,7 @@
 #![cfg(target_os = "linux")]
 #[path = "support/server.rs"]
 mod server;
-use qingjian_platform::protocol::{PROTOCOL_VERSION, read_message, write_message};
+use lightbookinput_platform::protocol::{PROTOCOL_VERSION, read_message, write_message};
 use serde_json::{Value, json};
 use server::Server;
 
@@ -10,11 +10,11 @@ use server::Server;
 fn learning_language_off_disables_annotations_in_real_server() {
     for (language, expected) in [("en", true), ("off", false), (" OFF ", false)] {
         let directory = std::env::temp_dir().join(format!(
-            "qingjian-config-{}-{}",
+            "lightbookinput-config-{}-{}",
             std::process::id(),
             language.trim()
         ));
-        std::fs::create_dir_all(directory.join("config/qingjian")).unwrap();
+        std::fs::create_dir_all(directory.join("config/lightbookinput")).unwrap();
         std::fs::create_dir_all(directory.join("resources/assets/glossary")).unwrap();
         std::fs::write(
             directory.join("resources/assets/glossary/glossary-en.tsv"),
@@ -22,7 +22,7 @@ fn learning_language_off_disables_annotations_in_real_server() {
         )
         .unwrap();
         std::fs::write(
-            directory.join("config/qingjian/config.toml"),
+            directory.join("config/lightbookinput/config.toml"),
             format!("[general]\nlearning_language = {language:?}\n"),
         )
         .unwrap();

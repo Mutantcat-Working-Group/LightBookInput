@@ -25,7 +25,7 @@ use super::log::log;
 use super::service::SharedClient;
 use super::window_class::WindowClass;
 
-const CLASS_NAME: PCWSTR = w!("QingjianPollWindow");
+const CLASS_NAME: PCWSTR = w!("LightBookInputPollWindow");
 static CLASS: WindowClass = WindowClass::new();
 
 const TIMER_ID: usize = 1;
@@ -146,7 +146,7 @@ fn poll_once(context: &PollContext) {
 }
 
 /// 本进程是不是在前台：当场看前台窗口属于谁，不只信线程焦点标记（后台进程的标记可能一直不清，
-/// 它来取模式会让 Server 以为青简仍是当前输入法）。UWP 应用的前台窗口在 ApplicationFrameHost 进程，那时退回看标记。
+/// 它来取模式会让 Server 以为轻书仍是当前输入法）。UWP 应用的前台窗口在 ApplicationFrameHost 进程，那时退回看标记。
 fn in_foreground(context: &PollContext) -> bool {
     let window = unsafe { GetForegroundWindow() };
     if window.is_invalid() {

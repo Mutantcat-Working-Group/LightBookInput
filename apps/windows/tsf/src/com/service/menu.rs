@@ -6,7 +6,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
     ASFW_ANY, AllowSetForegroundWindow, GetForegroundWindow, GetWindowThreadProcessId,
 };
 
-use qingjian_platform::protocol::IndicatorCommand;
+use lightbookinput_platform::protocol::IndicatorCommand;
 
 use super::TextService_Impl;
 use crate::com::log::log;

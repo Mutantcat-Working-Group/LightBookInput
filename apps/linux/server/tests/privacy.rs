@@ -1,9 +1,9 @@
 //! 隐私能力变化不能把暂存输入泄露到普通日志、用户词频或个人 n-gram。
-use qingjian_core::{Engine, Learner};
-use qingjian_dictionary::Dictionary;
-use qingjian_learning::{FrequencyLearner, InputLog};
-use qingjian_linux_server::{Router, RouterConfig};
-use qingjian_platform::protocol::{
+use lightbookinput_core::{Engine, Learner};
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_learning::{FrequencyLearner, InputLog};
+use lightbookinput_linux_server::{Router, RouterConfig};
+use lightbookinput_platform::protocol::{
     ClientMessage, KeyEvent, KeyModifiers, PROTOCOL_VERSION, ServerMessage, SessionId,
 };
 use std::path::PathBuf;
@@ -12,7 +12,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 static NEXT: AtomicU64 = AtomicU64::new(0);
 fn setup() -> (Router, PathBuf) {
     let path = std::env::temp_dir().join(format!(
-        "qingjian-privacy-{}-{}",
+        "lightbookinput-privacy-{}-{}",
         std::process::id(),
         NEXT.fetch_add(1, Ordering::Relaxed)
     ));

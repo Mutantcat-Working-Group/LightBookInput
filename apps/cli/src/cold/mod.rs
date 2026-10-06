@@ -9,8 +9,8 @@ use std::io::{BufWriter, Write};
 use std::path::Path;
 use std::time::Instant;
 
-use qingjian_core::Engine;
-use qingjian_neural::{CharScorer, P2c};
+use lightbookinput_core::Engine;
+use lightbookinput_neural::{CharScorer, P2c};
 use serde_json::json;
 
 use entry::Entry;

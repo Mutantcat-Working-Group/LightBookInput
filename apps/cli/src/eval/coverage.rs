@@ -2,7 +2,7 @@
 //!
 //! 与导入统计同源：都用码表的 `AuxCodeLookup`，两段口径分别是「词频前 10,000」与「全库」。
 
-use qingjian_core::Engine;
+use lightbookinput_core::Engine;
 
 /// 覆盖率只看词频最高的这么多条（缺省口径）。
 pub const COVERAGE_TOP: usize = 10_000;

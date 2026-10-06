@@ -1,9 +1,9 @@
 //! Linux 输入行为与会话隔离回归测试。
-use qingjian_core::{CustomPhrase, Engine, Learner};
-use qingjian_dictionary::Dictionary;
-use qingjian_learning::FrequencyLearner;
-use qingjian_linux_server::{Router, RouterConfig};
-use qingjian_platform::protocol::{
+use lightbookinput_core::{CustomPhrase, Engine, Learner};
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_learning::FrequencyLearner;
+use lightbookinput_linux_server::{Router, RouterConfig};
+use lightbookinput_platform::protocol::{
     ClientMessage, Frame, KeyEvent, KeyModifiers, KeyOutcome, PROTOCOL_VERSION, ServerMessage,
     SessionId,
 };
@@ -104,7 +104,7 @@ fn editing_commit_escape_and_punctuation() {
 }
 #[test]
 fn sessions_share_one_persistent_learner_and_private_input_does_not_write() {
-    let directory = std::env::temp_dir().join(format!("qingjian-learning-{}", std::process::id()));
+    let directory = std::env::temp_dir().join(format!("lightbookinput-learning-{}", std::process::id()));
     std::fs::create_dir_all(&directory).unwrap();
     let path = directory.join("user.tsv");
     let engine = Engine::new(Dictionary::parse("你好\tni hao\t100\n开发\tkai fa\t100\n").unwrap())

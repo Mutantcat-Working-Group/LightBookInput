@@ -2,7 +2,7 @@
 
 use super::*;
 
-impl QingjianInputController {
+impl LightBookInputInputController {
     /// 按当前缓冲区重新查候选、更新 marked text，回到第一页并重画候选窗口。
     pub(super) fn refresh(&self, client: TextClient<'_>) {
         // 本地整句模型要看光标前文：一段组句只在第一键读一次（组句中它不变；应用偶尔不回话也不至于让前文来回换），

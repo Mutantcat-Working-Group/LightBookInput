@@ -2,7 +2,7 @@
 #pragma once
 #include <fcitx/candidatelist.h>
 #include <functional>
-namespace qingjian {
+namespace lightbookinput {
 class Word final : public fcitx::CandidateWord {
 public:
     Word(std::string text, std::string comment, std::function<void(fcitx::InputContext *)> select)

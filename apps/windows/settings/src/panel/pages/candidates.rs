@@ -1,6 +1,6 @@
 //! 「候选窗口」页：外观、排布、渲染引擎、字体、拼音显示位置、悬浮状态条。
 
-use qingjian_platform::{CandidateRenderer, LayoutMode, PreeditMode, ThemeMode};
+use lightbookinput_platform::{CandidateRenderer, LayoutMode, PreeditMode, ThemeMode};
 use windows_reactor::*;
 
 use crate::panel::controls::{field, page};
@@ -55,7 +55,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
         ),
         field(
             "渲染引擎",
-            "青简渲染器让候选窗口在各平台一致。",
+            "轻书渲染器让候选窗口在各平台一致。",
             mode_combo(
                 &CandidateRenderer::ALL,
                 g.renderer,
@@ -65,7 +65,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
         ),
         field(
             "字体",
-            "只对青简渲染器生效；留空用系统字体，没装的字体自动回到系统字体。",
+            "只对轻书渲染器生效；留空用系统字体，没装的字体自动回到系统字体。",
             AutoSuggestBox::new()
                 .width(260.0)
                 .text(font_text)
@@ -86,7 +86,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
         ),
         field(
             "悬浮状态条",
-            "桌面上常驻、可拖动的小条：点「中 / 英」切换模式（开着双拼时还显示方案名），点「，。」切全角 / 半角标点，点齿轮打开设置。只在当前输入法是青简时显示，拖到哪下次还在哪。",
+            "桌面上常驻、可拖动的小条：点「中 / 英」切换模式（开着双拼时还显示方案名），点「，。」切全角 / 半角标点，点齿轮打开设置。只在当前输入法是轻书时显示，拖到哪下次还在哪。",
             ToggleSwitch::new()
                 .is_on(settings.config.status_bar.enabled)
                 .on_toggled(context.callback(Message::StatusBar)),

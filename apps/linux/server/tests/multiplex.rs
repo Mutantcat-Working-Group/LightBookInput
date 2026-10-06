@@ -2,7 +2,7 @@
 #![cfg(target_os = "linux")]
 #[path = "support/server.rs"]
 mod server;
-use qingjian_platform::protocol::{PROTOCOL_VERSION, read_message, write_message};
+use lightbookinput_platform::protocol::{PROTOCOL_VERSION, read_message, write_message};
 use serde_json::{Value, json};
 use server::Server;
 use std::os::unix::net::UnixStream;
@@ -36,7 +36,7 @@ fn key(stream: &mut UnixStream, id: u64, character: char) -> Value {
 }
 #[test]
 fn simultaneous_sessions_keep_buffers_and_survive_retirement() {
-    let directory = std::env::temp_dir().join(format!("qingjian-multiplex-{}", std::process::id()));
+    let directory = std::env::temp_dir().join(format!("lightbookinput-multiplex-{}", std::process::id()));
     let mut server = Server::start(directory.clone());
     let mut stream = server.connect();
     for id in 1..=128 {
@@ -94,7 +94,7 @@ fn simultaneous_sessions_keep_buffers_and_survive_retirement() {
 }
 #[test]
 fn rejects_old_missing_duplicate_and_unnegotiated_messages() {
-    let directory = std::env::temp_dir().join(format!("qingjian-reject-{}", std::process::id()));
+    let directory = std::env::temp_dir().join(format!("lightbookinput-reject-{}", std::process::id()));
     let mut server = Server::start(directory.clone());
     for scenario in 0..5 {
         let mut stream = server.connect();

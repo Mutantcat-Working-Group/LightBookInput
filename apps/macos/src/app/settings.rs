@@ -7,7 +7,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
-use qingjian_platform::Config;
+use lightbookinput_platform::Config;
 
 use super::paths;
 
@@ -113,7 +113,7 @@ impl Settings {
             return false;
         };
         // 先登记再动文件：后面哪一步失败，日志里都不会出现这个值
-        qingjian_platform::logs::secrets::register(value);
+        lightbookinput_platform::logs::secrets::register(value);
         let env_file = path.with_file_name(".env");
         let existing = std::fs::read_to_string(&env_file).unwrap_or_default();
         let prefix = format!("{name}=");
@@ -125,7 +125,7 @@ impl Settings {
         lines.push(&entry);
         let content = format!("{}\n", lines.join("\n"));
         // 原子写且仅本用户可读（0600）
-        let written = qingjian_core::storage::write_atomic_private(&env_file, |file| {
+        let written = lightbookinput_core::storage::write_atomic_private(&env_file, |file| {
             file.write_all(content.as_bytes())
         });
         if let Err(error) = written {
@@ -163,7 +163,7 @@ impl Settings {
     }
 }
 
-/// 输入法进程由 launchd 拉起，看不到 shell 的环境变量：配置同目录的 `.env`（如 `QINGJIAN_API_KEY=...`）先读进环境。
+/// 输入法进程由 launchd 拉起，看不到 shell 的环境变量：配置同目录的 `.env`（如 `LIGHTBOOKINPUT_API_KEY=...`）先读进环境。
 fn load_dotenv(config_path: &Path) {
     let env_file = config_path.with_file_name(".env");
     match dotenvy::from_path(&env_file) {

@@ -8,8 +8,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LOCK="$ROOT/tools/release/data.lock"
 OUT="$ROOT/target/release-data"
-REPO="qingjian-team/qingjian"
-ASSETS=(qingjian-data.tar.gz)
+# 默认取上游 qingjian-team/qingjian 的 data-vN release：轻书是青简的同源分支，数据包字节一致
+# （data.lock 里的哈希就是按这份算的）。等轻书自己发 data-vN release 后用这两个环境变量指回来。
+REPO="${LIGHTBOOKINPUT_DATA_REPO:-qingjian-team/qingjian}"
+# 锁文件与 CI 里一律按本仓的规范名记；上游资产叫 qingjian-data.tar.gz，下载后改回规范名。
+DATA_KEY=lightbookinput-data.tar.gz
+DATA_ASSET="${LIGHTBOOKINPUT_DATA_ASSET:-qingjian-data.tar.gz}"
+ASSETS=("$DATA_KEY")
 cd "$ROOT"
 
 [[ -f "$LOCK" ]] || { echo "缺少 $LOCK" >&2; exit 1; }
@@ -26,13 +31,19 @@ fi
 mkdir -p "$OUT"
 
 if [[ "${1:-}" != "--verify" ]]; then
-  for f in "${ASSETS[@]}"; do
+  download() {
+    local f="$1" asset="${2:-$1}"
     rm -f "$OUT/$f"
     if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-      gh release download "$TAG" --repo "$REPO" --pattern "$f" --dir "$OUT"
+      gh release download "$TAG" --repo "$REPO" --pattern "$asset" --dir "$OUT"
     else
-      curl -fL --retry 3 -o "$OUT/$f" "https://github.com/$REPO/releases/download/$TAG/$f"
+      curl -fL --retry 3 -o "$OUT/$asset" "https://github.com/$REPO/releases/download/$TAG/$asset"
     fi
+    [[ "$asset" == "$f" ]] || mv -f "$OUT/$asset" "$OUT/$f"
+  }
+  download "$DATA_KEY" "$DATA_ASSET"
+  for f in "${ASSETS[@]}"; do
+    [[ "$f" == "$DATA_KEY" ]] || download "$f"
   done
 fi
 
@@ -46,7 +57,7 @@ done
 
 if [[ -n "$LEGACY_MODEL" ]]; then
   mkdir -p data/generated data/models/hanzhang-zhiwei
-  tar -xzf "$OUT/qingjian-data.tar.gz" -C data/generated
+  tar -xzf "$OUT/lightbookinput-data.tar.gz" -C data/generated
   cp "$OUT/model.qjm" data/models/hanzhang-zhiwei/model.qjm
   MODEL_SOURCE=data/models/hanzhang-zhiwei/model.qjm
   P2C_MODEL_SOURCE=""
@@ -56,7 +67,7 @@ if [[ -n "$LEGACY_MODEL" ]]; then
     P2C_MODEL_SOURCE=data/models/hanzhang-tongbian/model.qjm
   fi
 else
-  tar -xzf "$OUT/qingjian-data.tar.gz" -C "$ROOT"
+  tar -xzf "$OUT/lightbookinput-data.tar.gz" -C "$ROOT"
   MODEL_SOURCE=data/models/hanzhang-zhiwei/hanzhang-zhiwei-small.qjm
   P2C_MODEL_SOURCE=data/models/hanzhang-tongbian/hanzhang-tongbian-small.qjm
   [[ -f "$MODEL_SOURCE" && -f "$P2C_MODEL_SOURCE" && -f data/generated/dict.qj ]] || {
@@ -72,7 +83,7 @@ echo "产品数据 $TAG 已就位"
 if [[ -n "${GITHUB_ENV:-}" ]]; then
   {
     echo "DATA_TAG=$TAG"
-    echo "DATA_SHA256=$(lock_value qingjian-data.tar.gz)"
+    echo "DATA_SHA256=$(lock_value lightbookinput-data.tar.gz)"
     echo "MODEL_SHA256=$(sha256 "$MODEL_SOURCE")"
     if [[ -n "$P2C_MODEL_SOURCE" ]]; then
       echo "P2C_MODEL_SHA256=$(sha256 "$P2C_MODEL_SOURCE")"

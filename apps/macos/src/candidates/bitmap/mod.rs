@@ -1,4 +1,4 @@
-//! 候选窗口的位图绘制：一帧交给 `qingjian-render` 画成位图，`drawRect:` 里贴上去。
+//! 候选窗口的位图绘制：一帧交给 `lightbookinput-render` 画成位图，`drawRect:` 里贴上去。
 //!
 //! 与自绘 NSView 的旧路径并存：配置 `[general] renderer = "system"` 走旧路（过渡期退路）。
 //! 面板背景透明、系统阴影按位图的 alpha 走，所以渲染器不画阴影。
@@ -12,8 +12,8 @@ use objc2::AnyThread;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSBitmapImageRep, NSCalibratedRGBColorSpace, NSCompositingOperation, NSImage};
 use objc2_foundation::{NSPoint, NSRect, NSSize};
-use qingjian_platform::LayoutMode;
-use qingjian_render::{FontLibrary, Layout, Renderer, Theme, UiFont};
+use lightbookinput_platform::LayoutMode;
+use lightbookinput_render::{FontLibrary, Layout, Renderer, Theme, UiFont};
 
 use super::frame::Frame;
 
@@ -25,7 +25,7 @@ pub struct BitmapPainter {
     image: Option<Retained<NSImage>>,
 
     /// 最近一帧（外观变了要重画）。
-    frame: qingjian_render::Frame,
+    frame: lightbookinput_render::Frame,
 
     /// 最近一帧的排布。
     layout: Layout,
@@ -69,7 +69,7 @@ impl BitmapPainter {
         Some(Self {
             renderer: Renderer::new(library),
             image: None,
-            frame: qingjian_render::Frame::default(),
+            frame: lightbookinput_render::Frame::default(),
             layout: Layout::Vertical,
             dark: false,
             scale: 2.0,
@@ -147,7 +147,7 @@ impl BitmapPainter {
 }
 
 /// 预乘 RGBA 位图 → NSImage（尺寸按点，位图按像素，Retina 自然对上）。
-fn to_image(pixmap: &qingjian_render::Pixmap, size: NSSize) -> Option<Retained<NSImage>> {
+fn to_image(pixmap: &lightbookinput_render::Pixmap, size: NSSize) -> Option<Retained<NSImage>> {
     let (width, height) = (pixmap.width(), pixmap.height());
     // SAFETY: planes 传空让 AppKit 自己分配；参数描述的是 8 位 × 4 通道、预乘 alpha 在后的连续 RGBA，
     // 与 tiny-skia 的内存布局一致；随后按 bytesPerRow 逐行拷进去，不越界。

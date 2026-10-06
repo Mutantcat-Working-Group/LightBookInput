@@ -4,7 +4,7 @@ use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSButton, NSPopUpButton, NSSecureTextField, NSTextField};
 use objc2_foundation::NSString;
-use qingjian_platform::Config;
+use lightbookinput_platform::Config;
 
 use crate::preferences::controls::{
     button, checkbox, note, row_checkbox, row_control, row_popup, secure_field, select,

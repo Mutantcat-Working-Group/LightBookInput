@@ -2,7 +2,7 @@
 
 use super::*;
 
-impl QingjianInputController {
+impl LightBookInputInputController {
     /// Option+数字：上屏当前页第几个候选的译文（学习和拼音消耗与选那个候选一样）。
     /// 不在组句中时不管；候选没有译文就吞掉按键不动，免得 ¡™£ 进应用。
     /// 翻译应用里选中的文字：云服务关着、密码框、没有选区都不动（键交回应用）。

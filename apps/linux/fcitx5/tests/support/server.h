@@ -16,18 +16,18 @@ public:
     pid_t pid = -1;
 
     explicit Server(const std::string &general = "") {
-        char pattern[] = "/tmp/qingjian-real-XXXXXX";
+        char pattern[] = "/tmp/lightbookinput-real-XXXXXX";
         auto *created = mkdtemp(pattern); assert(created);
         directory = created;
-        setenv("QINGJIAN_SOCKET", (directory / "server.sock").c_str(), 1);
-        setenv("QINGJIAN_RESOURCES", directory.c_str(), 1);
-        setenv("QINGJIAN_DICT", (directory / "dict.tsv").c_str(), 1);
+        setenv("LIGHTBOOKINPUT_SOCKET", (directory / "server.sock").c_str(), 1);
+        setenv("LIGHTBOOKINPUT_RESOURCES", directory.c_str(), 1);
+        setenv("LIGHTBOOKINPUT_DICT", (directory / "dict.tsv").c_str(), 1);
         setenv("XDG_CONFIG_HOME", (directory / "config").c_str(), 1);
         setenv("XDG_DATA_HOME", (directory / "data").c_str(), 1);
         setenv("XDG_STATE_HOME", (directory / "state").c_str(), 1);
-        std::filesystem::create_directories(directory / "config/qingjian");
+        std::filesystem::create_directories(directory / "config/lightbookinput");
         std::ofstream(directory / "dict.tsv") << "你\tni\t100\n泥\tni\t90\n拟\tni\t80\n你好\tni hao\t100\n好\thao\t80\n开发\tkai fa\t90\n";
-        std::ofstream(directory / "config/qingjian/config.toml") << "[general]\ninput_log = true\npage_size = 2\n" << general << "\n[dictionaries]\ndomains = []\n";
+        std::ofstream(directory / "config/lightbookinput/config.toml") << "[general]\ninput_log = true\npage_size = 2\n" << general << "\n[dictionaries]\ndomains = []\n";
         std::filesystem::create_directories(directory / "data/generated");
         std::ofstream(directory / "data/generated/english.tsv") << "hello\thello\t100\nhelp\thelp\t90\nheld\theld\t80\n";
         start();
@@ -38,7 +38,7 @@ public:
     }
     void start() {
         pid = fork(); assert(pid >= 0);
-        if (pid == 0) { prctl(PR_SET_PDEATHSIG, SIGKILL); execl(QINGJIAN_SERVER_EXECUTABLE, QINGJIAN_SERVER_EXECUTABLE, nullptr); _exit(127); }
+        if (pid == 0) { prctl(PR_SET_PDEATHSIG, SIGKILL); execl(LIGHTBOOKINPUT_SERVER_EXECUTABLE, LIGHTBOOKINPUT_SERVER_EXECUTABLE, nullptr); _exit(127); }
         for (int i = 0; i < 500; ++i) {
             if (std::filesystem::exists(directory / "server.sock")) return;
             int status; assert(waitpid(pid, &status, WNOHANG) == 0);

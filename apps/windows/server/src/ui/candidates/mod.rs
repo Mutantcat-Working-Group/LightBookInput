@@ -1,5 +1,5 @@
 //! 候选窗口：不抢焦点、置顶的分层窗口，跟随光标，画拼音行与候选列表，四周柔和阴影。
-//! 缺省交给青简渲染器出位图再贴（[`super::painter`]），配置 `renderer = "system"` 时走 GDI：绘制在 [`view`]，
+//! 缺省交给轻书渲染器出位图再贴（[`super::painter`]），配置 `renderer = "system"` 时走 GDI：绘制在 [`view`]，
 //! 配色 / 字体在 [`theme`]。绘制内容在 [`RenderData`]，一行的展示形态在 [`row`]。设计语言对齐 macOS 端。
 
 mod render_data;
@@ -20,8 +20,8 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 use windows::core::{Error, PCWSTR, Result, w};
 
-use qingjian_platform::ThemeMode;
-use qingjian_platform::protocol::Frame;
+use lightbookinput_platform::ThemeMode;
+use lightbookinput_platform::protocol::Frame;
 
 pub(crate) use self::render_data::RenderData;
 use self::theme::Theme;
@@ -30,7 +30,7 @@ use super::monitor;
 use super::painter::SharedPainter;
 use super::window_class::WindowClass;
 
-const CLASS_NAME: PCWSTR = w!("QingjianCandidateWindow");
+const CLASS_NAME: PCWSTR = w!("LightBookInputCandidateWindow");
 static CLASS: WindowClass = WindowClass::new();
 
 /// 光标行与候选窗之间的间隙（逻辑像素）。
@@ -69,7 +69,7 @@ pub(crate) struct CandidateWindow {
     /// 上次记进日志的缩放值（窗口 DPI、光标所在显示器 DPI）：变了才再记一条（#146）。
     logged_dpi: Cell<Option<(u32, Option<u32>)>>,
 
-    /// 青简渲染器；`None` 走 GDI。
+    /// 轻书渲染器；`None` 走 GDI。
     painter: SharedPainter,
 }
 
@@ -91,7 +91,7 @@ impl CandidateWindow {
             CreateWindowExW(
                 WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE,
                 CLASS_NAME,
-                w!("青简候选"),
+                w!("轻书候选"),
                 WS_POPUP,
                 0,
                 0,

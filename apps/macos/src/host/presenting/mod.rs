@@ -138,7 +138,7 @@ impl Host {
             highlighted: self.session.highlighted.saturating_sub(first),
             columns,
             column_ems: if columns > 0 {
-                qingjian_core::Grid::column_ems(&self.session.layout)
+                lightbookinput_core::Grid::column_ems(&self.session.layout)
             } else {
                 Vec::new()
             },

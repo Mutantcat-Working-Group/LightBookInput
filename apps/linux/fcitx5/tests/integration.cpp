@@ -1,5 +1,5 @@
 //! 无会话总线加载、默认面板回报、候选点击和协议失效回归。
-#include "qingjian.h"
+#include "lightbookinput.h"
 #include "key/mapping.h"
 #include "support/context.h"
 #include "support/mock.h"
@@ -8,15 +8,15 @@
 int main(int argc, char **argv) {
     assert(argc == 2);
     const std::string mode = argv[1];
-    qingjian::test::Mock mock(mode);
-    auto escaped = qingjian::mapKey(fcitx::Key(FcitxKey_quotedbl));
+    lightbookinput::test::Mock mock(mode);
+    auto escaped = lightbookinput::mapKey(fcitx::Key(FcitxKey_quotedbl));
     assert(Json::parse(escaped.dump()).at("character") == "\"");
-    assert(qingjian::mapKey(fcitx::Key(FcitxKey_ISO_Left_Tab))["modifiers"]["shift"] == true);
-    char program[] = "qingjian-test"; char disable[] = "--disable=all";
+    assert(lightbookinput::mapKey(fcitx::Key(FcitxKey_ISO_Left_Tab))["modifiers"]["shift"] == true);
+    char program[] = "lightbookinput-test"; char disable[] = "--disable=all";
     char *arguments[] = {program, disable, nullptr};
     fcitx::Instance instance(2, arguments);
     instance.initialize();
-    fcitx::QingjianEngine engine(&instance.addonManager());
+    fcitx::LightBookInputEngine engine(&instance.addonManager());
     auto owned = std::make_unique<Context>(instance.inputContextManager());
     auto &context = *owned;
     context.setCapabilityFlags(fcitx::CapabilityFlag::Preedit);

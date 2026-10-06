@@ -1,6 +1,6 @@
 //! 数字缺席、直输、英文候选与小键盘的实际上屏结果。
 use super::support::{compose, key, router};
-use qingjian_platform::protocol::{KeyModifiers, KeyOutcome};
+use lightbookinput_platform::protocol::{KeyModifiers, KeyOutcome};
 
 #[test]
 fn absent_slot_keeps_digit_in_buffer_and_raw_submission() {

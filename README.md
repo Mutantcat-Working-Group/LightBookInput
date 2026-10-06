@@ -1,55 +1,103 @@
-<p align="center">
-  <img src="assets/icon/qingjian-mark.svg" alt="青简竹简图标" height="108">
-</p>
+<div align="center">
+  <img src="icon.png" style="width:100px;" width="100" alt="轻书图标"/>
+  <h2>轻书 LightBookInput</h2>
+</div>
 
-<h1 align="center">青简 Qingjian</h1>
+[English](README.en.md) | 简体中文
 
-<p align="center"><strong>好好输入，顺便多认识一个词。</strong></p>
+### 一、产品概述
 
-<p align="center">
-  <a href="https://qingjian.app/download"><img src="https://img.shields.io/github/v/release/qingjian-team/qingjian?label=stable" alt="stable release"></a>
-  <a href="https://github.com/qingjian-team/qingjian/stargazers"><img src="https://img.shields.io/github/stars/qingjian-team/qingjian?style=flat&amp;label=Stars" alt="GitHub Stars"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License: GPL-3.0-or-later"></a>
-  <a href="https://qingjian.app/docs/getting-started/install"><img src="https://img.shields.io/badge/macOS-13%2B-blue" alt="macOS 13+"></a>
-  <a href="https://qingjian.app/docs/getting-started/install"><img src="https://img.shields.io/badge/Windows-10%2F11-blue" alt="Windows 10/11"></a>
-  <a href="https://qingjian.app/docs/getting-started/linux"><img src="https://img.shields.io/badge/Linux-Fcitx5%20manual-lightgrey" alt="Linux Fcitx5，手动启动"></a>
-</p>
+- 跨平台输入法：支持 macOS、Windows、Linux（Fcitx5），核心输入引擎平台无关，各平台只做壳。
+- 输入时顺便学语言：候选词旁显示一条学习语言的译词（英语 / 日语 / 西班牙语），让语言学习自然发生在日常输入里。
+- 整句输入：bigram 语言模型 + Viterbi + 束搜索，支持简拼整句、个人 n-gram 在线学习，本地小 Transformer 模型停顿后重排候选。
+- 自建词库：20.5 万条基础词库 + 11 本领域词库，`.qj` 二进制容器 mmap 零拷贝启动（50 ms）。
+- 隐私优先：拼音转换、词库查询、本地模型和输入习惯学习全部在本机完成，不需要账号，不上传数据。
+- 云联想（可选，默认关闭）：开启后把当前输入和附近文字发送到你自行填写的 AI 服务商，获取候选或整句补全。
 
-青简是一款输入法。你可以像平常一样打字：输入拼音、选择候选、写完整句；候选旁的一条译词，让语言学习自然发生在日常输入里。译词始终只是辅助信息，不会盖过你要输入的文字。
+核心价值：
 
-https://github.com/user-attachments/assets/d145fde9-a641-4543-8b15-dd7a2685de3d
+- 输入即学习：译词始终只是辅助信息，不会盖过你要输入的文字。
+- 越用越像自己：个人 n-gram（二元 + 三元）在线学习你的输入习惯，整句转换会越来越准。
+- 工程可靠：学习数据原子写、坏文件容忍、崩溃不丢，激活期间每 60 秒落一次盘。
+- 跨平台一致：Core 与平台层严格解耦，macOS / Windows / Linux 共享同一套输入引擎。
 
-视频演示了青简在 macOS 上的整句输入、候选重排和候选译词。
+### 二、功能说明
 
-## 下载与开始使用
+#### 输入体验
 
-- **macOS、Windows**：[下载青简](https://qingjian.app/download)；安装步骤见[使用文档](https://qingjian.app/docs/getting-started/install)。
-- **Linux**：已有 Fcitx5 版本，使用系统默认候选面板；目前需要手动启动后台服务，详见 [Linux 安装说明](https://qingjian.app/docs/getting-started/linux)。
+- 全拼 / 简拼 / 双拼（小鹤 / 自然码 / 微软 / 搜狗）/ 注音 / 五笔（开发中）
+- 整句转换：词图 + Viterbi + 束搜索，整句排第一
+- 拼写纠错：一处编辑（换位 / 换字母 / 多一个 / 少一个）凑出完整音节
+- 模糊音：z/zh、c/ch、s/sh、n/l、f/h、l/r、an/ang、en/eng、in/ing
+- 中英混输：整段输入在英文词表里即出英文候选
+- 英文模式：词表精确词 / 前缀补全 / 一处编辑纠正
+- emoji 候选：紧跟对应词，右侧标注词
+- 快捷候选：`rq` / `sj` / `xq` 出日期 / 时间 / 星期，`v` 开头表达式模式出四则运算结果
 
-macOS 与 Windows 版本仍处于测试阶段。安装后先选中青简，在「偏好设置 / 设置 → 通用」选择想学习的语言，就可以开始输入。第一次使用可从[第一次输入](https://qingjian.app/docs/getting-started/first-input)读起。
+#### 语言学习
 
-## 输入时，你会看到什么
+- 候选译词：中→英 / 日 / 西，24.9 万词随包释义表
+- 上屏译词：⌥ + 数字第一条、⇧⌥ + 数字第二条
+- 翻译选中文字：⌃⌥T 把应用里的选区交给云端翻译，译文在候选窗口里回车替换
+- 生词识别：候选里橙色画译词，看熟了变回灰
+- 词汇统计：今天 / 最近 7 天 / 累计的输入量，以及学习语言的词汇记录（含 CEFR / JLPT 等级分布）
 
-```text
-1  开发        development
-2  编程        programming
-3  架构        architecture
-```
+#### 个性化
 
-候选旁一次只显示一种学习语言的译词。目前可以选择英语、日语或西班牙语，也可以关闭译词显示。青简还支持整句输入、简拼、拼写纠错、双拼、五笔等输入方式；本地整句模型会在停顿后调整句子候选。
+- 个人 n-gram：bigram + trigram 计数，与静态模型按证据量插值，随上屏在线更新
+- 个人词频 / 用户词 / 个人英文词表 / 个人敲错表
+- 自动造词：连着选出的两个词合起来词库没有、记够次数就成用户词
+- 本地整句模型：小 Transformer（candle）重排整句转换的前几条路径
 
-「统计」页还会显示今天、最近 7 天和累计的输入量，以及学习语言的词汇记录。详细用法见[输入功能](https://qingjian.app/docs/input)、[译词与生词](https://qingjian.app/docs/learning/translation)、[本地统计](https://qingjian.app/docs/learning/statistics)和[按键与快捷键](https://qingjian.app/docs/getting-started/keys)。
+#### 云联想（可选）
 
-## 数据与隐私
+- 本地候选与本地整句在提示词里标成「可能全错的本地猜测」，模型独立判断、只给本地给不出的词
+- 问字模式：`?` + 问题拼音，走同一条 Predictor 通道
+- 整句补全：停键后同一次请求要云端词和整句补全（preedit 右侧，Tab 接受）
 
-拼音转换、词库查询、本地模型和输入习惯学习在你的设备上完成。输入量与词汇统计也只保存在本机，不会上传；青简不需要账号。输入日志与统计分开保存，日志可在设置中关闭或清空，不影响统计。检查更新会向官网请求版本列表，可在设置中关闭。
+### 三、安装与下载
 
-可选的**云联想默认关闭**。开启后，青简会把当前输入和附近的文字直接发送给你自行填写的 AI 服务商，以获取候选或整句补全；请求不经过青简的服务器。发送范围与本机保存的数据，见[数据与日志](https://qingjian.app/docs/help/data-and-logs)。
+1. **macOS / Windows**：从 [官网](https://lightbookinput.app/download) 下载最新安装包。
+   - macOS：pkg 安装到 `/Library/Input Methods/`，自动注册并启用输入源
+   - Windows：NSIS 安装器，含 Server 进程 + TSF DLL + WinUI 3 设置程序
+2. **Linux（Fcitx5）**：源码安装，手动启动后台服务。详见 [Linux 安装说明](https://lightbookinput.app/docs/getting-started/linux)。
+3. **源码构建**：Rust >= 1.88，`cargo build --workspace`。
 
-## 文档、反馈与参与开发
+### 四、快速上手
 
-- [使用文档](https://qingjian.app/docs)：安装、设置、输入、卸载与常见问题。
-- [反馈问题或建议](https://github.com/qingjian-team/qingjian/issues/new/choose)；也可以加入 [QQ 内测交流群](https://qm.qq.com/q/jBvn2gGTxm)。
-- 想参与开发？从[开发文档](docs/)和[开发约定](docs/contributing.md)开始。
+1. 安装后选中轻书，在「偏好设置 / 设置 → 通用」选择想学习的语言（英语 / 日语 / 西班牙语）。
+2. 像平常一样打字：输入拼音、选择候选、写完整句。
+3. 候选旁的一条译词就是当前学习语言的翻译，看熟了就变成自己的词汇。
+4. ⌥ + 数字上屏候选的译文，⇧⌥ + 数字上屏第二条译词。
+5. ⌃⌥T 翻译应用里选中的文字，译文在候选窗口里回车替换。
 
-青简在[官方渠道](https://qingjian.app/download)免费提供。代码采用 [GPL-3.0-or-later](LICENSE) 许可；项目名称与 logo 不包含在代码授权中。随包数据有各自的来源与许可，见[数据来源清单](docs/design/landscape.md)。
+详细用法见 [使用文档](https://lightbookinput.app/docs)。
+
+### 五、开发进度
+
+- [x] Core 输入引擎（拼音解析 / 候选生成 / 排序 / 整句 / 双拼 / 注音 / 英文模式）
+- [x] 自建词库（20.5 万条基础 + 11 本领域词库）
+- [x] 翻译（中→英 / 日 / 西 24.9 万词，英→中 4.5 万词，注假名，修饰键上屏译词，翻译选中文字）
+- [x] 个人 n-gram（二元 + 三元）
+- [x] 本地整句模型（小 Transformer 重排）
+- [x] 云联想（OpenAI 兼容接口）
+- [x] macOS 壳（IMK + 自绘候选窗 + 偏好设置）
+- [x] Windows 壳（TSF + Server + WinUI 3 设置 + NSIS 安装器）
+- [x] Linux 壳（Fcitx5 + Server）
+- [ ] 五笔（86 版，第一期 Core + CLI + Windows）
+- [ ] 个人微调（LoRA 挂在冻结基模上）
+- [ ] 闲时训练（门禁包括接电源、温度、空闲时长）
+
+### 六、参与开发
+
+- [开发文档](docs/)：架构设计与实现要点
+- [开发约定](docs/contributing.md)：代码组织、命名、提交信息、文档同步
+- [反馈问题或建议](https://github.com/mutantcat-working-group/lightbookinput/issues/new/choose)
+
+代码采用 [GPL-3.0-or-later](LICENSE) 许可；项目名称与 logo 不包含在代码授权中。随包数据有各自的来源与许可，见 [数据来源清单](docs/design/landscape.md)。
+
+---
+
+## 致谢
+
+本项目是 [qingjian-team/qingjian](https://github.com/qingjian-team/qingjian) 的 Fork，感谢原仓库及其作者的优秀开源工作，本仓库在其基础上继续维护与改进。

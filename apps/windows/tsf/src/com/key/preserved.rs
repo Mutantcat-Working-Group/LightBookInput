@@ -10,8 +10,8 @@ use windows::Win32::UI::TextServices::{
 };
 use windows::core::{GUID, Result};
 
-use qingjian_platform::protocol::{KeyEvent, KeyModifiers};
-use qingjian_platform::{Config, KeyCombo};
+use lightbookinput_platform::protocol::{KeyEvent, KeyModifiers};
+use lightbookinput_platform::{Config, KeyCombo};
 
 use crate::com::log::log;
 
@@ -24,9 +24,9 @@ pub(crate) const GUID_SWITCH_MODE: GUID = GUID::from_u128(0x2f6b8c51_9a34_4e7d_b
 /// msctf.h 的 `TF_MOD_LWIN`（windows crate 没导出）。
 const TF_MOD_LWIN: u32 = 0x08;
 
-/// 读 `%APPDATA%\Qingjian\config.toml` 里的组合；读不到 / 解析失败用缺省。
+/// 读 `%APPDATA%\LightBookInput\config.toml` 里的组合；读不到 / 解析失败用缺省。
 pub(crate) fn load_combo() -> KeyCombo {
-    let Some(path) = qingjian_platform::dirs::config_path() else {
+    let Some(path) = lightbookinput_platform::dirs::config_path() else {
         return KeyCombo::TRANSLATE_DEFAULT;
     };
     match Config::load(&path) {
@@ -49,7 +49,7 @@ fn switch_mode_key() -> TF_PRESERVEDKEY {
 
 /// 登记 Ctrl + Alt + Space 为中英切换保留键（`switch_mode` 勾了它时）。
 pub(crate) fn register_switch_mode(keystroke: &ITfKeystrokeMgr, tid: u32) -> Result<()> {
-    let description: Vec<u16> = "切换中英文（青简）".encode_utf16().collect();
+    let description: Vec<u16> = "切换中英文（轻书）".encode_utf16().collect();
     unsafe { keystroke.PreserveKey(tid, &GUID_SWITCH_MODE, &switch_mode_key(), &description) }
 }
 

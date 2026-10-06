@@ -8,7 +8,7 @@
 现有代码里「输入方案」的抽象是**「把按键解码成拼音串」**，双拼与注音共用的是**拼音**这个底层，不是**方案**这个抽象：
 
 ```rust
-// crates/qingjian-core/src/engine/setup.rs:79
+// crates/lightbookinput-core/src/engine/setup.rs:79
 pub(super) fn decode(&self, keys: &str) -> Option<EngineDecoded> {
     if self.zhuyin { Some(EngineDecoded::Zhuyin(crate::zhuyin::decode(keys))) }
     else { self.shuangpin.map(|s| EngineDecoded::Shuangpin(s.decode(keys))) }
@@ -49,15 +49,15 @@ if let Some(code) = self.code {
    （`engine/correcting.rs:9` 对双拼直接返回 `None`、`engine/setup.rs:70` 的 `modes()` 返回 `ModeKeys::LETTERLESS`），
    在一个集中判断里关掉：整句 / Viterbi、神经重排、模糊音、拼写纠错与词图敲错边、中英混输、简拼、
    v / u / i 前缀快捷键（**`v` 与 `i` 在五笔里是字根键，必须让位**）。
-3. **青简的产品特色全部自动保留。** `Learner`（词频 / 用户词 / 选择学习）、`Translator` + `Glossary` 释义、
+3. **轻书的产品特色全部自动保留。** `Learner`（词频 / 用户词 / 选择学习）、`Translator` + `Glossary` 释义、
    生词本 `VocabularyBook`、CEFR / JLPT 等级、`InputLog`、`UsageStats` 都按「上屏的词」工作，与输入方案无关。
-   **五笔用户照样有候选旁的译文与生词统计**——这是「Core 才是青简」换来的好处，也是这个功能的卖点。
+   **五笔用户照样有候选旁的译文与生词统计**——这是「Core 才是轻书」换来的好处，也是这个功能的卖点。
 
 ### 数据层：静态全量码表，不做运行时取码
 
-新增 `CodeTable`（`crates/qingjian-dictionary/src/code_table.rs`，与 `Dictionary` 同属「文本 → 键」的查表；
+新增 `CodeTable`（`crates/lightbookinput-dictionary/src/code_table.rs`，与 `Dictionary` 同属「文本 → 键」的查表；
 只有一个文件、没有同词干的兄弟，按约定不另开目录）。词目与 `WordList` 一样是排好序的 `Vec`，
-查询靠**前缀二分**——比现在按音节位置逐级收窄简单。`.qj` 容器加 `Kind::Code`（`crates/qingjian-format`，阶段 2）。
+查询靠**前缀二分**——比现在按音节位置逐级收窄简单。`.qj` 容器加 `Kind::Code`（`crates/lightbookinput-format`，阶段 2）。
 
 词组取码规则（二字词 2+2、三字词 1+1+1、四字及以上 1+1+1+1）**在生成数据时算好，运行时不算**：
 规则连带简码与识别码很绕，而静态码表够小也够全；码表没有的词靠用户词学习补，不做运行时推导。
@@ -93,7 +93,7 @@ if let Some(code) = self.code {
 管线：`tools/dict-convert` 加 `wubi` 子命令读码表 → `assets/wubi/wubi86.tsv`（`词\t码\t词频`）
 → `pack code` → `code-wubi86.qj`。
 
-`qingjian-dictionary/src/import/rime.rs` 已能把 Rime `.dict.yaml` 的 `词\t拼音\t权重` 转成青简 TSV，
+`lightbookinput-dictionary/src/import/rime.rs` 已能把 Rime `.dict.yaml` 的 `词\t拼音\t权重` 转成轻书 TSV，
 五笔码表正好是这个格式（第二列是 `ggll` 这样的码），转换主体可以直接复用。
 
 **许可与署名**（同步四处，见 `docs/design/landscape.md:55`）：`assets/wubi/LICENSE`、
@@ -115,7 +115,7 @@ scheme = "pinyin"   # pinyin | xiaohe | ziranma | microsoft | sogou | zhuyin | w
 | 壳 | 落点 |
 |---|---|
 | Core | `engine/mod.rs` 的 `shuangpin` 与 `zhuyin` 收敛为一个字段；`engine/setup.rs:20-33` 的 setter 合并；阶段 1 已加的 `code: Option<CodeTable>` 改为随 `scheme` 装载（哪个码表由配置决定，Core 不需要 `CodeScheme` 枚举） |
-| 配置 | `crates/qingjian-platform/src/config/general.rs:50-97` |
+| 配置 | `crates/lightbookinput-platform/src/config/general.rs:50-97` |
 | CLI | `apps/cli/src/args.rs:76` 加 `--wubi`；`apps/cli/src/main.rs:236-250` 应用；回放 `apps/cli/src/replay/mod.rs:95-116` 认新 scheme |
 | Windows 设置 | `apps/windows/settings/src/panel/pages/general.rs:14-20` 的 `SHUANGPIN` 列表扩成「输入方案」；`panel/message.rs:12-13`、`panel/component.rs:41-44` |
 | Windows Server | `server/src/main.rs:188-189` 启动应用；`dispatch/reload/mod.rs:107-108` 热加载；状态条 `dispatch/status/mod.rs:93-99` 用 `scheme.label()` |
@@ -129,7 +129,7 @@ scheme = "pinyin"   # pinyin | xiaohe | ziranma | microsoft | sogou | zhuyin | w
 |---|---|---|
 | 1 ✅ | Core `CodeTable` + `query_code` + Engine 分派 + CLI `--wubi`（2026-09-15 完成，233 + 21 个测试全绿，CLI 端到端验过） | 3–5 天 |
 | 2 | `dict-convert wubi` + 词频回填 + `pack code` + 许可署名 | 1–2 天 |
-| | 　└ `dict-convert wubi` 与词频回填**已做**（2026-09-15，读 Rime `.dict.yaml`，词频按词面从青简词库回填，4 个用例）；剩下载码表、`Kind::Code` 打包与许可署名 | |
+| | 　└ `dict-convert wubi` 与词频回填**已做**（2026-09-15，读 Rime `.dict.yaml`，词频按词面从轻书词库回填，4 个用例）；剩下载码表、`Kind::Code` 打包与许可署名 | |
 | 3 | `[general] scheme` 收敛 + 配置迁移 + Windows 设置页与状态条 | 2–3 天 |
 | | 　└ **已做**（2026-09-16）：`Scheme` 枚举与 `[general] scheme`；旧键 `shuangpin` / `zhuyin` 读取时推断（不自动改写文件）；CLI、macOS 偏好设置与 Windows 设置页/Server/状态条都改成读写新键；Windows Server 按方案装载码表（用户目录优先、随包 `assets/wubi/` 兜底，找不到只警告并按拼音跑）。打包与 macOS 接入**也已做**（2026-09-16 续）：`bundle.sh` 拷进 `Resources/wubi/`、Windows 安装器拷进 `{app}\assets\wubi\`，两处署名（macOS / Windows 的「关于」页）都补了；macOS 的偏好设置那栏换成「输入方案」下拉（`Scheme::ALL`），`apply_config` 里一并设注音与码表——macOS 侧因此顺带把一直没接的**大千注音**也接上了。**还差**：macOS 与 Windows 的真机验证 | |
 | | 　└ 壳真带上码表时，署名要同步：`bundle.sh` 是**按文件白名单**拷数据的（`assets/wubi/` 现在一个都没拷），偏好设置「关于」页的 `ATTRIBUTIONS` 也是照随包数据列的一份。现在两处都没加，因为 macOS 侧还没有输入方案，包里带它只是白占体积 | |

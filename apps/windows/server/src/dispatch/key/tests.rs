@@ -1,8 +1,8 @@
 //! Tab 与分页的三端约定；直接注入整句补全状态，不接云服务。
 use crate::dispatch::{Router, RouterConfig};
-use qingjian_core::{CustomPhrase, Engine};
-use qingjian_dictionary::{Dictionary, WordList};
-use qingjian_platform::protocol::{
+use lightbookinput_core::{CustomPhrase, Engine};
+use lightbookinput_dictionary::{Dictionary, WordList};
+use lightbookinput_platform::protocol::{
     ClientMessage, Frame, KeyEvent, KeyModifiers, KeyOutcome, PROTOCOL_VERSION, ServerMessage,
     SessionId,
 };

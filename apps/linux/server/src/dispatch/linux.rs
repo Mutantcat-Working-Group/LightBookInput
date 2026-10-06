@@ -1,7 +1,7 @@
 //! Linux 事件决策；Fcitx 插件只报告事实并应用返回值。
 use super::{Router, key::Effect};
 use crate::protocol::{DisplayIdentity, LinuxEvent, LinuxRequest};
-use qingjian_platform::protocol::{KeyOutcome, ServerMessage, SessionId};
+use lightbookinput_platform::protocol::{KeyOutcome, ServerMessage, SessionId};
 
 impl Router {
     pub(super) fn linux_event(&mut self, request: LinuxRequest) -> Option<ServerMessage> {

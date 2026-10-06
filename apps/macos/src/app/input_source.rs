@@ -1,4 +1,4 @@
-//! 把 `.app` 注册成系统输入源、启用并切成当前输入源：`qingjian-macos --register`（pkg 的 postinstall 以登录用户身份调）。
+//! 把 `.app` 注册成系统输入源、启用并切成当前输入源：`lightbookinput-macos --register`（pkg 的 postinstall 以登录用户身份调）。
 //! 走 Carbon 的 Text Input Source Services，没有 Cocoa 替代品；注册时序与缓存的坑见 docs/design/architecture.md。
 
 use std::ffi::c_void;
@@ -162,7 +162,7 @@ pub fn finish_register(source_id: &str) -> i32 {
     }
 }
 
-/// 子进程的命令行开关：`qingjian-macos --finish-register <输入源 ID>`。
+/// 子进程的命令行开关：`lightbookinput-macos --finish-register <输入源 ID>`。
 pub const FINISH_FLAG: &str = "--finish-register";
 
 /// 子进程退出码：已启用并切成当前。

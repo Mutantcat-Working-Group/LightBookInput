@@ -8,7 +8,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 use windows::core::{HSTRING, PCWSTR};
 
-use qingjian_platform::protocol::IndicatorCommand;
+use lightbookinput_platform::protocol::IndicatorCommand;
 
 /// 打开菜单时的勾选状态。
 pub(crate) struct MenuState {

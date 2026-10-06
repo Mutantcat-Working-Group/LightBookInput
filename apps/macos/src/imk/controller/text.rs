@@ -2,7 +2,7 @@
 
 use super::*;
 
-impl QingjianInputController {
+impl LightBookInputInputController {
     pub(super) fn handle_text(&self, text: &str, client: TextClient<'_>) -> bool {
         tracing::debug!(%text, "inputText");
         self.note_application(&client);
@@ -59,7 +59,7 @@ impl QingjianInputController {
         };
         host::with(|h| h.engine.set_english_mode(english_candidates && !question));
         let (page_previous, page_next) =
-            host::with(|h| h.page_keys).unwrap_or(qingjian_platform::DEFAULT_PAGE_KEYS);
+            host::with(|h| h.page_keys).unwrap_or(lightbookinput_platform::DEFAULT_PAGE_KEYS);
         // Caps Lock 亮着 = 英文模式：不组句、不转标点，字母默认小写、按住 Shift 才大写
         if english && !question {
             // Caps Lock 亮着时 macOS 不管按没按 Shift 送来的都是大写，只能读 Shift 状态：按着才大写
@@ -136,7 +136,7 @@ impl QingjianInputController {
         if c.is_ascii_lowercase()
             || (composing && c == '\'')
             || semicolon
-            || (expression && qingjian_core::shortcut::is_expression_char(c))
+            || (expression && lightbookinput_core::shortcut::is_expression_char(c))
             || (raw && c.is_ascii_graphic())
             || (unicode && (c.is_ascii_digit() || c == '+'))
             || hyphen

@@ -1,6 +1,6 @@
 //! Tab、整句补全与末页边界。
 use super::support::{compose, key, router};
-use qingjian_platform::protocol::{KeyModifiers, KeyOutcome};
+use lightbookinput_platform::protocol::{KeyModifiers, KeyOutcome};
 #[test]
 fn tab_and_backtab_page_boundaries_and_current_page_selection() {
     for size in [1, 4, 5, 9] {

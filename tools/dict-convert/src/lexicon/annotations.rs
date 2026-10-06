@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use qingjian_dictionary::canonical_syllable;
+use lightbookinput_dictionary::canonical_syllable;
 use serde::Deserialize;
 
 use crate::error::ConvertError;
@@ -43,7 +43,7 @@ mod tests {
     #[test]
     fn normalizes_u_umlaut_spellings() {
         let path = std::env::temp_dir().join(format!(
-            "qingjian-annotations-normalize-{}.jsonl",
+            "lightbookinput-annotations-normalize-{}.jsonl",
             std::process::id()
         ));
         std::fs::write(

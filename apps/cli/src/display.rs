@@ -2,7 +2,7 @@
 
 use std::time::{Duration, Instant};
 
-use qingjian_core::{Candidate, Engine, Query};
+use lightbookinput_core::{Candidate, Engine, Query};
 
 /// 等联想结果的轮询间隔与上限。CLI 是同步工具，等一等无妨；输入法里是定时器轮询、不等。
 const PREDICTION_POLL: Duration = Duration::from_millis(20);
@@ -226,14 +226,14 @@ fn format_candidate(candidate: &Candidate, width: usize) -> String {
         .map(|code| format!("[{code}] "))
         .unwrap_or_default();
     let marker = match candidate.kind {
-        qingjian_core::CandidateKind::Chinese | qingjian_core::CandidateKind::Code => "",
-        qingjian_core::CandidateKind::English => "[en] ",
-        qingjian_core::CandidateKind::Cloud => "☁ ",
-        qingjian_core::CandidateKind::Shortcut => "[v] ",
-        qingjian_core::CandidateKind::Custom(_) => "[custom] ",
-        qingjian_core::CandidateKind::Sentence => "[句] ",
-        qingjian_core::CandidateKind::Generated => "[生成] ",
-        qingjian_core::CandidateKind::Emoji => "",
+        lightbookinput_core::CandidateKind::Chinese | lightbookinput_core::CandidateKind::Code => "",
+        lightbookinput_core::CandidateKind::English => "[en] ",
+        lightbookinput_core::CandidateKind::Cloud => "☁ ",
+        lightbookinput_core::CandidateKind::Shortcut => "[v] ",
+        lightbookinput_core::CandidateKind::Custom(_) => "[custom] ",
+        lightbookinput_core::CandidateKind::Sentence => "[句] ",
+        lightbookinput_core::CandidateKind::Generated => "[生成] ",
+        lightbookinput_core::CandidateKind::Emoji => "",
     };
     format!(
         "{}{padding}{marker}{reading}{aux}{annotation}",

@@ -8,7 +8,7 @@ use objc2_app_kit::{
     NSPopUpButton, NSSecureTextField, NSTextAlignment, NSTextField,
 };
 use objc2_foundation::{NSArray, NSRect, NSString};
-use qingjian_core::Language;
+use lightbookinput_core::Language;
 
 use super::key_recorder::KeyRecorder;
 use super::layout::{CONTROL_X, LABEL_WIDTH, Layout, PAGE_PADDING, ROW_HEIGHT};

@@ -12,7 +12,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
     VK_CONTROL, VK_LCONTROL, VK_LSHIFT, VK_RCONTROL, VK_RSHIFT, VK_SHIFT,
 };
 
-use qingjian_platform::{SwitchKey, SwitchKeys};
+use lightbookinput_platform::{SwitchKey, SwitchKeys};
 
 #[derive(Default)]
 pub(crate) struct KeyTap {

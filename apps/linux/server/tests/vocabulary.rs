@@ -1,12 +1,12 @@
 //! 真实 VocabularyBook 的私密选词与译词快捷键回归。
-use qingjian_core::Engine;
-use qingjian_dictionary::Dictionary;
-use qingjian_learning::VocabularyBook;
-use qingjian_linux_server::{Router, RouterConfig};
-use qingjian_platform::protocol::{
+use lightbookinput_core::Engine;
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_learning::VocabularyBook;
+use lightbookinput_linux_server::{Router, RouterConfig};
+use lightbookinput_platform::protocol::{
     ClientMessage, Frame, KeyEvent, KeyModifiers, PROTOCOL_VERSION, ServerMessage, SessionId,
 };
-use qingjian_translate::Glossary;
+use lightbookinput_translate::Glossary;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
@@ -51,7 +51,7 @@ fn type_text(router: &mut Router, id: u64, text: &str) {
 #[test]
 fn private_vocabulary_book_stays_empty_for_selection_and_translation_shortcut() {
     let directory = std::env::temp_dir().join(format!(
-        "qingjian-vocabulary-{}-{}",
+        "lightbookinput-vocabulary-{}-{}",
         std::process::id(),
         NEXT.fetch_add(1, Ordering::Relaxed)
     ));
@@ -59,7 +59,7 @@ fn private_vocabulary_book_stays_empty_for_selection_and_translation_shortcut() 
     let vocabulary_path = directory.join("user-vocab.tsv");
     let engine = Engine::new(Dictionary::parse("你好\tni hao\t100\n").unwrap())
         .with_translator(Box::new(
-            Glossary::parse(qingjian_core::Language::English, "你好\thello\n").unwrap(),
+            Glossary::parse(lightbookinput_core::Language::English, "你好\thello\n").unwrap(),
         ))
         .with_vocabulary_tracker(Box::new(VocabularyBook::open(&vocabulary_path)));
     let mut router = Router::new(engine, RouterConfig::default());

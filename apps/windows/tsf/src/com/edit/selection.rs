@@ -8,7 +8,7 @@ use windows::Win32::UI::TextServices::{
 };
 use windows::core::{Result, implement};
 
-use qingjian_platform::protocol::ScreenRect;
+use lightbookinput_platform::protocol::ScreenRect;
 
 use super::anchor::{anchor_rect, mouse_screen_rect, selection_range};
 use crate::com::composition::Shared;

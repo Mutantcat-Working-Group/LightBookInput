@@ -1,5 +1,5 @@
 //! 共享长度前缀协议的内存回环。
-use qingjian_platform::protocol::{
+use lightbookinput_platform::protocol::{
     ClientMessage, KeyEvent, KeyModifiers, PROTOCOL_VERSION, ServerMessage, SessionId,
     read_message, write_message,
 };
@@ -57,18 +57,18 @@ fn open_session_carries_protocol_and_close_is_replyless() {
 
 #[test]
 fn linux_display_identity_round_trips_without_changing_shared_protocol() {
-    let identity = qingjian_linux_server::protocol::DisplayIdentity {
+    let identity = lightbookinput_linux_server::protocol::DisplayIdentity {
         generation: 7,
         context: "001122".into(),
         revision: 13,
     };
-    let ack = qingjian_linux_server::protocol::DisplayAcknowledged {
+    let ack = lightbookinput_linux_server::protocol::DisplayAcknowledged {
         session: SessionId(2),
         identity: identity.clone(),
         senses: vec![(0, 1), (3, 0)],
     };
     let value = serde_json::to_value(&ack).unwrap();
-    let decoded: qingjian_linux_server::protocol::DisplayAcknowledged =
+    let decoded: lightbookinput_linux_server::protocol::DisplayAcknowledged =
         serde_json::from_value(value).unwrap();
     assert_eq!(decoded.identity, identity);
     assert_eq!(decoded.senses, vec![(0, 1), (3, 0)]);
@@ -77,11 +77,11 @@ fn linux_display_identity_round_trips_without_changing_shared_protocol() {
 /// Fcitx5 插件的 OpenSession 把协议版本写死在 C++ 里；Server 要求完全一致，升版本时两边得一起改。
 #[test]
 fn fcitx5_plugin_opens_sessions_with_the_current_protocol() {
-    let plugin = concat!(env!("CARGO_MANIFEST_DIR"), "/../fcitx5/src/qingjian.cpp");
+    let plugin = concat!(env!("CARGO_MANIFEST_DIR"), "/../fcitx5/src/lightbookinput.cpp");
     let source = std::fs::read_to_string(plugin).unwrap();
     let expected = format!("{{\"protocol\", {PROTOCOL_VERSION}}}");
     assert!(
         source.contains(&expected),
-        "qingjian.cpp 的 OpenSession 应写 {expected}"
+        "lightbookinput.cpp 的 OpenSession 应写 {expected}"
     );
 }

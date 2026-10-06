@@ -1,6 +1,6 @@
 //! 字符交给 JSON 库转义；功能键转换成共享协议的 VK 值。
 #include "mapping.h"
-namespace qingjian {
+namespace lightbookinput {
 nlohmann::json mapKey(const fcitx::Key &key) {
     uint32_t code = key.sym();
     switch (key.sym()) {

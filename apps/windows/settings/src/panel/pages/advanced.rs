@@ -1,6 +1,6 @@
 //! 「高级」页：打开配置文件 / 数据目录 / 日志目录、详细日志、学习开关、输入日志。
 
-use qingjian_platform::LogLevel;
+use lightbookinput_platform::LogLevel;
 use windows_reactor::*;
 
 use crate::panel::controls::{field, note, page};

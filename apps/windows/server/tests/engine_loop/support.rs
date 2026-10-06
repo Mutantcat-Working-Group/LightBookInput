@@ -3,19 +3,19 @@
 pub use std::path::PathBuf;
 pub use std::sync::{Arc, Mutex};
 
-pub use qingjian_core::sentence::SentenceScorer;
-pub use qingjian_core::{Language, ModeKeys, ShuangpinScheme};
-pub use qingjian_platform::protocol::{
+pub use lightbookinput_core::sentence::SentenceScorer;
+pub use lightbookinput_core::{Language, ModeKeys, ShuangpinScheme};
+pub use lightbookinput_platform::protocol::{
     ClientMessage, Frame, KeyEvent, KeyModifiers, KeyOutcome, PROTOCOL_VERSION, ScreenRect,
     ServerMessage, SessionId,
 };
-pub use qingjian_platform::{
+pub use lightbookinput_platform::{
     AppsConfig, DEFAULT_ENGLISH_CANDIDATES_OFF_WINDOWS, PreeditMode, Scheme,
 };
-pub use qingjian_windows_server::dispatch::{
+pub use lightbookinput_windows_server::dispatch::{
     CandidateSink, RenderSettings, StatusEvent, StatusSink, StatusView,
 };
-pub use qingjian_windows_server::{AssemblySpec, Router, RouterConfig, assembly};
+pub use lightbookinput_windows_server::{AssemblySpec, Router, RouterConfig, assembly};
 
 pub const SESSION: SessionId = SessionId(1);
 

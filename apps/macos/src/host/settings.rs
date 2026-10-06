@@ -3,7 +3,7 @@
 use super::diagnostics::{copy_to_pasteboard, open_with_system};
 use super::*;
 use crate::preferences::DEFAULT_FONT_LABEL;
-use qingjian_platform::ShiftLetter;
+use lightbookinput_platform::ShiftLetter;
 
 impl Host {
     /// 写短语前读取文件；外部规则有变化时同步列表并请用户重新确认。
@@ -11,7 +11,7 @@ impl Host {
         let Some(path) = self.settings.path() else {
             return false;
         };
-        match qingjian_platform::Config::load(path) {
+        match lightbookinput_platform::Config::load(path) {
             Ok(latest) if latest.custom_phrases == self.settings.config().custom_phrases => true,
             Ok(_) => {
                 self.settings.reload();
@@ -42,7 +42,7 @@ impl Host {
         let Some(path) = self.settings.path() else {
             return;
         };
-        let result = qingjian_platform::Config::set_custom_phrases(path, &phrases);
+        let result = lightbookinput_platform::Config::set_custom_phrases(path, &phrases);
         self.settings.reload();
         self.apply_config(false);
         if let Err(error) = result {
@@ -80,7 +80,7 @@ impl Host {
                     open_with_system(&[&dir.to_string_lossy()]);
                 }
             }
-            MenuAction::OpenDownload => open_with_system(&[qingjian_update::DOWNLOAD_URL]),
+            MenuAction::OpenDownload => open_with_system(&[lightbookinput_update::DOWNLOAD_URL]),
         }
     }
 
@@ -147,7 +147,7 @@ impl Host {
                 let Some(path) = self.settings.path() else {
                     return;
                 };
-                if let Err(error) = qingjian_platform::Config::set_custom_phrases(path, &phrases) {
+                if let Err(error) = lightbookinput_platform::Config::set_custom_phrases(path, &phrases) {
                     self.preferences.set_phrase_error(&error);
                     self.preferences.set_status(&error);
                     return;
@@ -465,7 +465,7 @@ impl Host {
                 return;
             }
             (Setting::OpenDownload, _) => {
-                open_with_system(&[qingjian_update::DOWNLOAD_URL]);
+                open_with_system(&[lightbookinput_update::DOWNLOAD_URL]);
                 return;
             }
             (Setting::OpenWebsite, _) => {

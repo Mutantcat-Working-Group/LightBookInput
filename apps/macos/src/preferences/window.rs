@@ -6,8 +6,8 @@ use objc2_app_kit::{
     NSClipView, NSColor, NSScreen, NSScrollView, NSTabView, NSTabViewItem, NSTextField, NSView,
 };
 use objc2_foundation::{NSPoint, NSRect, NSSize, NSString};
-use qingjian_core::{Language, UsageSummary, VocabularySummary};
-use qingjian_platform::Config;
+use lightbookinput_core::{Language, UsageSummary, VocabularySummary};
+use lightbookinput_platform::Config;
 
 use super::controls::{language_label, small_label};
 use super::layout::{Layout, PAGE_PADDING, PAGE_WIDTH};
@@ -180,7 +180,7 @@ impl PreferencesWindow {
         ));
         content.addSubview(&status);
         let panel = PreferencesPanel::new(mtm, NSRect::new(NSPoint::ZERO, content_size));
-        panel.setTitle(&NSString::from_str("青简偏好设置"));
+        panel.setTitle(&NSString::from_str("轻书偏好设置"));
         panel.setContentView(Some(&content));
         panel.center();
 
@@ -219,7 +219,7 @@ impl PreferencesWindow {
     pub fn phrase_draft(
         &self,
         config: &Config,
-    ) -> Result<(Option<usize>, qingjian_core::CustomPhrase), String> {
+    ) -> Result<(Option<usize>, lightbookinput_core::CustomPhrase), String> {
         Ok((self.phrases.selected(config)?, self.phrases.draft()))
     }
 

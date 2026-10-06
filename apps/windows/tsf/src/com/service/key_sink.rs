@@ -7,7 +7,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::VK_CAPITAL;
 use windows::Win32::UI::TextServices::{ITfContext, ITfKeyEventSink_Impl};
 use windows::core::{BOOL, GUID, Ref, Result};
 
-use qingjian_platform::protocol::{KeyEvent, KeyOutcome};
+use lightbookinput_platform::protocol::{KeyEvent, KeyOutcome};
 
 use super::TextService_Impl;
 use super::next::Next;
@@ -281,7 +281,7 @@ fn eats_without_server(event: &KeyEvent) -> bool {
 /// - 翻译评审中一律吃，交给 Server 定接受 / 取消；
 /// - 带 Ctrl / Alt / Win：只有组句中的「修饰键 + 数字」吃（译词 / 删候选），其余归应用（翻译选中文字走保留键）；
 /// - 字母只有「中文模式、没在组句、按住 Shift 的大写」归应用，其中 V / U / I 仍吃：双拼下是表达式 / 问字入口。
-///   `[general] shift_letter = "compose"`（Server 经 [`InputSettings`](qingjian_platform::protocol::InputSettings) 下发）时这种大写也吃：送去 Core 起一段组句，
+///   `[general] shift_letter = "compose"`（Server 经 [`InputSettings`](lightbookinput_platform::protocol::InputSettings) 下发）时这种大写也吃：送去 Core 起一段组句，
 ///   `⇧C` 接 `pan` 才能出「C盘」；组句一开始，后面的 Shift 字母本来就被 `composing` 兜住；
 /// - 组句中功能键 / 方向键 / 可打印字符都吃；
 /// - 没在组句时数字 / 标点也先「测吃」送去转全角（中英各有一份开关），Server 不转的回 Passthrough 再放行；`?` 是问字前缀。
@@ -317,7 +317,7 @@ fn eats_key(
 
 #[cfg(test)]
 mod tests {
-    use qingjian_platform::protocol::{KeyEvent, KeyModifiers};
+    use lightbookinput_platform::protocol::{KeyEvent, KeyModifiers};
 
     use super::{eats_key, eats_without_server};
     use crate::com::key::event::to_key_event;
@@ -325,7 +325,7 @@ mod tests {
     /// 中文模式（`caps` / `english_mode` 都灭）。
     const CHINESE: (bool, bool) = (false, false);
 
-    fn key(vk: u32, caps: bool, english_mode: bool) -> qingjian_platform::protocol::KeyEvent {
+    fn key(vk: u32, caps: bool, english_mode: bool) -> lightbookinput_platform::protocol::KeyEvent {
         let mut event = to_key_event(vk, english_mode);
         event.modifiers.caps = caps;
         event.modifiers.english_mode = english_mode;

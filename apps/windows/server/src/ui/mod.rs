@@ -29,7 +29,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 use windows::core::{Error, Result};
 
-use qingjian_platform::protocol::{Frame, ScreenRect};
+use lightbookinput_platform::protocol::{Frame, ScreenRect};
 
 use self::candidates::CandidateWindow;
 use self::command::UiCommand;
@@ -60,7 +60,7 @@ impl UiHandle {
         let (ready_tx, ready_rx) = mpsc::channel::<Option<u32>>();
         let (command_tx, command_rx) = mpsc::channel::<UiCommand>();
         thread::Builder::new()
-            .name("qingjian-candidates".to_owned())
+            .name("lightbookinput-candidates".to_owned())
             .spawn(move || run(command_rx, &ready_tx, on_status))
             .map_err(|_| Error::from(E_FAIL))?;
         match ready_rx.recv() {
@@ -110,7 +110,7 @@ impl StatusSink for UiHandle {
     fn open_download(&self) {
         let _ = unsafe { AllowSetForegroundWindow(ASFW_ANY) };
         let opened = std::process::Command::new("explorer")
-            .arg(qingjian_update::DOWNLOAD_URL)
+            .arg(lightbookinput_update::DOWNLOAD_URL)
             .spawn();
         if let Err(error) = opened {
             tracing::warn!(%error, "打开下载页失败");
@@ -121,7 +121,7 @@ impl StatusSink for UiHandle {
 /// 起与本 exe 同目录的设置程序。设置程序已开时由新实例把它带到前台，得先把前台权让出去。
 pub(crate) fn open_settings() {
     let _ = unsafe { AllowSetForegroundWindow(ASFW_ANY) };
-    let exe = std::env::current_exe().map(|exe| exe.with_file_name("qingjian-settings.exe"));
+    let exe = std::env::current_exe().map(|exe| exe.with_file_name("lightbookinput-settings.exe"));
     let spawned = exe.and_then(|exe| std::process::Command::new(exe).spawn());
     if let Err(error) = spawned {
         tracing::warn!(%error, "打开设置程序失败");

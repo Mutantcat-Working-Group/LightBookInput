@@ -1,7 +1,7 @@
 //! 候选窗口的输出端。
 
-use qingjian_platform::CandidateRenderer;
-use qingjian_platform::protocol::{Frame, ScreenRect};
+use lightbookinput_platform::CandidateRenderer;
+use lightbookinput_platform::protocol::{Frame, ScreenRect};
 
 /// 候选窗口 / 状态条的画法。
 #[derive(Debug, Clone, PartialEq, Eq)]

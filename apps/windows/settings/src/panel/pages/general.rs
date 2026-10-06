@@ -1,6 +1,6 @@
 //! 「通用」页：学习语言、每页候选数、输入方案、英文模式候选。
 
-use qingjian_platform::{MAX_PAGE_SIZE, Scheme, ShiftLetter, SwitchKey};
+use lightbookinput_platform::{MAX_PAGE_SIZE, Scheme, ShiftLetter, SwitchKey};
 use windows_reactor::*;
 
 use crate::panel::controls::{feedback, field, index_of, page};
@@ -156,7 +156,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
         ),
         field(
             "启用内置英文模式",
-            "关掉后青简固定中文模式：切换键与任务栏、悬浮状态条上的「中」「英」按钮都不再切到英文，需要英文时用系统快捷键（Win + Space）切到别的输入法。",
+            "关掉后轻书固定中文模式：切换键与任务栏、悬浮状态条上的「中」「英」按钮都不再切到英文，需要英文时用系统快捷键（Win + Space）切到别的输入法。",
             ToggleSwitch::new()
                 .is_on(g.english_mode)
                 .on_toggled(context.callback(Message::EnglishMode)),

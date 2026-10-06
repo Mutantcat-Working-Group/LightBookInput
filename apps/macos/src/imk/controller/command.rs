@@ -2,7 +2,7 @@
 
 use super::*;
 
-impl QingjianInputController {
+impl LightBookInputInputController {
     /// 组句期间所有编辑动作都由我们接管；不认识的一律吞掉，否则应用会动光标、丢 marked text。
     pub(super) fn handle_command(&self, selector: Sel, client: TextClient<'_>) -> bool {
         tracing::debug!(selector = %selector, "didCommandBySelector");

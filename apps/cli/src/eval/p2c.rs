@@ -1,7 +1,7 @@
-//! 整句实验用的 P2C 打分器：与产品端 `qingjian_neural::P2cScorer` 同一条件，只是推理出错时直接终止。
+//! 整句实验用的 P2C 打分器：与产品端 `lightbookinput_neural::P2cScorer` 同一条件，只是推理出错时直接终止。
 
-use qingjian_core::sentence::SentenceScorer;
-use qingjian_neural::CharScorer;
+use lightbookinput_core::sentence::SentenceScorer;
+use lightbookinput_neural::CharScorer;
 
 pub struct P2cScorer(pub CharScorer);
 

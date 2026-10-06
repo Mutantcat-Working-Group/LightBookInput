@@ -1,5 +1,5 @@
 [package]
-name = "qingjian-windows-server"
+name = "lightbookinput-windows-server"
 description = "Windows 输入法的 Server 进程：持有 Engine，跑在应用进程外，与 TSF DLL（../tsf）走 IPC 协议通信"
 version = "0.1.5-dev"
 edition.workspace = true
@@ -7,7 +7,7 @@ license.workspace = true
 repository.workspace = true
 
 [[bin]]
-name = "qingjian-server"
+name = "lightbookinput-server"
 path = "src/main.rs"
 
 # 嵌 uiAccess manifest（见 build.rs）
@@ -15,16 +15,16 @@ path = "src/main.rs"
 embed-manifest.workspace = true
 
 [dependencies]
-qingjian-core.workspace = true
-qingjian-dictionary.workspace = true
-qingjian-learning.workspace = true
-qingjian-lm.workspace = true
-qingjian-neural.workspace = true
-qingjian-platform.workspace = true
-qingjian-predict.workspace = true
-qingjian-render.workspace = true
-qingjian-translate.workspace = true
-qingjian-update.workspace = true
+lightbookinput-core.workspace = true
+lightbookinput-dictionary.workspace = true
+lightbookinput-learning.workspace = true
+lightbookinput-lm.workspace = true
+lightbookinput-neural.workspace = true
+lightbookinput-platform.workspace = true
+lightbookinput-predict.workspace = true
+lightbookinput-render.workspace = true
+lightbookinput-translate.workspace = true
+lightbookinput-update.workspace = true
 dotenvy.workspace = true
 thiserror.workspace = true
 tracing.workspace = true

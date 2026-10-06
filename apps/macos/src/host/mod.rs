@@ -21,23 +21,23 @@ use std::path::PathBuf;
 use objc2::MainThreadMarker;
 use objc2_app_kit::{NSPasteboard, NSPasteboardTypeString};
 use objc2_foundation::{NSProcessInfo, NSRect, NSString};
-use qingjian_core::{
+use lightbookinput_core::{
     Candidate, CandidateKind, Cell, CloudWord, EmojiTable, Engine, FuzzyRules, Language, ModeKeys,
     NoGlossFiller, NoInputLogger, NoPredictor, NoTranslator, Prediction,
 };
-use qingjian_dictionary::{Dictionary, WordList};
-use qingjian_learning::{FrequencyLearner, InputLog, UsageStats, VocabularyBook};
-use qingjian_lm::BigramModel;
-use qingjian_platform::extra_dictionaries;
-use qingjian_platform::{
+use lightbookinput_dictionary::{Dictionary, WordList};
+use lightbookinput_learning::{FrequencyLearner, InputLog, UsageStats, VocabularyBook};
+use lightbookinput_lm::BigramModel;
+use lightbookinput_platform::extra_dictionaries;
+use lightbookinput_platform::{
     AppsConfig, CandidateRenderer, DEFAULT_ENGLISH_CANDIDATES_OFF, DictionariesConfig,
     GeneralConfig, KeyCombo, LEARNING_LANGUAGE_OFF, LayoutMode, LocalModelConfig, LogLevel,
     Modifiers, PAGE_KEY_OPTIONS, PreeditMode, Scheme, ShortcutConfig, ThemeMode, UpdateChannel,
 };
-use qingjian_predict::{
+use lightbookinput_predict::{
     CloudGlossFiller, CloudPredictor, ConnectionTest, PredictConfig, PredictError,
 };
-use qingjian_translate::{Glossary, LayeredTranslator, LevelTable, PersonalGlossary};
+use lightbookinput_translate::{Glossary, LayeredTranslator, LevelTable, PersonalGlossary};
 
 use crate::app::BundleInfo;
 use crate::app::{Settings, logging, paths};
@@ -164,7 +164,7 @@ pub struct Host {
     /// 正在后台加载的模型；加载完接到 Engine 上就清掉。
     model_loader: Option<
         std::sync::mpsc::Receiver<
-            Result<Box<dyn qingjian_core::sentence::SentenceScorer>, qingjian_neural::NeuralError>,
+            Result<Box<dyn lightbookinput_core::sentence::SentenceScorer>, lightbookinput_neural::NeuralError>,
         >,
     >,
 
@@ -172,7 +172,7 @@ pub struct Host {
     applied_model: Option<LocalModelConfig>,
 
     /// 检查更新；拿不到数据目录时没有。
-    updates: Option<qingjian_update::Checker>,
+    updates: Option<lightbookinput_update::Checker>,
 
     /// 菜单与「关于」页上正显示的更新状态，变了才刷界面。
     update_status: UpdateStatus,
@@ -194,13 +194,13 @@ thread_local! {
 /// 激活期间学习数据最多隔这么久落一次盘。
 const LEARNING_FLUSH_INTERVAL: std::time::Duration = std::time::Duration::from_secs(60);
 
-/// 输入统计文件名，与学习数据同目录（按天一行，见 `qingjian-learning::UsageStats`）。
+/// 输入统计文件名，与学习数据同目录（按天一行，见 `lightbookinput-learning::UsageStats`）。
 const USAGE_FILE: &str = "usage.tsv";
 
-/// 检查更新的结果文件名，与学习数据同目录（见 `qingjian-update::UpdateState`）。
+/// 检查更新的结果文件名，与学习数据同目录（见 `lightbookinput-update::UpdateState`）。
 const UPDATE_STATE_FILE: &str = "update.json";
 
-/// 词汇记录文件名，与学习数据同目录（一个译词一行，见 `qingjian-learning::VocabularyBook`）。
+/// 词汇记录文件名，与学习数据同目录（一个译词一行，见 `lightbookinput-learning::VocabularyBook`）。
 const VOCABULARY_FILE: &str = "user-vocab.tsv";
 
 /// 可能打进包里的释义表语言，按这个顺序在设置里列出；文件不存在的不列。

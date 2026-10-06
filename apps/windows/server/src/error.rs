@@ -1,6 +1,6 @@
-use qingjian_dictionary::DictionaryError;
-use qingjian_lm::LmError;
-use qingjian_translate::GlossaryError;
+use lightbookinput_dictionary::DictionaryError;
+use lightbookinput_lm::LmError;
+use lightbookinput_translate::GlossaryError;
 
 /// 装配 Engine 时的错误。
 #[derive(Debug, thiserror::Error)]

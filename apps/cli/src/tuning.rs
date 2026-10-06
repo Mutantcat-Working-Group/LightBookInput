@@ -1,8 +1,8 @@
 //! `--tune 名=值`：把引擎里几组「拍的」常数换成别的值，回放评测时扫参数用；名字见 [`KEYS`]。
 
-use qingjian_core::Engine;
-use qingjian_core::correction::TypoCosts;
-use qingjian_core::sentence::Interpolation;
+use lightbookinput_core::Engine;
+use lightbookinput_core::correction::TypoCosts;
+use lightbookinput_core::sentence::Interpolation;
 
 /// 可调的参数名。
 pub const KEYS: [&str; 11] = [
@@ -73,7 +73,7 @@ pub enum TuneError {
 
 #[cfg(test)]
 mod tests {
-    use qingjian_dictionary::Dictionary;
+    use lightbookinput_dictionary::Dictionary;
 
     use super::*;
 

@@ -488,7 +488,7 @@ dependencies = [
 [[package]]
 name = "cosmic-text"
 version = "0.19.0"
-source = "git+https://github.com/qingjian-team/cosmic-text?rev=9cf0d65a5e4db381e34907103326673386096be3#9cf0d65a5e4db381e34907103326673386096be3"
+source = "git+https://github.com/mutantcat-working-group/cosmic-text?rev=9cf0d65a5e4db381e34907103326673386096be3#9cf0d65a5e4db381e34907103326673386096be3"
 dependencies = [
  "bitflags 2.13.1",
  "fontdb",
@@ -2598,19 +2598,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d8f70e07b9c3962945a74e59ca1c511bba65b6419468acc217c457d93f3c740"
 
 [[package]]
-name = "qingjian-cli"
+name = "lightbookinput-cli"
 version = "0.1.1"
 dependencies = [
  "clap",
  "dotenvy",
- "qingjian-core",
- "qingjian-dictionary",
- "qingjian-learning",
- "qingjian-lm",
- "qingjian-neural",
- "qingjian-platform",
- "qingjian-predict",
- "qingjian-translate",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "lightbookinput-platform",
+ "lightbookinput-predict",
+ "lightbookinput-translate",
  "serde",
  "serde_json",
  "thiserror 2.0.20",
@@ -2620,13 +2620,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-core"
+name = "lightbookinput-core"
 version = "0.1.1"
 dependencies = [
  "ferrous-opencc",
  "foldhash",
  "jiff",
- "qingjian-dictionary",
+ "lightbookinput-dictionary",
  "serde",
  "thiserror 2.0.20",
  "toml",
@@ -2634,17 +2634,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-dict-convert"
+name = "lightbookinput-dict-convert"
 version = "0.1.1"
 dependencies = [
  "clap",
  "jiff",
- "qingjian-core",
- "qingjian-dictionary",
- "qingjian-format",
- "qingjian-lm",
- "qingjian-neural",
- "qingjian-translate",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-format",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "lightbookinput-translate",
  "serde",
  "serde_json",
  "thiserror 2.0.20",
@@ -2653,17 +2653,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-dictionary"
+name = "lightbookinput-dictionary"
 version = "0.1.1"
 dependencies = [
- "qingjian-format",
+ "lightbookinput-format",
  "thiserror 2.0.20",
  "tracing",
  "zerocopy",
 ]
 
 [[package]]
-name = "qingjian-format"
+name = "lightbookinput-format"
 version = "0.1.1"
 dependencies = [
  "memmap2",
@@ -2675,13 +2675,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-gloss-gen"
+name = "lightbookinput-gloss-gen"
 version = "0.1.1"
 dependencies = [
  "async-openai",
  "clap",
  "dotenvy",
- "qingjian-core",
+ "lightbookinput-core",
  "serde",
  "serde_json",
  "thiserror 2.0.20",
@@ -2691,14 +2691,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-learning"
+name = "lightbookinput-learning"
 version = "0.1.1"
 dependencies = [
  "foldhash",
  "jiff",
- "qingjian-core",
- "qingjian-dictionary",
- "qingjian-translate",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-translate",
  "serde",
  "serde_json",
  "thiserror 2.0.20",
@@ -2706,17 +2706,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-linux-server"
+name = "lightbookinput-linux-server"
 version = "0.1.5-dev"
 dependencies = [
  "libc",
- "qingjian-core",
- "qingjian-dictionary",
- "qingjian-learning",
- "qingjian-lm",
- "qingjian-neural",
- "qingjian-platform",
- "qingjian-translate",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "lightbookinput-platform",
+ "lightbookinput-translate",
  "serde",
  "serde_json",
  "thiserror 2.0.20",
@@ -2726,18 +2726,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-lm"
+name = "lightbookinput-lm"
 version = "0.1.1"
 dependencies = [
- "qingjian-core",
- "qingjian-format",
+ "lightbookinput-core",
+ "lightbookinput-format",
  "thiserror 2.0.20",
  "tracing",
  "zerocopy",
 ]
 
 [[package]]
-name = "qingjian-macos"
+name = "lightbookinput-macos"
 version = "0.1.5-dev"
 dependencies = [
  "dotenvy",
@@ -2749,16 +2749,16 @@ dependencies = [
  "objc2-foundation",
  "objc2-input-method-kit",
  "plist",
- "qingjian-core",
- "qingjian-dictionary",
- "qingjian-learning",
- "qingjian-lm",
- "qingjian-neural",
- "qingjian-platform",
- "qingjian-predict",
- "qingjian-render",
- "qingjian-translate",
- "qingjian-update",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "lightbookinput-platform",
+ "lightbookinput-predict",
+ "lightbookinput-render",
+ "lightbookinput-translate",
+ "lightbookinput-update",
  "thiserror 2.0.20",
  "toml_edit",
  "tracing",
@@ -2767,13 +2767,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-neural"
+name = "lightbookinput-neural"
 version = "0.1.1"
 dependencies = [
  "candle-core",
  "candle-nn",
- "qingjian-core",
- "qingjian-format",
+ "lightbookinput-core",
+ "lightbookinput-format",
  "serde",
  "serde_json",
  "thiserror 2.0.20",
@@ -2781,12 +2781,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-platform"
+name = "lightbookinput-platform"
 version = "0.1.1"
 dependencies = [
- "qingjian-core",
- "qingjian-dictionary",
- "qingjian-predict",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-predict",
  "serde",
  "serde_json",
  "thiserror 2.0.20",
@@ -2796,11 +2796,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-predict"
+name = "lightbookinput-predict"
 version = "0.1.1"
 dependencies = [
  "async-openai",
- "qingjian-core",
+ "lightbookinput-core",
  "reqwest",
  "serde",
  "serde_json",
@@ -2811,18 +2811,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-release-sign"
+name = "lightbookinput-release-sign"
 version = "0.1.1"
 dependencies = [
  "base64 0.23.1",
  "clap",
  "ed25519-dalek",
- "qingjian-update",
+ "lightbookinput-update",
  "thiserror 2.0.20",
 ]
 
 [[package]]
-name = "qingjian-render"
+name = "lightbookinput-render"
 version = "0.1.1"
 dependencies = [
  "clap",
@@ -2835,23 +2835,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-translate"
+name = "lightbookinput-translate"
 version = "0.1.1"
 dependencies = [
- "qingjian-core",
- "qingjian-format",
+ "lightbookinput-core",
+ "lightbookinput-format",
  "thiserror 2.0.20",
  "tracing",
  "zerocopy",
 ]
 
 [[package]]
-name = "qingjian-update"
+name = "lightbookinput-update"
 version = "0.1.1"
 dependencies = [
  "base64 0.23.1",
  "ed25519-dalek",
- "qingjian-platform",
+ "lightbookinput-platform",
  "reqwest",
  "serde",
  "serde_json",
@@ -2861,21 +2861,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-windows-server"
+name = "lightbookinput-windows-server"
 version = "0.1.5-dev"
 dependencies = [
  "dotenvy",
  "embed-manifest",
- "qingjian-core",
- "qingjian-dictionary",
- "qingjian-learning",
- "qingjian-lm",
- "qingjian-neural",
- "qingjian-platform",
- "qingjian-predict",
- "qingjian-render",
- "qingjian-translate",
- "qingjian-update",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "lightbookinput-platform",
+ "lightbookinput-predict",
+ "lightbookinput-render",
+ "lightbookinput-translate",
+ "lightbookinput-update",
  "thiserror 2.0.20",
  "toml_edit",
  "tracing",
@@ -2887,18 +2887,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-windows-settings"
+name = "lightbookinput-windows-settings"
 version = "0.1.5-dev"
 dependencies = [
  "jiff",
- "qingjian-core",
- "qingjian-dictionary",
- "qingjian-learning",
- "qingjian-platform",
- "qingjian-predict",
- "qingjian-render",
- "qingjian-translate",
- "qingjian-update",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-platform",
+ "lightbookinput-predict",
+ "lightbookinput-render",
+ "lightbookinput-translate",
+ "lightbookinput-update",
  "rfd",
  "toml_edit",
  "windows",
@@ -2908,12 +2908,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "qingjian-windows-tsf"
+name = "lightbookinput-windows-tsf"
 version = "0.1.5-dev"
 dependencies = [
- "qingjian-core",
- "qingjian-platform",
- "qingjian-windows-server",
+ "lightbookinput-core",
+ "lightbookinput-platform",
+ "lightbookinput-windows-server",
  "thiserror 2.0.20",
  "windows",
  "windows-core 0.62.2",

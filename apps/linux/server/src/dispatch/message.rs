@@ -1,6 +1,6 @@
 //! Linux 首版协议消息与 Engine 按键分派。
 use super::{Router, key::Effect, session::SessionInfo};
-use qingjian_platform::protocol::{ClientMessage, KeyOutcome, PROTOCOL_VERSION, ServerMessage};
+use lightbookinput_platform::protocol::{ClientMessage, KeyOutcome, PROTOCOL_VERSION, ServerMessage};
 
 impl Router {
     pub(super) fn dispatch(&mut self, message: ClientMessage) -> Option<ServerMessage> {

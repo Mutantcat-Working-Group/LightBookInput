@@ -5,8 +5,8 @@
 
 use std::sync::mpsc::{TryRecvError, channel};
 
-use qingjian_core::sentence::SentenceScorer;
-use qingjian_neural::{CharScorer, NeuralError, P2cScorer};
+use lightbookinput_core::sentence::SentenceScorer;
+use lightbookinput_neural::{CharScorer, NeuralError, P2cScorer};
 
 mod rescore_monitor;
 
@@ -34,7 +34,7 @@ impl Host {
         };
         let (tx, rx) = channel::<Result<Box<dyn SentenceScorer>, NeuralError>>();
         let spawned = std::thread::Builder::new()
-            .name("qingjian-model-load".to_owned())
+            .name("lightbookinput-model-load".to_owned())
             .spawn(move || {
                 let started = std::time::Instant::now();
                 // 预热要走各自真正的前向：第一次前向要编译 Metal 内核，几百毫秒

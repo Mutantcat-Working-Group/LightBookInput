@@ -1,5 +1,5 @@
 //! 真实插件到 Rust Server：128 活跃会话、交错组句、重入、重启和键盘来源。
-#include "qingjian.h"
+#include "lightbookinput.h"
 #include "key/mapping.h"
 #include "support/server.h"
 #include "support/input.h"
@@ -9,12 +9,12 @@
 
 int main() {
     Server server("shift_letter = \"compose\"\n");
-    char program[] = "qingjian-real"; char disable[] = "--disable=all";
+    char program[] = "lightbookinput-real"; char disable[] = "--disable=all";
     char *arguments[] = {program, disable, nullptr};
     fcitx::Instance instance(2, arguments); instance.initialize();
-    auto engineOwner = std::make_unique<fcitx::QingjianEngine>(&instance.addonManager());
+    auto engineOwner = std::make_unique<fcitx::LightBookInputEngine>(&instance.addonManager());
     auto &engine = *engineOwner;
-    fcitx::InputMethodEntry entry("qingjian", "qingjian", "zh_CN", "qingjian");
+    fcitx::InputMethodEntry entry("lightbookinput", "lightbookinput", "zh_CN", "lightbookinput");
     auto type = [&](Input &context, const std::string &text) {
         for (auto c : text) assert(engine.process(&context, fcitx::Key(static_cast<fcitx::KeySym>(c))));
     };
@@ -63,11 +63,11 @@ int main() {
     assert(engine.process(doomedPointer, fcitx::Key(FcitxKey_space)));
     // 小键盘来源、运算符与 NumLock 关闭导航键。
     for (int digit = 0; digit <= 9; ++digit) {
-        auto key = qingjian::mapKey(fcitx::Key(static_cast<fcitx::KeySym>(FcitxKey_KP_0 + digit)));
+        auto key = lightbookinput::mapKey(fcitx::Key(static_cast<fcitx::KeySym>(FcitxKey_KP_0 + digit)));
         assert(key["virtual_key"] == 0x60 + digit && key["character"] == std::string(1, '0' + digit));
     }
     for (auto [sym, code] : {std::pair{FcitxKey_KP_Add, 0x6b}, {FcitxKey_KP_Subtract, 0x6d}, {FcitxKey_KP_Decimal, 0x6e}, {FcitxKey_KP_Divide, 0x6f}, {FcitxKey_KP_Multiply, 0x6a}, {FcitxKey_KP_Enter, 0x0d}, {FcitxKey_KP_Home, 0x24}, {FcitxKey_KP_Left, 0x25}, {FcitxKey_KP_Delete, 0x2e}})
-        assert(qingjian::mapKey(fcitx::Key(sym))["virtual_key"] == code);
+        assert(lightbookinput::mapKey(fcitx::Key(sym))["virtual_key"] == code);
     a.committed.clear();
     for (auto symbol : {FcitxKey_KP_1, FcitxKey_KP_Add, FcitxKey_KP_2, FcitxKey_KP_Subtract,
                         FcitxKey_KP_3, FcitxKey_KP_Multiply, FcitxKey_KP_4, FcitxKey_KP_Divide,
@@ -82,14 +82,14 @@ int main() {
     // A 私密，B 普通；密码/禁用 C 不创建新的连接或污染 B。
     a.setCapabilityFlags(fcitx::CapabilityFlags(fcitx::CapabilityFlag::Preedit) | fcitx::CapabilityFlag::Sensitive);
     type(a, "privateprobe"); type(b, "ni");
-    auto *disabledSession = static_cast<qingjian::Session *>(contexts[2]->property("qingjian-session"));
+    auto *disabledSession = static_cast<lightbookinput::Session *>(contexts[2]->property("lightbookinput-session"));
     const auto disabledId = disabledSession->id;
     contexts[2]->setCapabilityFlags(fcitx::CapabilityFlag::Password);
     assert(!engine.process(contexts[2].get(), fcitx::Key(FcitxKey_n)));
     assert(engine.process(&b, fcitx::Key(FcitxKey_space))); assert(b.committed == "好你");
     contexts[2]->setCapabilityFlags(fcitx::CapabilityFlag::Preedit);
     type(*contexts[2], "ni");
-    assert(static_cast<qingjian::Session *>(contexts[2]->property("qingjian-session"))->id > disabledId);
+    assert(static_cast<lightbookinput::Session *>(contexts[2]->property("lightbookinput-session"))->id > disabledId);
     // 保留旧列表再销毁，旧回调不能提交到后来创建的上下文。
     contexts[3]->focusIn(); type(*contexts[3], "ni");
     auto old = contexts[3]->inputPanel().candidateList(); contexts[3].reset();
@@ -112,7 +112,7 @@ int main() {
     assert(replacement->committed == committed + "好" && server.sockets() == 2);
     replacement->focusIn(); type(*replacement, "ni");
     auto finalCandidates = replacement->inputPanel().candidateList();
-    auto shared = static_cast<qingjian::Session *>(replacement->property("qingjian-session"))->owner.lock();
+    auto shared = static_cast<lightbookinput::Session *>(replacement->property("lightbookinput-session"))->owner.lock();
     { Input transient(instance.inputContextManager()); type(transient, "ni"); }
     assert(!shared->retired.empty());
     auto timer = instance.eventLoop().addTimeEvent(CLOCK_MONOTONIC, fcitx::now(CLOCK_MONOTONIC) + 30000, 0,

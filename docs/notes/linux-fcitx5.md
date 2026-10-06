@@ -10,19 +10,19 @@
 桌面运行已验证的范围见下文，构建版本门槛不代表全部桌面已验收。
 
 ```sh
-cargo test -p qingjian-linux-server --locked
+cargo test -p lightbookinput-linux-server --locked
 cargo fmt --all --check
-cargo clippy --workspace --exclude qingjian-macos --all-targets --locked -- -D warnings
-cargo test --workspace --exclude qingjian-macos --locked
-cargo build -p qingjian-linux-server --locked
+cargo clippy --workspace --exclude lightbookinput-macos --all-targets --locked -- -D warnings
+cargo test --workspace --exclude lightbookinput-macos --locked
+cargo build -p lightbookinput-linux-server --locked
 cmake -S apps/linux/fcitx5 -B target/fcitx5-stage1 -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
 cmake --build target/fcitx5-stage1 --parallel 2
 env -u DBUS_SESSION_BUS_ADDRESS ctest --test-dir target/fcitx5-stage1 --output-on-failure
 python3 apps/linux/tests/installation.py
 ```
 
-CTest 的 `real-server` 实际运行 Rust Server 并通过 InputContext 输入与点击，默认二进制位置 `target/debug/qingjian-linux-server`。
-自定义 Cargo target 时传 `-DQINGJIAN_SERVER_EXECUTABLE=/绝对路径/qingjian-linux-server`。
+CTest 的 `real-server` 实际运行 Rust Server 并通过 InputContext 输入与点击，默认二进制位置 `target/debug/lightbookinput-linux-server`。
+自定义 Cargo target 时传 `-DLIGHTBOOKINPUT_SERVER_EXECUTABLE=/绝对路径/lightbookinput-linux-server`。
 测试实例关闭所有 Fcitx addon，不依赖桌面总线；插件初始化本身也不连接 D-Bus。真实桌面测试才需要 `fcitx5-modules`、GTK / Qt 输入模块及 `dbus-run-session`。
 
 ## 协议与状态
@@ -55,7 +55,7 @@ FocusOut 的行内预编辑由框架或声明 ClientUnfocusCommit 的客户端�
 
 ## 本地整句模型
 
-Server 启动时按 `[model] enabled`（缺省开）在后台线程加载模型并预热，`find_model` 优先找用户目录 `~/.local/share/qingjian/models/hanzhang-tongbian/` 与随包的 `resources/data/models/hanzhang-tongbian/`，然后回退知微；旧用户目录仍可读取。Linux 没有配置热加载，改开关要重启服务。
+Server 启动时按 `[model] enabled`（缺省开）在后台线程加载模型并预热，`find_model` 优先找用户目录 `~/.local/share/lightbookinput/models/hanzhang-tongbian/` 与随包的 `resources/data/models/hanzhang-tongbian/`，然后回退知微；旧用户目录仍可读取。Linux 没有配置热加载，改开关要重启服务。
 节拍与 Windows Server 的 `dispatch/rescore` 相同：缓冲变化后起 80 ms 防抖，到点把整句路径送去后台打分，每 20 ms 收一次，最长等 2 s；
 结果到了只在用户还看着第一页、没动过高亮时重建候选布局，下一次 `Poll` 回的帧就是新顺序。主循环按 `Router::next_tick` 的绝对到点时间等消息，空闲时一秒一次落盘学习。
 模型在后台接上时用户正在组句，Server 补查一次攒下整句路径再起防抖，这一轮不错过重排。前文用本会话最近上屏的字，首版不读应用光标前文。
@@ -63,11 +63,11 @@ Server 启动时按 `[model] enabled`（缺省开）在后台线程加载模型�
 ## 路径和排错
 
 用户安装与手动启动见 [Linux 用户说明](../user/getting-started/linux.md)。安装只登记实际绝对插件库路径，不修改系统 Fcitx5 搜索规则。
-`QINGJIAN_SOCKET` 可指定绝对 socket 路径；缺省为 `$XDG_RUNTIME_DIR/qingjian.sock`，无 runtime 时用 `/tmp/qingjian-<uid>/qingjian.sock`。
-父目录须归当前用户且不可被其他用户写入；socket 权限为 0600。`QINGJIAN_RESOURCES` 覆盖资源根，`QINGJIAN_DICT` 可指定测试词库。
-默认数据从可执行文件旁 `../share/qingjian/resources` 找，支持源码开发目录回退。
+`LIGHTBOOKINPUT_SOCKET` 可指定绝对 socket 路径；缺省为 `$XDG_RUNTIME_DIR/lightbookinput.sock`，无 runtime 时用 `/tmp/lightbookinput-<uid>/lightbookinput.sock`。
+父目录须归当前用户且不可被其他用户写入；socket 权限为 0600。`LIGHTBOOKINPUT_RESOURCES` 覆盖资源根，`LIGHTBOOKINPUT_DICT` 可指定测试词库。
+默认数据从可执行文件旁 `../share/lightbookinput/resources` 找，支持源码开发目录回退。
 
-未出候选时先确认手动 Server 在运行，再查看 `$XDG_STATE_HOME/qingjian/logs/server.*.log`（缺省 `~/.local/state`）。
+未出候选时先确认手动 Server 在运行，再查看 `$XDG_STATE_HOME/lightbookinput/logs/server.*.log`（缺省 `~/.local/state`）。
 输入日志由 `[general] input_log` 控制；用户配置和学习文件始终保存在 XDG 用户目录，卸载不删除。
 
 ## 验证环境

@@ -6,7 +6,7 @@ use objc2::msg_send;
 use objc2::rc::Retained;
 use objc2::runtime::AnyObject;
 use objc2_foundation::{NSAttributedString, NSDictionary, NSNotFound, NSRange, NSRect, NSString};
-use qingjian_core::SurroundingText;
+use lightbookinput_core::SurroundingText;
 
 /// `{NSNotFound, 0}`：不替换任何已有文本，插到当前位置。
 const NO_REPLACEMENT: NSRange = NSRange::new(NSNotFound as usize, 0);

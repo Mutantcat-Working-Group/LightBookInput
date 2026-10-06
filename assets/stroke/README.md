@@ -17,7 +17,7 @@
 
 数据集页 <https://data.gov.tw/dataset/5961>，下载 <https://www.cns11643.gov.tw/opendata/Properties.zip> 与
 <https://www.cns11643.gov.tw/opendata/MapingTables.zip>（解到 `data/cns/`）；对照源 `hanzi-writer-data-2.0.1.tgz`（npm registry）解到 `data/mmh/`。
-对照表再生成：`cargo run -p qingjian-dict-convert -- mmh-reference`（读 `data/mmh/package/` 与字表，写上面两张对照表；`data/` 已 gitignore，表不进仓库）。选型与许可依据见 [docs/design/aux-code.md](../../docs/design/aux-code.md)「原生表：只带笔画」与 wayfinder 的
+对照表再生成：`cargo run -p lightbookinput-dict-convert -- mmh-reference`（读 `data/mmh/package/` 与字表，写上面两张对照表；`data/` 已 gitignore，表不进仓库）。选型与许可依据见 [docs/design/aux-code.md](../../docs/design/aux-code.md)「原生表：只带笔画」与 wayfinder 的
 t07（数据源查证）/ t09（归一化决议）两张票：**CNS 作字形来源 + 大陆序覆盖表**，MMH 只在开发期做对照。
 
 ## 文件
@@ -34,7 +34,7 @@ t07（数据源查证）/ t09（归一化决议）两张票：**CNS 作字形来
 
 ```bash
 # 生成（缺省写 data/generated/codes/stroke.tsv）
-cargo run --release -p qingjian-dict-convert -- stroke --cns-count data/cns/CNS_stroke.txt --verify
+cargo run --release -p lightbookinput-dict-convert -- stroke --cns-count data/cns/CNS_stroke.txt --verify
 ```
 
 `--verify` 两路对照（对照表由 `mmh-reference` 生成，**找不到哪张就跳过哪张并提示**）：笔画数按「一级字表每 12 字取 1」（291 字）抽样比对；首笔按一级字表 3,500 字全量比对几何类别。几何类别分不清近竖的撇与点，但两岸笔顺的差异也落在这几类里，所以不按类别放行：不符的字逐字裁定后进首笔白名单。白名单之外一处不符即退出码非 0。对照源把撇也归成竖的字（册、删）对照不出来，靠人工抽查。
@@ -42,7 +42,7 @@ cargo run --release -p qingjian-dict-convert -- stroke --cns-count data/cns/CNS_
 随包时再算成码表（缺省读 `data/generated/codes/stroke.tsv` 与 `data/generated/dict.qj`，写 `data/generated/codes/stroke.qj`）：
 
 ```bash
-cargo run --release -p qingjian-dict-convert -- pack codes
+cargo run --release -p lightbookinput-dict-convert -- pack codes
 ```
 
 按设计文档的取码规则算码（单字「前 4 笔 + 末笔」、词组每字首笔，缺字的词跳过并计入统计）；元数据缺省写明
@@ -90,7 +90,7 @@ cargo run --release -p qingjian-dict-convert -- pack codes
 抽样对照完成 sampled=291 reference_entries=3500 whitelisted=7 unmatched=0
 ```
 
-- **抽样对照**：291 字里 7 字不符，全部在白名单内，白名单之外 **0 条**（`cargo test -p qingjian-dict-convert` 的
+- **抽样对照**：291 字里 7 字不符，全部在白名单内，白名单之外 **0 条**（`cargo test -p lightbookinput-dict-convert` 的
   `stroke::tests` 另外覆盖规则解析、锚点语义与对照/抽样逻辑）。
 - **产物**：7,990 行 / 127,283 字节（平均 10.9 画）。设计文档估的 40–80 KB 偏小：那是按「前 4 笔 + 末笔」的 5 码估的，
   本表是全笔顺序列（`字\t[1-5n]+`）。

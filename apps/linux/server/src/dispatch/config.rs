@@ -1,6 +1,6 @@
 //! Linux 首版按键与候选配置。
-use qingjian_platform::protocol::KeyModifiers;
-use qingjian_platform::{AppsConfig, Config, LayoutMode, PreeditMode, ThemeMode};
+use lightbookinput_platform::protocol::KeyModifiers;
+use lightbookinput_platform::{AppsConfig, Config, LayoutMode, PreeditMode, ThemeMode};
 
 /// Router 要用的配置项，与 macOS 壳的 `Host` 字段对齐。
 #[derive(Debug, Clone, PartialEq, Eq)]

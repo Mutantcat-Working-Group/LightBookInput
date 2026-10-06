@@ -15,7 +15,7 @@ body:
       options:
         - label: 已搜索过现有 issue（包括已关闭的），没有重复
           required: true
-        - label: 已查过[使用说明](https://qingjian.app/docs)，里面没有答案
+        - label: 已查过[使用说明](https://lightbookinput.app/docs)，里面没有答案
           required: true
   - type: dropdown
     id: platform

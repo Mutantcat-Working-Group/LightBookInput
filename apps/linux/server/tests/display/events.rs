@@ -1,6 +1,6 @@
 //! 错误鼠标身份不改变其他会话曝光，重开上下文不会复用旧帧。
 use super::{compose, key, router};
-use qingjian_platform::protocol::{ClientMessage, PROTOCOL_VERSION, SessionId};
+use lightbookinput_platform::protocol::{ClientMessage, PROTOCOL_VERSION, SessionId};
 use serde_json::json;
 
 #[test]

@@ -1,7 +1,7 @@
 mod segment;
 mod style;
 
-use qingjian_core::MarkedSegment;
+use lightbookinput_core::MarkedSegment;
 
 use segment::PreeditSegment;
 pub use style::PreeditStyle;
@@ -52,7 +52,7 @@ impl Preedit {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use qingjian_core::MarkedKind;
+    use lightbookinput_core::MarkedKind;
 
     #[test]
     fn builds_from_marked_segments_and_concatenates() {

@@ -1,7 +1,7 @@
 //! 形码码表：Rime `.dict.yaml`（极点 86 五笔等）→ `词\t编码\t词频`。
 //!
 //! 码表自带的第二列（Rime 里是权重）**不用**：那是码表顺序，不是语料词频，直接拿来排序会让同一个词
-//! 在形码下和在拼音下排得不一样。词频从青简词库（`词\t拼音\t词频`）按**词面**交叉回填：
+//! 在形码下和在拼音下排得不一样。词频从轻书词库（`词\t拼音\t词频`）按**词面**交叉回填：
 //! 词库里有的用语料词频（与拼音方案同一把尺子，释义兜底与生词识别也对得上），
 //! 没有的给 [`UNKNOWN_FREQUENCY`]——语料里一次都没出现过，本来就该排在同编码的已知词后面。
 //!
@@ -11,8 +11,8 @@ use std::collections::HashMap;
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 
-use qingjian_dictionary::Dictionary;
-use qingjian_dictionary::import::{looks_like_rime, to_tsv};
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_dictionary::import::{looks_like_rime, to_tsv};
 
 use crate::error::ConvertError;
 
@@ -32,7 +32,7 @@ pub struct Converted {
     pub unknown: usize,
 }
 
-/// 读 Rime 码表写出青简形码 TSV，词频从 `frequencies`（青简词库 TSV，可给多本）交叉回填。
+/// 读 Rime 码表写出轻书形码 TSV，词频从 `frequencies`（轻书词库 TSV，可给多本）交叉回填。
 pub fn convert(
     input: &Path,
     frequencies: &[PathBuf],
@@ -99,7 +99,7 @@ pub fn convert(
     let mut writer = BufWriter::new(std::fs::File::create(output)?);
     writeln!(
         writer,
-        "# 形码码表：词\t编码\t词频。词频由青简词库按词面回填（不是码表自带的权重），出处见 assets/wubi/README.md"
+        "# 形码码表：词\t编码\t词频。词频由轻书词库按词面回填（不是码表自带的权重），出处见 assets/wubi/README.md"
     )?;
     for (word, code, frequency) in &entries {
         writeln!(writer, "{word}\t{code}\t{frequency}")?;
@@ -131,7 +131,7 @@ name: wubi86
 
     /// 每个用例一个自己的目录：`cargo test` 并行跑，共用目录会互相覆盖。
     fn scratch(name: &str) -> std::path::PathBuf {
-        let dir = std::env::temp_dir().join(format!("qingjian-wubi-{name}"));
+        let dir = std::env::temp_dir().join(format!("lightbookinput-wubi-{name}"));
         std::fs::create_dir_all(&dir).unwrap();
         dir
     }

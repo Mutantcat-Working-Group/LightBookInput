@@ -2,6 +2,6 @@
 #pragma once
 #include <fcitx-utils/key.h>
 #include <nlohmann/json.hpp>
-namespace qingjian {
+namespace lightbookinput {
 nlohmann::json mapKey(const fcitx::Key &key);
 }

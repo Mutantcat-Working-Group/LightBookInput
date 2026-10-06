@@ -2,8 +2,8 @@ use objc2::rc::Retained;
 use objc2::{MainThreadMarker, sel};
 use objc2_app_kit::{NSControlStateValueOff, NSControlStateValueOn, NSMenu, NSMenuItem};
 use objc2_foundation::NSString;
-use qingjian_core::FuzzyRules;
-use qingjian_platform::Config;
+use lightbookinput_core::FuzzyRules;
+use lightbookinput_platform::Config;
 
 use super::MenuAction;
 use super::target::MenuTarget;
@@ -82,7 +82,7 @@ impl InputMenu {
         error.setEnabled(false);
         error.setHidden(true);
         menu.addItem(&error);
-        let about = action_item(mtm, &format!("青简 {version}"), None, &target);
+        let about = action_item(mtm, &format!("轻书 {version}"), None, &target);
         about.setEnabled(false);
         menu.addItem(&about);
 

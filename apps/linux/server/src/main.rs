@@ -4,14 +4,14 @@ mod paths;
 
 #[cfg(target_os = "linux")]
 fn run() -> Result<(), Box<dyn std::error::Error>> {
-    use qingjian_core::Language;
-    use qingjian_linux_server::{
+    use lightbookinput_core::Language;
+    use lightbookinput_linux_server::{
         AssemblySpec, LanguageModelFiles, Router, RouterConfig, assembly, find_model,
     };
-    use qingjian_platform::Config;
+    use lightbookinput_platform::Config;
     use std::path::PathBuf;
     if std::env::args().any(|arg| arg == "--version") {
-        println!("qingjian-linux-server {}", env!("CARGO_PKG_VERSION"));
+        println!("lightbookinput-linux-server {}", env!("CARGO_PKG_VERSION"));
         return Ok(());
     }
     let config_path = paths::config_path();
@@ -33,8 +33,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .with_ansi(false)
         .with_writer(writer)
         .init();
-    let root = paths::resource_root().ok_or("product resources missing; set QINGJIAN_RESOURCES")?;
-    let dictionary = std::env::var_os("QINGJIAN_DICT")
+    let root = paths::resource_root().ok_or("product resources missing; set LIGHTBOOKINPUT_RESOURCES")?;
+    let dictionary = std::env::var_os("LIGHTBOOKINPUT_DICT")
         .map(PathBuf::from)
         .or_else(|| paths::generated(&root, "dict.qj"))
         .unwrap_or_else(|| root.join("assets/sample/dict.tsv"));
@@ -91,23 +91,23 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut router = Router::new(engine, RouterConfig::from(&config));
     router.configure_local_model(find_model(Some(&user_dir), &root), &config.model);
     extern "C" fn stop(_: libc::c_int) {
-        qingjian_linux_server::ipc::request_shutdown();
+        lightbookinput_linux_server::ipc::request_shutdown();
     }
     unsafe {
         libc::signal(libc::SIGTERM, stop as *const () as libc::sighandler_t);
         libc::signal(libc::SIGINT, stop as *const () as libc::sighandler_t);
     }
-    let socket = qingjian_linux_server::ipc::socket_path();
-    tracing::info!(path = %socket.display(), "青简 Linux Server 启动");
-    qingjian_linux_server::ipc::serve_socket(socket, &mut router)?;
+    let socket = lightbookinput_linux_server::ipc::socket_path();
+    tracing::info!(path = %socket.display(), "轻书 Linux Server 启动");
+    lightbookinput_linux_server::ipc::serve_socket(socket, &mut router)?;
     Ok(())
 }
 fn main() {
     #[cfg(target_os = "linux")]
     if let Err(error) = run() {
-        eprintln!("青简启动失败：{error}");
+        eprintln!("轻书启动失败：{error}");
         std::process::exit(1);
     }
     #[cfg(not(target_os = "linux"))]
-    eprintln!("qingjian-linux-server 仅支持 Linux");
+    eprintln!("lightbookinput-linux-server 仅支持 Linux");
 }

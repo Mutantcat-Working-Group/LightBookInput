@@ -2,4 +2,4 @@
 CFBundleName = "青简";
 CFBundleDisplayName = "青简";
 /* 输入模式的显示名，键是 Info.plist 里的模式 ID */
-"app.qingjian.inputmethod.Hans" = "青简";
+"org.mutantcat.lightbookinput.Hans" = "轻书";

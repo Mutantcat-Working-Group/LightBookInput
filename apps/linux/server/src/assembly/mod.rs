@@ -6,11 +6,11 @@ mod spec;
 use std::path::Path;
 use std::time::Instant;
 
-use qingjian_core::{EmojiTable, Engine, Language};
-use qingjian_dictionary::{Dictionary, WordList};
-use qingjian_learning::{FrequencyLearner, InputLog, UsageStats, VocabularyBook};
-use qingjian_platform::extra_dictionaries;
-use qingjian_translate::{Glossary, LayeredTranslator, LevelTable, PersonalGlossary};
+use lightbookinput_core::{EmojiTable, Engine, Language};
+use lightbookinput_dictionary::{Dictionary, WordList};
+use lightbookinput_learning::{FrequencyLearner, InputLog, UsageStats, VocabularyBook};
+use lightbookinput_platform::extra_dictionaries;
+use lightbookinput_translate::{Glossary, LayeredTranslator, LevelTable, PersonalGlossary};
 
 use crate::error::ServerError;
 

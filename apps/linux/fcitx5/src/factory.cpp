@@ -1,9 +1,9 @@
-//! 青简 addon 工厂。
-#include "qingjian.h"
+//! 轻书 addon 工厂。
+#include "lightbookinput.h"
 namespace fcitx {
-class QingjianFactory final : public AddonFactory {
+class LightBookInputFactory final : public AddonFactory {
 public:
-    AddonInstance *create(AddonManager *manager) override { return new QingjianEngine(manager); }
+    AddonInstance *create(AddonManager *manager) override { return new LightBookInputEngine(manager); }
 };
 }
-FCITX_ADDON_FACTORY_V2(qingjian, fcitx::QingjianFactory)
+FCITX_ADDON_FACTORY_V2(lightbookinput, fcitx::LightBookInputFactory)

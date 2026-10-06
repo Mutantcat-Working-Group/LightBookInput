@@ -1,16 +1,16 @@
 //! 组句期间轮询：Server 回新版本的换序帧就重画一次并回报，同版本不重画也不重复回报。
-#include "qingjian.h"
+#include "lightbookinput.h"
 #include "support/context.h"
 #include "support/mock.h"
 #include <fcitx/inputcontextmanager.h>
 #include <fcitx/inputpanel.h>
 int main() {
-    qingjian::test::Mock mock("rescore");
-    char program[] = "qingjian-test"; char disable[] = "--disable=all";
+    lightbookinput::test::Mock mock("rescore");
+    char program[] = "lightbookinput-test"; char disable[] = "--disable=all";
     char *arguments[] = {program, disable, nullptr};
     fcitx::Instance instance(2, arguments);
     instance.initialize();
-    fcitx::QingjianEngine engine(&instance.addonManager());
+    fcitx::LightBookInputEngine engine(&instance.addonManager());
     auto owned = std::make_unique<Context>(instance.inputContextManager());
     auto &context = *owned;
     context.setCapabilityFlags(fcitx::CapabilityFlag::Preedit);

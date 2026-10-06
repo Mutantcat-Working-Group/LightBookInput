@@ -29,7 +29,7 @@ bool transfer(int fd, void *buffer, size_t length, bool write, Clock::time_point
     return true;
 }
 }
-namespace qingjian {
+namespace lightbookinput {
 Connection::~Connection() { close(); }
 void Connection::close() { if (fd_ >= 0) ::close(fd_); fd_ = -1; }
 bool Connection::open() {
@@ -38,9 +38,9 @@ bool Connection::open() {
     if (fd_ < 0) return false;
     sockaddr_un address{};
     address.sun_family = AF_UNIX;
-    const char *custom = std::getenv("QINGJIAN_SOCKET");
+    const char *custom = std::getenv("LIGHTBOOKINPUT_SOCKET");
     const char *runtime = std::getenv("XDG_RUNTIME_DIR");
-    std::string path = custom ? custom : std::string(runtime && *runtime ? runtime : ("/tmp/qingjian-" + std::to_string(geteuid())).c_str()) + "/qingjian.sock";
+    std::string path = custom ? custom : std::string(runtime && *runtime ? runtime : ("/tmp/lightbookinput-" + std::to_string(geteuid())).c_str()) + "/lightbookinput.sock";
     if (path.empty() || path[0] != '/' || path.size() >= sizeof(address.sun_path)) { close(); return false; }
     std::memcpy(address.sun_path, path.c_str(), path.size() + 1);
     if (::connect(fd_, reinterpret_cast<sockaddr *>(&address), sizeof(address)) < 0) { close(); return false; }

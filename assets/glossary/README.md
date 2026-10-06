@@ -3,7 +3,7 @@
 候选词右侧那一行「词性 + 译词」的数据，一张表一门学习语言。
 
 格式：`词\t[词性. ]译词[|读音]\t…`，UTF-8 **无 BOM**、LF 换行、按码点排序。
-解析在 `crates/qingjian-translate/src/glossary/mod.rs`，规则是严格的：任一行缺词或缺释义，
+解析在 `crates/lightbookinput-translate/src/glossary/mod.rs`，规则是严格的：任一行缺词或缺释义，
 整张表加载失败（`.qj` 打包走同一套解析）。
 
 本目录各表随代码以 **GPL-3.0-or-later** 发布，与仓库一致。各表来源不同，见下。
@@ -13,7 +13,7 @@
 由 `tools/gloss-gen` 用 LLM（DeepSeek）离线批量生成，不含任何第三方词典内容。
 
 - `data/generated/gloss-llm.jsonl`：模型原始输出，一行一个词（词性、英文译词、日文译词与假名），可续跑：
-  `cargo run --release -p qingjian-gloss-gen -- generate --words assets/lexicon/dict.tsv --min-count 1 --max-chars 8`
+  `cargo run --release -p lightbookinput-gloss-gen -- generate --words assets/lexicon/dict.tsv --min-count 1 --max-chars 8`
 - `glossary-en.tsv` / `glossary-ja.tsv`：输入法加载的表，由 `... export --out-dir assets/glossary` 导出。
 
 2026-09-05 对 `assets/lexicon/dict.tsv` 全量生成：23.9 万词（含旧语料词表的 3.8 万），
@@ -57,8 +57,8 @@
 约 4.5 万词：
 
 ```
-cargo run --release -p qingjian-gloss-gen -- english --include assets/lexicon/05_english/05_tech/*.tsv
-cargo run --release -p qingjian-gloss-gen -- export-english
+cargo run --release -p lightbookinput-gloss-gen -- english --include assets/lexicon/05_english/05_tech/*.tsv
+cargo run --release -p lightbookinput-gloss-gen -- export-english
 ```
 
 `data/generated/gloss-en-llm.jsonl` 是它的原始输出。表的键是小写，Engine 查表时把候选转小写。

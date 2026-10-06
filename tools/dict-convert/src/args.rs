@@ -7,8 +7,8 @@ use crate::stroke::StrokeOptions;
 
 #[derive(Debug, Parser)]
 #[command(
-    name = "qingjian-dict-convert",
-    about = "把第三方词库 / 词典转换成青简的 TSV，或把 TSV 打包成 .qj"
+    name = "lightbookinput-dict-convert",
+    about = "把第三方词库 / 词典转换成轻书的 TSV，或把 TSV 打包成 .qj"
 )]
 pub struct Args {
     /// 输出目录
@@ -21,7 +21,7 @@ pub struct Args {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// 青简基础词库：从「输入法字词库_分类整理版」数据包 + Unihan 读音建 dict.tsv（两遍跑，见模块文档）
+    /// 轻书基础词库：从「输入法字词库_分类整理版」数据包 + Unihan 读音建 dict.tsv（两遍跑，见模块文档）
     Lexicon {
         /// 数据包目录（含 01_characters / 02_common / 03_domains），随仓库放在 assets/lexicon
         #[arg(long, default_value = "assets/lexicon")]
@@ -52,12 +52,12 @@ pub enum Command {
         domain_keep_min: u64,
     },
 
-    /// 形码码表（五笔）：Rime `.dict.yaml` → `词\t编码\t词频`。词频由青简词库按词面回填，不用码表自带的权重
+    /// 形码码表（五笔）：Rime `.dict.yaml` → `词\t编码\t词频`。词频由轻书词库按词面回填，不用码表自带的权重
     Wubi {
         /// 输入的 Rime 码表（`.dict.yaml`，如极点 86 五笔）
         input: PathBuf,
 
-        /// 词频来源：青简词库 TSV（`词\t拼音\t词频`）。可给多个（基础词库 + 随包领域词库），同一个词取词频最大的那份
+        /// 词频来源：轻书词库 TSV（`词\t拼音\t词频`）。可给多个（基础词库 + 随包领域词库），同一个词取词频最大的那份
         #[arg(long, default_value = "assets/lexicon/dict.tsv", num_args = 1..)]
         frequency: Vec<PathBuf>,
 
@@ -100,7 +100,7 @@ pub enum Command {
         #[arg(required = true)]
         corpus: Vec<PathBuf>,
 
-        /// 分词用的词库（青简 TSV）；同目录 dicts/ 下的领域词库会一并用于分词（词表与拆分前一致）
+        /// 分词用的词库（轻书 TSV）；同目录 dicts/ 下的领域词库会一并用于分词（词表与拆分前一致）
         #[arg(long, default_value = "data/generated/dict.tsv")]
         dict: PathBuf,
 
@@ -140,7 +140,7 @@ pub enum Command {
         #[arg(long)]
         candidates: Option<PathBuf>,
 
-        /// 分词用的词库（青简 TSV）
+        /// 分词用的词库（轻书 TSV）
         #[arg(long, default_value = "assets/lexicon/dict.tsv")]
         dict: PathBuf,
 
@@ -163,7 +163,7 @@ pub enum Command {
         #[arg(long, default_value = "data/corpus/lccc.txt")]
         dialogue: PathBuf,
 
-        /// 分词与成分读音用的词库（青简 TSV，同目录 dicts/ 一并读）
+        /// 分词与成分读音用的词库（轻书 TSV，同目录 dicts/ 一并读）
         #[arg(long, default_value = "data/generated/dict.tsv")]
         dict: PathBuf,
 

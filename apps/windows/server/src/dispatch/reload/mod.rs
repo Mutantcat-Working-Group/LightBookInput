@@ -9,9 +9,9 @@ mod tests;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant, SystemTime};
 
-use qingjian_core::{Engine, Language, NoGlossFiller, NoPredictor, NoTranslator};
-use qingjian_platform::{Config, code_tables};
-use qingjian_predict::{CloudGlossFiller, CloudPredictor, PredictConfig};
+use lightbookinput_core::{Engine, Language, NoGlossFiller, NoPredictor, NoTranslator};
+use lightbookinput_platform::{Config, code_tables};
+use lightbookinput_predict::{CloudGlossFiller, CloudPredictor, PredictConfig};
 
 pub(super) use self::state::ConfigReload;
 pub use self::state::DataDirs;
@@ -19,7 +19,7 @@ pub use self::state::DataDirs;
 /// 看配置文件 mtime 的最短间隔；工人循环空闲时按它等，重排的短节拍来得更勤时按这个节流。
 pub(super) const CONFIG_POLL_INTERVAL: Duration = Duration::from_secs(1);
 
-/// 检查更新的结果文件名，在用户数据目录下（见 `qingjian-update::UpdateState`）。
+/// 检查更新的结果文件名，在用户数据目录下（见 `lightbookinput-update::UpdateState`）。
 const UPDATE_STATE_FILE: &str = "update.json";
 use super::{Router, RouterConfig};
 use crate::assembly;
@@ -122,7 +122,7 @@ impl Router {
         let code_files = dirs.code_snapshot();
         let dictionary_files = dirs.dict_snapshot();
         let updates = dirs.user_root.as_deref().map(|dir| {
-            qingjian_update::Checker::new(dir.join(UPDATE_STATE_FILE), env!("CARGO_PKG_VERSION"))
+            lightbookinput_update::Checker::new(dir.join(UPDATE_STATE_FILE), env!("CARGO_PKG_VERSION"))
         });
         self.reload = Some(ConfigReload {
             config_path,

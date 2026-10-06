@@ -1,21 +1,25 @@
-# 推 v<版本> 标签发三个平台（共用一个 GitHub Release）；单平台补丁推 macos-v / windows-v / linux-v<版本>，只打那一个平台。
+# 正式发版流水线：推 v<版本> 标签发三个平台（共用一个 GitHub Release）；单平台补丁推 macos-v / windows-v / linux-v<版本>，只打那一个平台。
+#
+# 当前只在 workflow_dispatch 下手动跑：日常打包走 package.yml（同一批标签触发，出自签名安装包、发草稿 Release）。
+# 那条流水线不依赖下面的 Secrets，本文件则强依赖 LIGHTBOOKINPUT_INDEX_SIGNING_KEY（签名索引）与公证证书；
+# 等这些配齐、要正式发版时，把 on: 改回 push tags 即可（两边的标签监听会重叠，改回去时记得先关掉 package.yml 的触发）。
 # 版本号读各平台壳：macOS apps/macos/Cargo.toml、Windows apps/windows/server/Cargo.toml、Linux apps/linux/server/Cargo.toml，要打的平台都得与标签一致。
 # 流程：prepare 核对版本、建草稿 Release → 各平台 job 并行打包，把安装包与摘要 / 构建信息片段传到草稿上
 # → publish 合并片段、转正、生成并签名 releases.json、触发官网构建。任何平台失败都停在草稿，不会发出缺平台的版本。
 # 流程见 docs/notes/release.md。macOS 的签名与公证可选，下面的 Secrets 配齐才签，否则出 ad-hoc 包；
-# Windows 现在没有代码签名（QINGJIAN_UIACCESS=0 关掉 uiAccess，否则没签名的 Server 起不来），证书办下来再加 signtool。
-#   QINGJIAN_CERT_P12            Developer ID Application + Installer 两张证书（含私钥）导出的 .p12，base64
-#   QINGJIAN_CERT_PASSWORD       .p12 的密码
-#   QINGJIAN_SIGN_IDENTITY       "Developer ID Application: 名字 (TEAMID)"
-#   QINGJIAN_INSTALLER_IDENTITY  "Developer ID Installer: 名字 (TEAMID)"
-#   QINGJIAN_NOTARY_KEY          App Store Connect API 密钥 .p8，base64
-#   QINGJIAN_NOTARY_KEY_ID       密钥的 Key ID
-#   QINGJIAN_NOTARY_ISSUER       密钥的 Issuer ID
+# Windows 现在没有代码签名（LIGHTBOOKINPUT_UIACCESS=0 关掉 uiAccess，否则没签名的 Server 起不来），证书办下来再加 signtool。
+#   LIGHTBOOKINPUT_CERT_P12            Developer ID Application + Installer 两张证书（含私钥）导出的 .p12，base64
+#   LIGHTBOOKINPUT_CERT_PASSWORD       .p12 的密码
+#   LIGHTBOOKINPUT_SIGN_IDENTITY       "Developer ID Application: 名字 (TEAMID)"
+#   LIGHTBOOKINPUT_INSTALLER_IDENTITY  "Developer ID Installer: 名字 (TEAMID)"
+#   LIGHTBOOKINPUT_NOTARY_KEY          App Store Connect API 密钥 .p8，base64
+#   LIGHTBOOKINPUT_NOTARY_KEY_ID       密钥的 Key ID
+#   LIGHTBOOKINPUT_NOTARY_ISSUER       密钥的 Issuer ID
 # 版本索引的签名（必须，没配门禁直接失败）：
-#   QINGJIAN_INDEX_SIGNING_KEY   releases.json 的 ed25519 私钥（base64 的 32 字节，tools/release-sign keygen 生成），
-#                                公钥在 crates/qingjian-update/src/index/signature.rs；软件内检查更新只认签过名的索引
+#   LIGHTBOOKINPUT_INDEX_SIGNING_KEY   releases.json 的 ed25519 私钥（base64 的 32 字节，tools/release-sign keygen 生成），
+#                                公钥在 crates/lightbookinput-update/src/index/signature.rs；软件内检查更新只认签过名的索引
 # 发版后让官网重新构建（也可选）：
-#   QINGJIAN_WEB_TOKEN           fine-grained PAT，对 qingjian-team/qingjian-web 有 Contents: read and write
+#   LIGHTBOOKINPUT_WEB_TOKEN           fine-grained PAT，对 mutantcat-working-group/lightbookinput-web 有 Contents: read and write
 #                                （官网由 Cloudflare 按仓库提交自动构建，tools/release/bump-website.sh 往那边推一个小提交）
 #
 # 门禁：版本号与标签一致且不带 -dev；标签指向的提交必须在 main 上（防止从没合并的分支或手滑的本地提交发版）。
@@ -24,8 +28,7 @@
 name: release
 
 on:
-  push:
-    tags: ['v*', 'macos-v*', 'windows-v*', 'linux-v*']
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
@@ -49,10 +52,10 @@ jobs:
       - name: Check versions match tag and tag is on main
         id: gate
         env:
-          INDEX_KEY_SET: ${{ secrets.QINGJIAN_INDEX_SIGNING_KEY != '' }}
+          INDEX_KEY_SET: ${{ secrets.LIGHTBOOKINPUT_INDEX_SIGNING_KEY != '' }}
         run: |
           if [[ "$INDEX_KEY_SET" != "true" ]]; then
-            echo "没配 QINGJIAN_INDEX_SIGNING_KEY：releases.json 签不了名，已装的青简都不认这份索引、收不到更新提示（docs/notes/release.md）" >&2
+            echo "没配 LIGHTBOOKINPUT_INDEX_SIGNING_KEY：releases.json 签不了名，已装的轻书都不认这份索引、收不到更新提示（docs/notes/release.md）" >&2
             exit 1
           fi
           case "$GITHUB_REF_NAME" in
@@ -89,7 +92,7 @@ jobs:
           MACOS: ${{ steps.gate.outputs.macos }}
           WINDOWS: ${{ steps.gate.outputs.windows }}
           LINUX: ${{ steps.gate.outputs.linux }}
-          MAC_SIGNED: ${{ secrets.QINGJIAN_CERT_P12 != '' }}
+          MAC_SIGNED: ${{ secrets.LIGHTBOOKINPUT_CERT_P12 != '' }}
         run: |
           NOTES="$RUNNER_TEMP/notes.md"
           python3 tools/release/releases_json.py --notes-for "$VERSION" > "$NOTES"
@@ -103,10 +106,10 @@ jobs:
             printf '\n> Linux：预编译包在 Ubuntu 26.04 上构建，其他发行版请用源码安装；解开后运行 install.sh，说明见官网文档「Linux」。\n' >> "$NOTES"
           fi
           case "$GITHUB_REF_NAME" in
-            macos-v*) TITLE="青简 macOS $VERSION" ;;
-            windows-v*) TITLE="青简 Windows $VERSION" ;;
-            linux-v*) TITLE="青简 Linux $VERSION" ;;
-            *) TITLE="青简 $VERSION" ;;
+            macos-v*) TITLE="轻书 macOS $VERSION" ;;
+            windows-v*) TITLE="轻书 Windows $VERSION" ;;
+            linux-v*) TITLE="轻书 Linux $VERSION" ;;
+            *) TITLE="轻书 $VERSION" ;;
           esac
           # 带预发布后缀的版本（0.1.4-beta.1）是测试渠道的：标成预发布，不抢 GitHub 的 latest
           PRERELEASE=(); [[ "$VERSION" == *-* ]] && PRERELEASE=(--prerelease --latest=false)
@@ -137,8 +140,8 @@ jobs:
       - name: Detect optional secrets
         id: secrets
         run: |
-          echo "sign=${{ secrets.QINGJIAN_CERT_P12 != '' }}" >> "$GITHUB_OUTPUT"
-          echo "notarize=${{ secrets.QINGJIAN_NOTARY_KEY != '' }}" >> "$GITHUB_OUTPUT"
+          echo "sign=${{ secrets.LIGHTBOOKINPUT_CERT_P12 != '' }}" >> "$GITHUB_OUTPUT"
+          echo "notarize=${{ secrets.LIGHTBOOKINPUT_NOTARY_KEY != '' }}" >> "$GITHUB_OUTPUT"
 
       - name: Fetch product data
         env:
@@ -150,10 +153,10 @@ jobs:
       - name: Import signing certificates
         if: steps.secrets.outputs.sign == 'true'
         env:
-          CERT_P12: ${{ secrets.QINGJIAN_CERT_P12 }}
-          CERT_PASSWORD: ${{ secrets.QINGJIAN_CERT_PASSWORD }}
-          SIGN_IDENTITY: ${{ secrets.QINGJIAN_SIGN_IDENTITY }}
-          INSTALLER_IDENTITY: ${{ secrets.QINGJIAN_INSTALLER_IDENTITY }}
+          CERT_P12: ${{ secrets.LIGHTBOOKINPUT_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.LIGHTBOOKINPUT_CERT_PASSWORD }}
+          SIGN_IDENTITY: ${{ secrets.LIGHTBOOKINPUT_SIGN_IDENTITY }}
+          INSTALLER_IDENTITY: ${{ secrets.LIGHTBOOKINPUT_INSTALLER_IDENTITY }}
         run: |
           KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
           security create-keychain -p "" "$KEYCHAIN"
@@ -165,28 +168,28 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign:,productbuild: -s -k "" "$KEYCHAIN" >/dev/null
           security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
           {
-            echo "QINGJIAN_SIGN_IDENTITY=$SIGN_IDENTITY"
-            echo "QINGJIAN_INSTALLER_IDENTITY=$INSTALLER_IDENTITY"
+            echo "LIGHTBOOKINPUT_SIGN_IDENTITY=$SIGN_IDENTITY"
+            echo "LIGHTBOOKINPUT_INSTALLER_IDENTITY=$INSTALLER_IDENTITY"
           } >> "$GITHUB_ENV"
 
       - name: Store notarization credentials
         if: steps.secrets.outputs.notarize == 'true'
         env:
-          NOTARY_KEY: ${{ secrets.QINGJIAN_NOTARY_KEY }}
-          NOTARY_KEY_ID: ${{ secrets.QINGJIAN_NOTARY_KEY_ID }}
-          NOTARY_ISSUER: ${{ secrets.QINGJIAN_NOTARY_ISSUER }}
+          NOTARY_KEY: ${{ secrets.LIGHTBOOKINPUT_NOTARY_KEY }}
+          NOTARY_KEY_ID: ${{ secrets.LIGHTBOOKINPUT_NOTARY_KEY_ID }}
+          NOTARY_ISSUER: ${{ secrets.LIGHTBOOKINPUT_NOTARY_ISSUER }}
         run: |
           echo "$NOTARY_KEY" | base64 --decode > "$RUNNER_TEMP/AuthKey.p8"
-          xcrun notarytool store-credentials qingjian --key "$RUNNER_TEMP/AuthKey.p8" \
+          xcrun notarytool store-credentials lightbookinput --key "$RUNNER_TEMP/AuthKey.p8" \
             --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER"
           rm -f "$RUNNER_TEMP/AuthKey.p8"
-          echo "QINGJIAN_NOTARY_PROFILE=qingjian" >> "$GITHUB_ENV"
+          echo "LIGHTBOOKINPUT_NOTARY_PROFILE=lightbookinput" >> "$GITHUB_ENV"
 
       - name: Build pkg (arm64)
-        run: QINGJIAN_TARGET=aarch64-apple-darwin apps/macos/scripts/bundle.sh --pkg
+        run: LIGHTBOOKINPUT_TARGET=aarch64-apple-darwin apps/macos/scripts/bundle.sh --pkg
 
       - name: Build pkg (x86_64)
-        run: QINGJIAN_TARGET=x86_64-apple-darwin apps/macos/scripts/bundle.sh --pkg
+        run: LIGHTBOOKINPUT_TARGET=x86_64-apple-darwin apps/macos/scripts/bundle.sh --pkg
 
       - name: Upload to draft release
         env:
@@ -204,8 +207,8 @@ jobs:
         shell: bash
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
-      # 没有代码签名证书：Server 不带 uiAccess（没签名的 exe 带 uiAccess=true 起不来）。证书办下来后去掉这一行并在 build.ps1 加 signtool。
-      QINGJIAN_UIACCESS: '0'
+      # 没有组织代码签名证书：Server 不带 uiAccess（没签名的 exe 带 uiAccess=true 起不来）。build-nsis.ps1 内部也会设 0 并自签。
+      LIGHTBOOKINPUT_UIACCESS: '0'
       PYTHON: python
       # Windows 上 Python 的标准输出缺省 cp1252，中文更新日志会编码失败。
       PYTHONUTF8: '1'
@@ -218,7 +221,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # v1
         with:
           toolchain: 1.96.0
-          # 安装包另带一份 32 位 TSF DLL（build.ps1 编）
+          # 安装包另带一份 32 位 TSF DLL（build-nsis.ps1 编）
           targets: i686-pc-windows-msvc
 
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
@@ -230,23 +233,15 @@ jobs:
           tools/release/data-fetch.sh
           ls -la data/generated data/generated/dicts data/models/hanzhang-zhiwei data/models/hanzhang-tongbian
 
-      # 与开发机同版本（7.1.0，自带简体中文翻译；Chocolatey 只有 6.x，6 的安装包不带简中）。钉死 GitHub Release 上的文件。
-      - name: Install Inno Setup 7.1.0
-        shell: pwsh
+      - name: Install NSIS
         run: |
-          $url = 'https://github.com/jrsoftware/issrc/releases/download/is-7_1_0/innosetup-7.1.0-x64.exe'
-          # 下载来的安装程序要以管理员身份执行，先核对 SHA-256（2026-09-11 从上面地址下载后算出），对不上就不装。
-          $expected = '0362a383ed217d4c4239b5933866dd96d3eb2102737da92f80f6057a4b40df2f'
-          $exe = Join-Path $env:RUNNER_TEMP 'innosetup.exe'
-          Invoke-WebRequest -Uri $url -OutFile $exe
-          $actual = (Get-FileHash -Path $exe -Algorithm SHA256).Hash.ToLowerInvariant()
-          if ($actual -ne $expected) { throw "Inno Setup 安装程序 SHA-256 不符：$actual" }
-          Start-Process -FilePath $exe -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-' -Wait
-          & "${env:ProgramFiles}\Inno Setup 7\ISCC.exe" --version
+          choco install nsis -y --no-progress
+          "/c/Program Files (x86)/NSIS/makensis.exe" /VERSION
 
       - name: Build installer
-        shell: pwsh
-        run: powershell -NoProfile -ExecutionPolicy Bypass -File apps\windows\installer\build.ps1
+        run: |
+          # 一次出两个架构（64 位含 32 位 TSF DLL + 纯 32 位包）；正式版把自签证书换成组织证书
+          powershell -NoProfile -ExecutionPolicy Bypass -File apps\windows\installer\build-nsis.ps1
 
       - name: Upload to draft release
         env:
@@ -294,14 +289,14 @@ jobs:
           work="$RUNNER_TEMP/package-test"
           mkdir -p "$work"
           tar -xzf target/linux-package/*.tar.gz -C "$work"
-          cd "$work"/qingjian-*/
+          cd "$work"/lightbookinput-*/
           export XDG_DATA_HOME="$work/data"
           ./install.sh --prefix "$work/prefix"
-          for binary in "$work/prefix/bin/qingjian-linux-server" "$work/prefix/lib/fcitx5/qingjian.so"; do
+          for binary in "$work/prefix/bin/lightbookinput-linux-server" "$work/prefix/lib/fcitx5/lightbookinput.so"; do
             if ldd "$binary" | grep 'not found'; then exit 1; fi
           done
           ./uninstall.sh --prefix "$work/prefix"
-          test ! -e "$work/prefix/bin/qingjian-linux-server"
+          test ! -e "$work/prefix/bin/lightbookinput-linux-server"
 
       - name: Upload to draft release
         env:
@@ -328,7 +323,7 @@ jobs:
 
       - name: Detect optional secrets
         id: secrets
-        run: echo "website=${{ secrets.QINGJIAN_WEB_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+        run: echo "website=${{ secrets.LIGHTBOOKINPUT_WEB_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
 
       - name: Merge checksums and build info, publish
         env:
@@ -339,11 +334,11 @@ jobs:
       - name: Generate releases.json
         env:
           GH_TOKEN: ${{ github.token }}
-          QINGJIAN_INDEX_SIGNING_KEY: ${{ secrets.QINGJIAN_INDEX_SIGNING_KEY }}
+          LIGHTBOOKINPUT_INDEX_SIGNING_KEY: ${{ secrets.LIGHTBOOKINPUT_INDEX_SIGNING_KEY }}
         run: tools/release/publish-releases-json.sh "$GITHUB_REF_NAME" "$RUNNER_TEMP/release"
 
       - name: Trigger website build
         if: steps.secrets.outputs.website == 'true'
         env:
-          QINGJIAN_WEB_TOKEN: ${{ secrets.QINGJIAN_WEB_TOKEN }}
+          LIGHTBOOKINPUT_WEB_TOKEN: ${{ secrets.LIGHTBOOKINPUT_WEB_TOKEN }}
         run: tools/release/bump-website.sh

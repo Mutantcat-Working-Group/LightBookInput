@@ -11,9 +11,9 @@ mod state;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use qingjian_core::CandidateLayout;
-use qingjian_platform::LocalModelConfig;
-use qingjian_platform::protocol::SessionId;
+use lightbookinput_core::CandidateLayout;
+use lightbookinput_platform::LocalModelConfig;
+use lightbookinput_platform::protocol::SessionId;
 
 use self::loader::Loaded;
 pub(crate) use self::loader::ModelLoader;
@@ -34,7 +34,7 @@ pub fn find_model(user_dir: Option<&Path>, bundled_root: &Path) -> Option<PathBu
     candidates
         .into_iter()
         .flatten()
-        .find_map(|dir| qingjian_neural::find_model(&dir))
+        .find_map(|dir| lightbookinput_neural::find_model(&dir))
 }
 
 impl Router {

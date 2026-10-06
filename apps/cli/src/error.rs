@@ -1,10 +1,10 @@
-use qingjian_dictionary::DictionaryError;
-use qingjian_learning::LearningError;
-use qingjian_lm::LmError;
-use qingjian_neural::NeuralError;
-use qingjian_platform::ConfigError;
-use qingjian_predict::PredictError;
-use qingjian_translate::GlossaryError;
+use lightbookinput_dictionary::DictionaryError;
+use lightbookinput_learning::LearningError;
+use lightbookinput_lm::LmError;
+use lightbookinput_neural::NeuralError;
+use lightbookinput_platform::ConfigError;
+use lightbookinput_predict::PredictError;
+use lightbookinput_translate::GlossaryError;
 #[derive(Debug, thiserror::Error)]
 pub enum CliError {
     #[error(transparent)]

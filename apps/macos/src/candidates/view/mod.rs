@@ -1,6 +1,6 @@
 //! 候选窗口的内容视图：自绘顶部拼音行与若干候选，竖排一行一个、横排排成一行，一项高亮。
 //!
-//! 有两条画法：缺省交给 `qingjian-render` 出位图再贴（[`BitmapPainter`]），配置 `[general] renderer = "system"`
+//! 有两条画法：缺省交给 `lightbookinput-render` 出位图再贴（[`BitmapPainter`]），配置 `[general] renderer = "system"`
 //! 走下面用 AppKit 逐项绘制的旧路径（过渡期的退路，渲染器稳定一个版本后删）。
 
 mod matrix;
@@ -18,7 +18,7 @@ use objc2_app_kit::{
 use objc2_foundation::{
     NSArray, NSAttributedString, NSDictionary, NSNumber, NSPoint, NSRect, NSSize, NSString,
 };
-use qingjian_platform::{CandidateRenderer, LayoutMode};
+use lightbookinput_platform::{CandidateRenderer, LayoutMode};
 
 use super::bitmap::BitmapPainter;
 use super::cloud_icon::CloudIcon;
@@ -140,11 +140,11 @@ impl CandidateView {
         }
     }
 
-    /// 青简渲染器 / 系统绘制。渲染器字体库加载失败就留在系统绘制。
+    /// 轻书渲染器 / 系统绘制。渲染器字体库加载失败就留在系统绘制。
     pub fn set_renderer(&self, renderer: CandidateRenderer) {
         let mut bitmap = self.ivars().bitmap.borrow_mut();
         match renderer {
-            CandidateRenderer::Qingjian if bitmap.is_none() => {
+            CandidateRenderer::LightBookInput if bitmap.is_none() => {
                 *bitmap = BitmapPainter::new(&self.ivars().font.borrow());
             }
             CandidateRenderer::System if bitmap.is_some() => {

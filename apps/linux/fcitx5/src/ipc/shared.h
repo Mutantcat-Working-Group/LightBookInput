@@ -5,7 +5,7 @@
 #include <fcitx-utils/event.h>
 #include <unordered_map>
 #include <vector>
-namespace qingjian {
+namespace lightbookinput {
 class SharedConnection {
 public:
     Connection connection;

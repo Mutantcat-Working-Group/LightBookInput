@@ -1,6 +1,6 @@
 //! 根组件的 Reactor 生命周期：建状态、按消息落盘、画左侧导航 + 当前页。
 
-use qingjian_platform::{
+use lightbookinput_platform::{
     CandidateRenderer, Config, DEFAULT_ENGLISH_CANDIDATES_OFF_WINDOWS, LayoutMode, LogLevel,
     PreeditMode, ShiftLetter, ThemeMode, UpdateChannel,
 };
@@ -30,12 +30,12 @@ impl Component for Settings {
             record_box: ElementRef::new(),
             notice: Notice::default(),
             update_state: Self::update_state_path()
-                .map(|path| qingjian_update::UpdateState::load(&path))
+                .map(|path| lightbookinput_update::UpdateState::load(&path))
                 .unwrap_or_default(),
             update_checking: false,
             update_error: None,
             dictionary_status: String::new(),
-            families: qingjian_render::system_fonts::families(),
+            families: lightbookinput_render::system_fonts::families(),
             font_query: None,
         }
     }
@@ -277,7 +277,7 @@ impl Component for Settings {
 
             // 关于页
             Message::OpenWebsite => open_with_explorer(about::WEBSITE_URL),
-            Message::OpenDownload => open_with_explorer(qingjian_update::DOWNLOAD_URL),
+            Message::OpenDownload => open_with_explorer(lightbookinput_update::DOWNLOAD_URL),
 
             // 关于页：检查更新
             Message::UpdateCheck(on) => self.save("update", "check", on),
@@ -296,7 +296,7 @@ impl Component for Settings {
                 let config = self.config.update.clone();
                 context.spawn_background(move |_cancel| {
                     let result =
-                        qingjian_update::Checker::check_blocking(&path, about::VERSION, &config);
+                        lightbookinput_update::Checker::check_blocking(&path, about::VERSION, &config);
                     Message::UpdateChecked(result.map(|r| r.map_err(|error| error.to_string())))
                 });
             }
@@ -316,7 +316,7 @@ impl Component for Settings {
     }
 
     fn view(&self, _input: &(), context: &mut ViewContext<Self>) -> View {
-        context.window_title("青简设置");
+        context.window_title("轻书设置");
         let item = |tag: &str, label: &str, symbol| {
             KeyedView::new(
                 tag,
@@ -346,7 +346,7 @@ impl Component for Settings {
         ];
         NavigationView::new()
             .pane_display_mode(NavigationViewPaneDisplayMode::Left)
-            .pane_title("青简")
+            .pane_title("轻书")
             .open_pane_length(220.0)
             .is_pane_open(true)
             .is_pane_toggle_button_visible(false)

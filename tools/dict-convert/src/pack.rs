@@ -4,11 +4,11 @@
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use qingjian_core::Language;
-use qingjian_dictionary::Dictionary;
-use qingjian_format::Metadata;
-use qingjian_lm::BigramModel;
-use qingjian_translate::Glossary;
+use lightbookinput_core::Language;
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_format::Metadata;
+use lightbookinput_lm::BigramModel;
+use lightbookinput_translate::Glossary;
 
 use crate::args::PackKind;
 use crate::error::ConvertError;
@@ -48,7 +48,7 @@ pub fn pack(
     out_dir: &Path,
 ) -> Result<(), ConvertError> {
     let metadata = Metadata {
-        generator: format!("qingjian-dict-convert {}", env!("CARGO_PKG_VERSION")),
+        generator: format!("lightbookinput-dict-convert {}", env!("CARGO_PKG_VERSION")),
         ..metadata
     };
     // 只有 codes 自己带元数据缺省值（名称、许可、署名都是产品决定），别的种类仍然要显式给。
@@ -103,7 +103,7 @@ pub fn pack(
                 .output
                 .map(Path::to_path_buf)
                 .unwrap_or_else(|| out_dir.join("model.qjm"));
-            let parameters = qingjian_neural::qjm::pack(&input, &out, &metadata)?;
+            let parameters = lightbookinput_neural::qjm::pack(&input, &out, &metadata)?;
             report(
                 &out,
                 usize::try_from(parameters).unwrap_or(usize::MAX),

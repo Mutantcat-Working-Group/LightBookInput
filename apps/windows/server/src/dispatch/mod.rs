@@ -19,9 +19,9 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
-use qingjian_core::Engine;
-use qingjian_platform::LocalModelConfig;
-use qingjian_platform::protocol::{
+use lightbookinput_core::Engine;
+use lightbookinput_platform::LocalModelConfig;
+use lightbookinput_platform::protocol::{
     ClientMessage, Frame, IndicatorState, InputSettings, ScreenRect, ServerMessage, SessionId,
 };
 
@@ -93,7 +93,7 @@ pub struct Router {
     /// 全局中英模式（`true` 英文），所有应用共用。DLL 切了报来，激活 / 获焦 / 轮询时取走。
     english: bool,
 
-    /// 当前输入法是不是青简：有 DLL 来取模式就是，切成别的输入法时收起。状态条只在这时显示；
+    /// 当前输入法是不是轻书：有 DLL 来取模式就是，切成别的输入法时收起。状态条只在这时显示；
     /// 应用退出不影响它，状态条是桌面常驻的。
     ime_active: bool,
 

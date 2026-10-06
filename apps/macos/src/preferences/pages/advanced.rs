@@ -3,7 +3,7 @@
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::NSButton;
-use qingjian_platform::{Config, LogLevel};
+use lightbookinput_platform::{Config, LogLevel};
 
 use crate::preferences::controls::{
     GROUP_GAP, button, checkbox, note_full, row_checkbox, set_checked,

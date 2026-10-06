@@ -2,7 +2,7 @@
 #pragma once
 #include <fcitx/candidatelist.h>
 #include <functional>
-namespace qingjian {
+namespace lightbookinput {
 class List final : public fcitx::CommonCandidateList {
 public:
     List(int page, int pages, std::function<void(bool)> turn) : page_(page), pages_(pages), turn_(std::move(turn)) {}

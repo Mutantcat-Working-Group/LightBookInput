@@ -2,7 +2,7 @@
 
 mod sink;
 
-use qingjian_platform::protocol::{Frame, ScreenRect, SessionId};
+use lightbookinput_platform::protocol::{Frame, ScreenRect, SessionId};
 
 pub use self::sink::{CandidateSink, NoopSink, RenderSettings};
 use super::Router;

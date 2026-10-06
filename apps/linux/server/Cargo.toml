@@ -1,5 +1,5 @@
 [package]
-name = "qingjian-linux-server"
+name = "lightbookinput-linux-server"
 description = "Linux Fcitx5 输入法的 Rust Server"
 version = "0.1.5-dev"
 edition.workspace = true
@@ -7,17 +7,17 @@ license.workspace = true
 repository.workspace = true
 
 [[bin]]
-name = "qingjian-linux-server"
+name = "lightbookinput-linux-server"
 path = "src/main.rs"
 
 [dependencies]
-qingjian-core.workspace = true
-qingjian-dictionary.workspace = true
-qingjian-learning.workspace = true
-qingjian-lm.workspace = true
-qingjian-neural.workspace = true
-qingjian-platform.workspace = true
-qingjian-translate.workspace = true
+lightbookinput-core.workspace = true
+lightbookinput-dictionary.workspace = true
+lightbookinput-learning.workspace = true
+lightbookinput-lm.workspace = true
+lightbookinput-neural.workspace = true
+lightbookinput-platform.workspace = true
+lightbookinput-translate.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

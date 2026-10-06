@@ -112,9 +112,9 @@ impl Host {
     }
 
     /// 配置里的自定义短语，`[general] system_text_replacements` 开着时再并上系统的文本替换，一起推给 Engine。
-    fn apply_custom_phrases(&mut self, config: &qingjian_platform::Config) {
+    fn apply_custom_phrases(&mut self, config: &lightbookinput_platform::Config) {
         let phrases = if config.general.system_text_replacements {
-            qingjian_core::custom_phrase::merge_replacements(
+            lightbookinput_core::custom_phrase::merge_replacements(
                 &config.custom_phrases,
                 self.text_replacements
                     .iter()
@@ -236,7 +236,7 @@ impl Host {
             self.engine.set_code_table(None);
             return;
         };
-        match qingjian_dictionary::CodeTable::from_path(&path) {
+        match lightbookinput_dictionary::CodeTable::from_path(&path) {
             Ok(table) => {
                 tracing::info!(table = %path.display(), entries = table.len(), "形码码表已载入");
                 self.engine.set_code_table(Some(table));

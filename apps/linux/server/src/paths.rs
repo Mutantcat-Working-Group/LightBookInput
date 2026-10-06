@@ -7,7 +7,7 @@ fn xdg(name: &str, fallback: &str) -> PathBuf {
         .filter(|p| p.is_absolute())
         .or_else(|| std::env::var_os("HOME").map(|p| PathBuf::from(p).join(fallback)))
         .unwrap_or_else(|| PathBuf::from("."))
-        .join("qingjian")
+        .join("lightbookinput")
 }
 pub fn user_dir() -> PathBuf {
     xdg("XDG_DATA_HOME", ".local/share")
@@ -19,16 +19,16 @@ pub fn log_dir() -> PathBuf {
     xdg("XDG_STATE_HOME", ".local/state").join("logs")
 }
 pub fn resource_root() -> Option<PathBuf> {
-    if let Some(root) = std::env::var_os("QINGJIAN_RESOURCES") {
+    if let Some(root) = std::env::var_os("LIGHTBOOKINPUT_RESOURCES") {
         return Some(root.into());
     }
     let executable = std::env::current_exe().ok()?;
     let prefix = executable.parent()?.parent()?;
-    let installed = prefix.join("share/qingjian/resources");
+    let installed = prefix.join("share/lightbookinput/resources");
     if installed.join("assets").is_dir() || installed.join("data").is_dir() {
         return Some(installed);
     }
-    qingjian_platform::resources::bundled_root()
+    lightbookinput_platform::resources::bundled_root()
 }
 pub fn existing(path: PathBuf) -> Option<PathBuf> {
     path.is_file().then_some(path)

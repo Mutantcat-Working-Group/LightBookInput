@@ -12,7 +12,7 @@ mod recorder;
 
 use std::path::{Path, PathBuf};
 
-use qingjian_platform::Config;
+use lightbookinput_platform::Config;
 use windows_reactor::*;
 
 use self::cloud_status::CloudStatus;
@@ -51,7 +51,7 @@ pub(crate) struct Settings {
     notice: Notice,
 
     /// Server 或「立即检查」落盘的检查更新结果（用户目录的 `update.json`）。
-    update_state: qingjian_update::UpdateState,
+    update_state: lightbookinput_update::UpdateState,
 
     /// 「立即检查」正在跑 / 刚失败的原因。
     update_checking: bool,
@@ -68,14 +68,14 @@ pub(crate) struct Settings {
 }
 
 impl Settings {
-    /// `%APPDATA%\Qingjian\config.toml`；取不到 `APPDATA` 退回工作目录。
+    /// `%APPDATA%\LightBookInput\config.toml`；取不到 `APPDATA` 退回工作目录。
     fn config_path() -> PathBuf {
-        qingjian_platform::dirs::config_path().unwrap_or_else(|| PathBuf::from("config.toml"))
+        lightbookinput_platform::dirs::config_path().unwrap_or_else(|| PathBuf::from("config.toml"))
     }
 
-    /// 检查更新的结果文件 `%APPDATA%\Qingjian\update.json`（Server 写，这里读）。
+    /// 检查更新的结果文件 `%APPDATA%\LightBookInput\update.json`（Server 写，这里读）。
     fn update_state_path() -> Option<PathBuf> {
-        qingjian_platform::dirs::user_dir().map(|dir| dir.join("update.json"))
+        lightbookinput_platform::dirs::user_dir().map(|dir| dir.join("update.json"))
     }
 
     /// 配置文件不在就写出模板：这个账户下 Server 还没跑过时，保存与「在记事本中打开」都要有文件。
@@ -85,7 +85,7 @@ impl Settings {
         }
     }
 
-    /// 数据目录 `%APPDATA%\Qingjian`。
+    /// 数据目录 `%APPDATA%\LightBookInput`。
     fn data_dir(&self) -> &Path {
         self.path.parent().unwrap_or_else(|| Path::new("."))
     }

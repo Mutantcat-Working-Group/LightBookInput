@@ -5,7 +5,7 @@ use std::rc::Rc;
 
 use windows::Win32::UI::TextServices::{ITfLangBarItemSink, TF_LBI_ICON, TF_LBI_STATUS};
 
-use qingjian_platform::SwitchKeys;
+use lightbookinput_platform::SwitchKeys;
 
 /// 当前中英模式 + 语言栏更新回调，文本服务与语言栏按钮共享（STA 单线程）。
 pub(crate) struct ModeState {

@@ -5,19 +5,19 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>zh-Hans</string>
 	<key>CFBundleExecutable</key>
-	<string>qingjian-macos</string>
+	<string>lightbookinput-macos</string>
 	<key>CFBundleIdentifier</key>
-	<string>app.qingjian.inputmethod</string>
+	<string>org.mutantcat.lightbookinput</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Qingjian</string>
+	<string>LightBookInput</string>
 	<key>CFBundleDisplayName</key>
-	<string>青简</string>
+	<string>轻书</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleIconFile</key>
-	<string>Qingjian</string>
+	<string>LightBookInput</string>
 	<key>CFBundleShortVersionString</key>
 	<string>0.1.0</string>
 	<key>CFBundleVersion</key>
@@ -31,23 +31,23 @@
 
 	<!-- InputMethodKit：连接名按 10.7 起的约定必须是 <bundle id>_Connection -->
 	<key>InputMethodConnectionName</key>
-	<string>app.qingjian.inputmethod_Connection</string>
+	<string>org.mutantcat.lightbookinput_Connection</string>
 	<!-- 与 imk/controller/mod.rs 里 define_class! 的 #[name] 一致 -->
 	<key>InputMethodServerControllerClass</key>
-	<string>QingjianInputController</string>
+	<string>LightBookInputInputController</string>
 	<key>InputMethodType</key>
 	<string>Keyboard</string>
 
 	<!-- Text Input Sources：系统「输入法」列表里的身份 -->
 	<key>TISInputSourceID</key>
-	<string>app.qingjian.inputmethod</string>
+	<string>org.mutantcat.lightbookinput</string>
 	<key>TISIntendedLanguage</key>
 	<string>zh-Hans</string>
-	<!-- 允许系统设置里打开「用 Caps Lock 在 ABC 与青简之间切换」；缺省不开，青简自己的 Caps Lock 英文模式不变（#211） -->
+	<!-- 允许系统设置里打开「用 Caps Lock 在 ABC 与轻书之间切换」；缺省不开，轻书自己的 Caps Lock 英文模式不变（#211） -->
 	<key>TICapsLockLanguageSwitchCapable</key>
 	<true/>
 	<key>tsInputMethodIconFileKey</key>
-	<string>qingjian-menu.pdf</string>
+	<string>lightbookinput-menu.pdf</string>
 	<!-- 模板图：系统只取 alpha，按深浅色自动反色 -->
 	<key>TISIconIsTemplate</key>
 	<true/>
@@ -57,16 +57,16 @@
 		<string>Latn</string>
 	</array>
 
-	<!-- 输入模式：系统登记、启用的是模式 app.qingjian.inputmethod.Hans，顶层 ID 是它的父项；
+	<!-- 输入模式：系统登记、启用的是模式 org.mutantcat.lightbookinput.Hans，顶层 ID 是它的父项；
 	显示名在 InfoPlist.strings 按模式 ID 给。约定见 docs/design/architecture.md「Info.plist 约定」 -->
 	<key>ComponentInputModeDict</key>
 	<dict>
 		<key>tsInputModeListKey</key>
 		<dict>
-			<key>app.qingjian.inputmethod.Hans</key>
+			<key>org.mutantcat.lightbookinput.Hans</key>
 			<dict>
 				<key>TISInputSourceID</key>
-				<string>app.qingjian.inputmethod.Hans</string>
+				<string>org.mutantcat.lightbookinput.Hans</string>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hans</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
@@ -79,11 +79,11 @@
 				<key>tsInputModeIsVisibleKey</key>
 				<true/>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>qingjian-menu.pdf</string>
+				<string>lightbookinput-menu.pdf</string>
 				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>qingjian-menu.pdf</string>
+				<string>lightbookinput-menu.pdf</string>
 				<key>tsInputModePaletteIconFileKey</key>
-				<string>qingjian-menu.pdf</string>
+				<string>lightbookinput-menu.pdf</string>
 				<key>tsInputModePrimaryInScriptKey</key>
 				<true/>
 				<key>tsInputModeScriptKey</key>
@@ -92,7 +92,7 @@
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>
 		<array>
-			<string>app.qingjian.inputmethod.Hans</string>
+			<string>org.mutantcat.lightbookinput.Hans</string>
 		</array>
 	</dict>
 </dict>

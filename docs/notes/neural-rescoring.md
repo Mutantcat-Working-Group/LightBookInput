@@ -3,7 +3,7 @@
 ## 做了什么
 
 - 模型：两档字级 decoder，small 23M、base 36M / 上下文 256，语料为中文维基 + LCCC（训练细节不在本仓库）。
-- 推理：`crates/qingjian-neural`（candle），与训练脚本的 Python 打分对拍一致。M1 上 Metal 后端最快：空前文单条 6 ms，
+- 推理：`crates/lightbookinput-neural`（candle），与训练脚本的 Python 打分对拍一致。M1 上 Metal 后端最快：空前文单条 6 ms，
   64 字前文 × 8 条 133 ms；CPU（Accelerate）约慢一倍，candle 自带 gemm 再慢一倍。按 token 算吞吐很低，是每层十几个小算子的调度开销在主导。
 - 接法：Core `sentence::convert_paths` 出 Viterbi 前 6 条路径，`Engine` 按 `路径分 + λ·(神经分 − 静态二元分)` 重排，
   神经分只替换静态二元的判断，个人 n-gram、用户加分、敲错代价原样保留（早先试过 `(1 − λ)·路径分 + λ·神经分` 的线性混分，
@@ -70,7 +70,7 @@
 
 ## 进壳（2026-09-08 晚）
 
-1. **前文 KV 缓存**（`qingjian-neural::PrefixCache`）：前文在一次组句里不变，每层的 K / V 算一次存下来；每条候选只算「前文最后一个 token + 候选」这一小段，
+1. **前文 KV 缓存**（`lightbookinput-neural::PrefixCache`）：前文在一次组句里不变，每层的 K / V 算一次存下来；每条候选只算「前文最后一个 token + 候选」这一小段，
    前文缓存部分不含最后一个 token，它的输出分布正好给候选第一个字用。Metal 上 64 字前文 × 8 条 133 → 28 ms，空前文 8 条 20 ms；
    剩下的是每层十几个小算子的调度开销，CPU（candle gemm）同样的活要 73 ms，还是 Metal。与 Python 对拍不变。
 2. **Core 异步重排**（`engine/rescoring/`）：一次查询里整句转换会跑好几遍（纠错变体、中英混输比分），所有路径文本进一张「前文 + 文本 → 神经分」缓存；
@@ -92,7 +92,7 @@
 
 ## 2026-09-24 换 P2C 之后：两个 bug、一个架构上限
 
-整句重排从含章·知微（字级模型）换成含章·通变（P2C，`crates/qingjian-neural::P2cScorer`）之后在冻结集上是 42.5% / 字准 79.3%，
+整句重排从含章·知微（字级模型）换成含章·通变（P2C，`crates/lightbookinput-neural::P2cScorer`）之后在冻结集上是 42.5% / 字准 79.3%，
 但日常打字里中英混输整个坏掉：`woxiangxuexirust` 出 我想学习如斯。下面三件事是一次查出来的。
 
 ### 一、神经分不能写回 `Conversion::score`

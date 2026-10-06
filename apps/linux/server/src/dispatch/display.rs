@@ -3,8 +3,8 @@ use super::Router;
 use crate::protocol::{
     DisplayAcknowledged, DisplayIdentity, LINUX_UI_PROTOCOL, LinuxEvent, LinuxRequest,
 };
-use qingjian_core::Translation;
-use qingjian_platform::protocol::{ClientMessage, ServerMessage, SessionId};
+use lightbookinput_core::Translation;
+use lightbookinput_platform::protocol::{ClientMessage, ServerMessage, SessionId};
 use serde_json::{Value, json};
 
 impl Router {

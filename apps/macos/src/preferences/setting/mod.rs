@@ -3,7 +3,7 @@ mod value;
 pub use value::SettingValue;
 
 use objc2_foundation::NSInteger;
-use qingjian_core::FuzzyRules;
+use lightbookinput_core::FuzzyRules;
 
 /// 模糊音勾选框的 tag 起点，后面加规则在 [`FuzzyRules::NAMES`] 里的下标。
 const FUZZY_TAG_BASE: NSInteger = 100;
@@ -32,7 +32,7 @@ pub enum Setting {
     /// `[general] theme`，弹出菜单。
     Theme,
 
-    /// `[general] renderer`，弹出菜单：青简渲染器 / 系统绘制。
+    /// `[general] renderer`，弹出菜单：轻书渲染器 / 系统绘制。
     Renderer,
 
     /// `[general] font`，字体列表选中的字族名；「系统默认」为系统字体。

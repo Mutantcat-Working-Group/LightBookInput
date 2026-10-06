@@ -1,6 +1,6 @@
 //! Unix socket 服务：连接内会话编号隔离、握手校验、断线回收和私有权限。
 use crate::dispatch::Router;
-use qingjian_platform::protocol::{ClientMessage, ServerMessage};
+use lightbookinput_platform::protocol::{ClientMessage, ServerMessage};
 use std::io;
 use std::os::unix::fs::{FileTypeExt, MetadataExt, PermissionsExt};
 use std::os::unix::net::{UnixListener, UnixStream};
@@ -26,16 +26,16 @@ static NEXT_SESSION: AtomicU64 = AtomicU64::new(1);
 
 /// 取得 Linux socket 路径；没有运行时目录时使用按用户隔离的私有临时目录。
 pub fn socket_path() -> PathBuf {
-    std::env::var_os("QINGJIAN_SOCKET")
+    std::env::var_os("LIGHTBOOKINPUT_SOCKET")
         .map(PathBuf::from)
         .unwrap_or_else(|| {
             std::env::var_os("XDG_RUNTIME_DIR")
                 .filter(|p| !p.is_empty())
                 .map(PathBuf::from)
                 .unwrap_or_else(|| {
-                    PathBuf::from(format!("/tmp/qingjian-{}", unsafe { libc::geteuid() }))
+                    PathBuf::from(format!("/tmp/lightbookinput-{}", unsafe { libc::geteuid() }))
                 })
-                .join("qingjian.sock")
+                .join("lightbookinput.sock")
         })
 }
 

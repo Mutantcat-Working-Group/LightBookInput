@@ -2,7 +2,7 @@
 
 use super::*;
 
-impl QingjianInputController {
+impl LightBookInputInputController {
     pub(super) fn commit_highlighted(&self, client: TextClient<'_>) -> bool {
         let index = host::with(|h| h.session.highlighted).unwrap_or(0);
         self.commit_index(index, client)

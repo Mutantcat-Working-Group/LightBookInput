@@ -1,8 +1,8 @@
 //! 候选窗口的一行：[`Candidate`] → 渲染器的 [`Row`]（序号、候选词、annotation 片段），与 macOS 端 `candidates/row.rs` 一致。
 //! GDI 画法也用同一个类型。
 
-use qingjian_core::{Candidate, CandidateKind};
-use qingjian_render::{Row, Tone};
+use lightbookinput_core::{Candidate, CandidateKind};
+use lightbookinput_render::{Row, Tone};
 
 /// `position` 是页内下标（从 0 起）。`show_code` 是 `[general] aux_code_show`：
 /// 打开且候选带码时，码用方括号括起来紧跟在候选词后面（`鹤[rbm]`），不进 annotation。

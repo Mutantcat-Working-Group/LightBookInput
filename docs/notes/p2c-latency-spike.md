@@ -10,7 +10,7 @@
 
 ## 怎么量的
 
-`crates/qingjian-neural/examples/p2c_bench.rs`。拿现有的字级模型（现位于 `data/models/hanzhang-zhiwei`，full-small 23M，字表 19147，上下文 128）
+`crates/lightbookinput-neural/examples/p2c_bench.rs`。拿现有的字级模型（现位于 `data/models/hanzhang-zhiwei`，full-small 23M，字表 19147，上下文 128）
 当代理，跑真正的 beam search：前文进 KV 缓存，逐字推进，每步把 `beam × vocab` 个延长取回 CPU 挑 top-k，再按 beam 顺序重排缓存。
 
 **偏差说明**：现有模型不带拼音条件，P2C 真模型会多一路拼音编码。但每键增量那一档（下表）说明拼音前缀是可缓存的、成本可以忽略，
@@ -106,8 +106,8 @@ Windows 端是 CPU 推理，参考 CPU 那一列。每档热身 3 次、取 10 �
 ## 复现
 
 ```bash
-cargo run --release -p qingjian-neural --example p2c_bench --features metal -- data/models/hanzhang-zhiwei   # Apple GPU
-cargo run --release -p qingjian-neural --example p2c_bench -- data/models/hanzhang-zhiwei                    # CPU
+cargo run --release -p lightbookinput-neural --example p2c_bench --features metal -- data/models/hanzhang-zhiwei   # Apple GPU
+cargo run --release -p lightbookinput-neural --example p2c_bench -- data/models/hanzhang-zhiwei                    # CPU
 ```
 
 换模型就换最后那个参数（`.qjm` 单文件或三件套目录都认）。表格格式固定，以后训出真 P2C 模型跑同一条命令直接对比。

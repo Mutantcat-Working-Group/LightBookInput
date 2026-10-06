@@ -140,7 +140,7 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             build: info.build.clone(),
             page_size: 9,
             cloud_slots: 2,
-            page_keys: qingjian_platform::DEFAULT_PAGE_KEYS,
+            page_keys: lightbookinput_platform::DEFAULT_PAGE_KEYS,
             translation_keys: ShortcutConfig::default().translation_keys(),
             delete_keys: ShortcutConfig::default().delete_keys(),
             status: None,
@@ -161,7 +161,7 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             model_loader: None,
             applied_model: None,
             updates: paths::user_data_dir()
-                .map(|dir| qingjian_update::Checker::new(dir.join(UPDATE_STATE_FILE), version)),
+                .map(|dir| lightbookinput_update::Checker::new(dir.join(UPDATE_STATE_FILE), version)),
             update_status: UpdateStatus::default(),
             session: Session::default(),
             sentence: None,

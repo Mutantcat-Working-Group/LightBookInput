@@ -1,5 +1,5 @@
 //! 传输错误在有界时间内使整条连接失效，已发送事件不重放。
-#include "qingjian.h"
+#include "lightbookinput.h"
 #include "support/input.h"
 #include "support/wire.h"
 #include <fcitx/inputcontextmanager.h>
@@ -12,9 +12,9 @@
 int main(int argc, char **argv) {
     assert(argc == 2);
     const std::string failure = argv[1];
-    char directory[] = "/tmp/qingjian-transport-XXXXXX"; assert(mkdtemp(directory));
+    char directory[] = "/tmp/lightbookinput-transport-XXXXXX"; assert(mkdtemp(directory));
     const std::string socketPath = std::string(directory) + "/server.sock";
-    setenv("QINGJIAN_SOCKET", socketPath.c_str(), 1);
+    setenv("LIGHTBOOKINPUT_SOCKET", socketPath.c_str(), 1);
     setenv("XDG_CONFIG_HOME", directory, 1); setenv("XDG_DATA_HOME", directory, 1);
     int listener = socket(AF_UNIX, SOCK_STREAM, 0);
     sockaddr_un address{}; address.sun_family = AF_UNIX; std::strcpy(address.sun_path, socketPath.c_str());
@@ -48,10 +48,10 @@ int main(int argc, char **argv) {
         char byte; assert(recv(connection, &byte, 1, 0) == 0); // 失败后关闭，无键重放。
         close(connection);
     });
-    char program[] = "qingjian-transport"; char disable[] = "--disable=all"; char *arguments[] = {program, disable, nullptr};
+    char program[] = "lightbookinput-transport"; char disable[] = "--disable=all"; char *arguments[] = {program, disable, nullptr};
     {
         fcitx::Instance instance(2, arguments); instance.initialize();
-        fcitx::QingjianEngine engine(&instance.addonManager());
+        fcitx::LightBookInputEngine engine(&instance.addonManager());
         Input context(instance.inputContextManager());
         auto begin = std::chrono::steady_clock::now();
         assert(!engine.process(&context, fcitx::Key(FcitxKey_n)));

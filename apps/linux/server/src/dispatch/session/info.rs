@@ -1,6 +1,6 @@
 //! 单个 Fcitx 输入上下文保存的输入状态。
 use crate::dispatch::composed::Composed;
-use qingjian_core::EngineSession;
+use lightbookinput_core::EngineSession;
 
 pub(crate) struct SessionInfo {
     /// 应用标识。
@@ -10,10 +10,10 @@ pub(crate) struct SessionInfo {
     pub(crate) display_identity: Option<crate::protocol::DisplayIdentity>,
 
     /// 待确认的当前候选帧。
-    pub(crate) display_frame: Option<qingjian_platform::protocol::Frame>,
+    pub(crate) display_frame: Option<lightbookinput_platform::protocol::Frame>,
 
     /// 上次发给插件的帧；插件定时 Poll 时内容没变就沿用展示身份，不算新的展示。
-    pub(crate) last_frame: Option<qingjian_platform::protocol::Frame>,
+    pub(crate) last_frame: Option<lightbookinput_platform::protocol::Frame>,
 
     /// Server 持有的中英模式与单击 Shift 状态。
     pub(crate) english: bool,

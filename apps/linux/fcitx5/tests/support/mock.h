@@ -6,7 +6,7 @@
 #include <thread>
 #include <sys/un.h>
 #include <unistd.h>
-namespace qingjian::test {
+namespace lightbookinput::test {
 struct Mock {
     std::string directory;
 
@@ -20,11 +20,11 @@ struct Mock {
     int polls = 0;
 
     explicit Mock(const std::string &mode) {
-        char path[] = "/tmp/qingjian-plugin-XXXXXX";
+        char path[] = "/tmp/lightbookinput-plugin-XXXXXX";
         assert(mkdtemp(path));
         directory = path;
         std::string socketPath = directory + "/server.sock";
-        setenv("QINGJIAN_SOCKET", socketPath.c_str(), 1);
+        setenv("LIGHTBOOKINPUT_SOCKET", socketPath.c_str(), 1);
         setenv("XDG_CONFIG_HOME", path, 1);
         setenv("XDG_DATA_HOME", path, 1);
         unsetenv("DBUS_SESSION_BUS_ADDRESS");

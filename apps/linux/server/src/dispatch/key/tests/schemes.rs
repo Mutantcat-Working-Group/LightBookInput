@@ -1,7 +1,7 @@
 //! 双拼模式入口与注音符号、声调、提交键边界。
 use super::support::{compose, key, router};
-use qingjian_core::{ModeKeys, ShuangpinScheme};
-use qingjian_platform::protocol::{KeyModifiers, KeyOutcome};
+use lightbookinput_core::{ModeKeys, ShuangpinScheme};
+use lightbookinput_platform::protocol::{KeyModifiers, KeyOutcome};
 
 #[test]
 fn shuangpin_shift_mode_keys_respect_custom_bindings_and_english() {

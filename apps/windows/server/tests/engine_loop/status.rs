@@ -115,7 +115,7 @@ fn status_bar_stays_hidden_when_disabled() {
 
 #[test]
 fn indicator_menu_toggles_status_bar() {
-    use qingjian_platform::protocol::IndicatorCommand;
+    use lightbookinput_platform::protocol::IndicatorCommand;
 
     let mut router = router();
     let recorder = RecordingStatus::default();
@@ -155,7 +155,7 @@ fn mode_is_shared_by_every_app() {
     assert_eq!(synced_mode(&mut router, other_app), Some(true));
     assert_eq!(synced_mode(&mut router, SessionId(3)), Some(true));
 
-    // 切成别的输入法收起状态条；再有应用来取模式（又切回青简）就重新显示，模式照旧。
+    // 切成别的输入法收起状态条；再有应用来取模式（又切回轻书）就重新显示，模式照旧。
     router.handle(ClientMessage::ImeSwitched { session: SESSION });
     assert_eq!(recorder.calls().last(), Some(&None));
     assert_eq!(synced_mode(&mut router, other_app), Some(true));

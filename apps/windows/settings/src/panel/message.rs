@@ -22,7 +22,7 @@ pub(crate) enum Message {
     /// 开=写入平台默认名单，关=清空。
     EnglishOffInApps(bool),
     /// 勾上 / 去掉一个中英切换键。
-    SwitchKey(qingjian_platform::SwitchKey, bool),
+    SwitchKey(lightbookinput_platform::SwitchKey, bool),
     /// 内置英文模式总开关。
     EnglishMode(bool),
 
@@ -109,7 +109,7 @@ pub(crate) enum Message {
     UpdateCheck(bool),
     UpdateChannel(Option<usize>),
     CheckUpdateNow,
-    UpdateChecked(Option<Result<qingjian_update::UpdateState, String>>),
+    UpdateChecked(Option<Result<lightbookinput_update::UpdateState, String>>),
     OpenDownload,
     OpenRepository,
 }

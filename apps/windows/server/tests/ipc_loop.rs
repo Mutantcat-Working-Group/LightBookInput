@@ -3,12 +3,12 @@
 use std::io::{Cursor, Read, Write};
 use std::path::PathBuf;
 
-use qingjian_core::Language;
-use qingjian_platform::protocol::{
+use lightbookinput_core::Language;
+use lightbookinput_platform::protocol::{
     ClientMessage, KeyEvent, PROTOCOL_VERSION, ServerMessage, SessionId,
 };
-use qingjian_windows_server::ipc::{read_message, serve, write_message};
-use qingjian_windows_server::{AssemblySpec, Router, RouterConfig, assembly};
+use lightbookinput_windows_server::ipc::{read_message, serve, write_message};
+use lightbookinput_windows_server::{AssemblySpec, Router, RouterConfig, assembly};
 
 const SESSION: SessionId = SessionId(1);
 

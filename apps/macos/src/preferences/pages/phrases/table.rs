@@ -12,7 +12,7 @@ use objc2_app_kit::{
 use objc2_foundation::{
     NSInteger, NSNotification, NSObject, NSObjectProtocol, NSPoint, NSRect, NSSize, NSString,
 };
-use qingjian_core::CustomPhrase;
+use lightbookinput_core::CustomPhrase;
 use std::cell::RefCell;
 
 define_class!(

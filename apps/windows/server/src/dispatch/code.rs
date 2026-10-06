@@ -5,9 +5,9 @@
 
 use std::path::{Path, PathBuf};
 
-use qingjian_core::Engine;
-use qingjian_dictionary::CodeTable;
-use qingjian_platform::Scheme;
+use lightbookinput_core::Engine;
+use lightbookinput_dictionary::CodeTable;
+use lightbookinput_platform::Scheme;
 
 use super::Router;
 

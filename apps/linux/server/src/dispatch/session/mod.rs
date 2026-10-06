@@ -2,7 +2,7 @@
 mod info;
 pub(super) use self::info::SessionInfo;
 use super::Router;
-use qingjian_platform::protocol::SessionId;
+use lightbookinput_platform::protocol::SessionId;
 
 impl Router {
     pub fn session_count(&self) -> usize {

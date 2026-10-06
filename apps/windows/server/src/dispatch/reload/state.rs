@@ -3,12 +3,12 @@
 use std::path::PathBuf;
 use std::time::{Instant, SystemTime};
 
-use qingjian_core::Language;
-use qingjian_dictionary::Dictionary;
-use qingjian_platform::{
+use lightbookinput_core::Language;
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_platform::{
     AuxCodeConfig, DictionariesConfig, UpdateConfig, code_tables, extra_dictionaries,
 };
-use qingjian_predict::PredictConfig;
+use lightbookinput_predict::PredictConfig;
 
 /// 随包与用户数据目录：启动与热加载用的是同一批（词库、码表）。
 /// 分开传参数会越传越长，且热加载与原路径不一致时找不到文件。
@@ -88,7 +88,7 @@ pub(crate) struct ConfigReload {
     pub(super) update: UpdateConfig,
 
     /// 检查更新：结果写进用户目录的 `update.json`，设置程序的「关于」页读它；拿不到用户目录时没有。
-    pub(super) updates: Option<qingjian_update::Checker>,
+    pub(super) updates: Option<lightbookinput_update::Checker>,
 }
 
 impl ConfigReload {

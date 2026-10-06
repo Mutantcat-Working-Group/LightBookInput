@@ -1,7 +1,7 @@
 //! 有界 Unix socket 传输；任何错误都关闭连接，下一次按键重新握手。
 #pragma once
 #include <nlohmann/json.hpp>
-namespace qingjian {
+namespace lightbookinput {
 class Connection {
 public:
     Connection() = default;

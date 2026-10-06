@@ -1,8 +1,8 @@
 //! Linux Engine 装配所需的产品数据与用户路径。
 use std::path::PathBuf;
 
-use qingjian_core::Language;
-use qingjian_platform::DictionariesConfig;
+use lightbookinput_core::Language;
+use lightbookinput_platform::DictionariesConfig;
 
 use super::LanguageModelFiles;
 

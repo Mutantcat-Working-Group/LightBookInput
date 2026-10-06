@@ -3,8 +3,8 @@
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 
-use qingjian_dictionary::AuxCodeTable;
-use qingjian_format::Metadata;
+use lightbookinput_dictionary::AuxCodeTable;
+use lightbookinput_format::Metadata;
 
 use crate::codes::{CodeStats, StrokeTable, build, key, single_char_code, word_code};
 
@@ -14,7 +14,7 @@ struct TempDir(PathBuf);
 impl TempDir {
     fn new(name: &str) -> Self {
         let dir =
-            std::env::temp_dir().join(format!("qingjian-codes-{name}-{}", std::process::id()));
+            std::env::temp_dir().join(format!("lightbookinput-codes-{name}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         Self(dir)

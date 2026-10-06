@@ -30,7 +30,7 @@ MODEL_FILE=data/models/hanzhang-zhiwei/hanzhang-zhiwei-small.qjm
 P2C_MODEL_FILE=data/models/hanzhang-tongbian/hanzhang-tongbian-small.qjm
 
 for f in "${PRODUCT_FILES[@]}"; do
-  [[ -f "data/generated/$f" ]] || { echo "缺少 data/generated/$f，先按 assets/lexicon/QINGJIAN.md 生成" >&2; exit 1; }
+  [[ -f "data/generated/$f" ]] || { echo "缺少 data/generated/$f，先按 assets/lexicon/LIGHTBOOKINPUT.md 生成" >&2; exit 1; }
 done
 DOMAIN_FILES=()
 for f in data/generated/dicts/*.qj; do [[ -f "$f" ]] && DOMAIN_FILES+=("dicts/$(basename "$f")"); done
@@ -46,7 +46,7 @@ fi
 [[ -f data/models/hanzhang-zhiwei/model.safetensors || -f "$MODEL_FILE" ]] || { echo "缺少 $MODEL_FILE，先把导出的三件套放到 data/models/hanzhang-zhiwei/ 再跑 tools/release/pack-model.sh" >&2; exit 1; }
 [[ -f data/models/hanzhang-zhiwei/model.safetensors ]] && tools/release/pack-model.sh
 [[ -f data/models/hanzhang-tongbian/model.safetensors || -f "$P2C_MODEL_FILE" ]] || { echo "缺少 $P2C_MODEL_FILE，先把导出的三件套放到 data/models/hanzhang-tongbian/ 再运行 tools/release/pack-model.sh" >&2; exit 1; }
-[[ -f data/models/hanzhang-tongbian/model.safetensors ]] && QINGJIAN_MODEL_DIR=data/models/hanzhang-tongbian tools/release/pack-model.sh
+[[ -f data/models/hanzhang-tongbian/model.safetensors ]] && LIGHTBOOKINPUT_MODEL_DIR=data/models/hanzhang-tongbian tools/release/pack-model.sh
 
 rm -rf "$OUT" && mkdir -p "$OUT/stage/data/generated/dicts" "$OUT/stage/data/generated/codes" \
   "$OUT/stage/data/models/hanzhang-zhiwei" "$OUT/stage/data/models/hanzhang-tongbian"
@@ -55,9 +55,9 @@ for f in "${PRODUCT_FILES[@]}" "${DOMAIN_FILES[@]}" "${CODE_FILES[@]}"; do
 done
 cp "$MODEL_FILE" "$OUT/stage/$MODEL_FILE"
 cp "$P2C_MODEL_FILE" "$OUT/stage/$P2C_MODEL_FILE"
-COPYFILE_DISABLE=1 tar -czf "$OUT/qingjian-data.tar.gz" -C "$OUT/stage" data
-(cd "$OUT" && shasum -a 256 ./qingjian-data.tar.gz | tee SHA256SUMS)
-du -h "$OUT/qingjian-data.tar.gz"
+COPYFILE_DISABLE=1 tar -czf "$OUT/lightbookinput-data.tar.gz" -C "$OUT/stage" data
+(cd "$OUT" && shasum -a 256 ./lightbookinput-data.tar.gz | tee SHA256SUMS)
+du -h "$OUT/lightbookinput-data.tar.gz"
 
 [[ "$MODE" == "pack" ]] && exit 0
 
@@ -70,12 +70,12 @@ gh release view "$TAG" >/dev/null 2>&1 && { echo "$TAG 已存在，数据版本�
 
 sha_of() { grep " ./$1\$" "$OUT/SHA256SUMS" | cut -d' ' -f1; }
 gh release create "$TAG" --prerelease --target "$TARGET" --title "产品数据 $TAG" \
-  --notes "单个 qingjian-data.tar.gz 包含运行时词库、语言模型、释义表、含章·通变（hanzhang-tongbian-small.qjm）和含章·知微（hanzhang-zhiwei-small.qjm）。仓库 tools/release/data.lock 钉住压缩包的 SHA-256。" \
-  "$OUT/qingjian-data.tar.gz"
+  --notes "单个 lightbookinput-data.tar.gz 包含运行时词库、语言模型、释义表、含章·通变（hanzhang-tongbian-small.qjm）和含章·知微（hanzhang-zhiwei-small.qjm）。仓库 tools/release/data.lock 钉住压缩包的 SHA-256。" \
+  "$OUT/lightbookinput-data.tar.gz"
 
 cat > "$LOCK" <<EOF
 # 产品数据版本，data-bundle.sh 写、data-fetch.sh 读；不要手改
 tag = $TAG
-qingjian-data.tar.gz = $(sha_of qingjian-data.tar.gz)
+lightbookinput-data.tar.gz = $(sha_of lightbookinput-data.tar.gz)
 EOF
 echo "已发 ${TAG}，锁文件已更新（记得提交）"

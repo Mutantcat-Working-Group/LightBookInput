@@ -2,11 +2,11 @@
 //! 插件定时 Poll 回的帧内容没变时展示身份不变，重排换了顺序才推进。
 use std::time::{Duration, Instant};
 
-use qingjian_core::Engine;
-use qingjian_core::sentence::SentenceScorer;
-use qingjian_dictionary::Dictionary;
-use qingjian_linux_server::{Router, RouterConfig};
-use qingjian_platform::protocol::{
+use lightbookinput_core::Engine;
+use lightbookinput_core::sentence::SentenceScorer;
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_linux_server::{Router, RouterConfig};
+use lightbookinput_platform::protocol::{
     ClientMessage, Frame, KeyEvent, KeyModifiers, PROTOCOL_VERSION, ServerMessage, SessionId,
 };
 use serde_json::{Value, json};

@@ -1,9 +1,9 @@
 //! Info.plist 与 Text Input Sources 的契约测试。
 //!
 //! 缺输入模式声明（`ComponentInputModeDict`）时：标准文本视图（备忘录等）按 script / 模式过滤输入源，
-//! 会话被立即拆除、表现为「切换不过去」（#31）；系统设置「添加输入法」列表也不显示青简，
+//! 会话被立即拆除、表现为「切换不过去」（#31）；系统设置「添加输入法」列表也不显示轻书，
 //! 安装器自动启用失败后用户没有兜底路径（macOS 26 实测）。打包脚本把这个文件原样拷进 `.app`，
-//! 所以在这里守住声明结构与身份键的对应关系，改坏的人 `cargo test -p qingjian-macos` 立刻能看见。
+//! 所以在这里守住声明结构与身份键的对应关系，改坏的人 `cargo test -p lightbookinput-macos` 立刻能看见。
 
 use std::path::PathBuf;
 
@@ -79,7 +79,7 @@ fn declares_input_modes_for_standard_text_views() {
         .and_then(|value| value.as_dictionary())
         .expect(
             "缺 ComponentInputModeDict：没有输入模式声明，标准文本视图（备忘录等）切换不过去，\
-             系统设置「添加输入法」列表也不显示青简（#31）",
+             系统设置「添加输入法」列表也不显示轻书（#31）",
         );
     let modes = component
         .get("tsInputModeListKey")

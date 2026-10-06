@@ -12,8 +12,8 @@ mod tally;
 
 use std::path::Path;
 
-use qingjian_core::{Engine, InputLogEntry, InputSource};
-use qingjian_dictionary::CodeTable;
+use lightbookinput_core::{Engine, InputLogEntry, InputSource};
+use lightbookinput_dictionary::CodeTable;
 
 pub use report::Report;
 
@@ -92,7 +92,7 @@ pub fn run(
 fn replay_commit(
     engine: &mut Engine,
     switcher: &mut SchemeSwitcher,
-    commit: &qingjian_core::CommitEntry,
+    commit: &lightbookinput_core::CommitEntry,
     report: &mut Report,
     show_misses: usize,
 ) {

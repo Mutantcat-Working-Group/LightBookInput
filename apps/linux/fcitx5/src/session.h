@@ -3,7 +3,7 @@
 #include "ipc/shared.h"
 #include <fcitx/inputcontextproperty.h>
 #include <fcitx-utils/event.h>
-namespace qingjian {
+namespace lightbookinput {
 struct Session final : fcitx::InputContextProperty {
     Session(std::shared_ptr<SharedConnection> shared, uint64_t number)
         : id(number), owner(shared) {}

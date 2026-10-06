@@ -1,5 +1,5 @@
-use qingjian_platform::protocol::KeyModifiers;
-use qingjian_platform::{
+use lightbookinput_platform::protocol::KeyModifiers;
+use lightbookinput_platform::{
     AppsConfig, CandidateRenderer, Config, KeyCombo, LayoutMode, PreeditMode, Scheme, SwitchKeys,
     ThemeMode,
 };
@@ -25,10 +25,10 @@ pub struct RouterConfig {
     /// 候选窗口外观（`[general] theme`）。
     pub theme: ThemeMode,
 
-    /// 候选窗口 / 状态条由青简渲染器还是 GDI 画（`[general] renderer`）。
+    /// 候选窗口 / 状态条由轻书渲染器还是 GDI 画（`[general] renderer`）。
     pub renderer: CandidateRenderer,
 
-    /// 候选窗口字体的字族名（`[general] font`），空为系统字体；只对青简渲染器生效。
+    /// 候选窗口字体的字族名（`[general] font`），空为系统字体；只对轻书渲染器生效。
     pub font: String,
 
     /// 拼音显示位置（`[general] preedit`）。

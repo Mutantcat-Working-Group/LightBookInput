@@ -2,7 +2,7 @@
 
 use objc2::rc::Retained;
 use objc2_app_kit::{NSButton, NSTableView};
-use qingjian_core::CustomPhrase;
+use lightbookinput_core::CustomPhrase;
 use std::cell::RefCell;
 
 pub(super) struct TableState {

@@ -2,8 +2,8 @@
 
 mod state;
 
-use qingjian_core::{Candidate, CandidateKind, CandidateLayout, CandidateList};
-use qingjian_platform::protocol::{Frame, PreeditKind, PreeditSegment};
+use lightbookinput_core::{Candidate, CandidateKind, CandidateLayout, CandidateList};
+use lightbookinput_platform::protocol::{Frame, PreeditKind, PreeditSegment};
 
 pub(super) use self::state::Composed;
 use super::Router;

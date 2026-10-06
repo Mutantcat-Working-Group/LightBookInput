@@ -4,23 +4,23 @@
 
 use std::path::{Path, PathBuf};
 
-use qingjian_core::{Engine, Language};
-use qingjian_platform::{Config, ConfigError, LogLevel, resources};
-use qingjian_windows_server::assembly::{glossary_file, learning_language};
-use qingjian_windows_server::{
+use lightbookinput_core::{Engine, Language};
+use lightbookinput_platform::{Config, ConfigError, LogLevel, resources};
+use lightbookinput_windows_server::assembly::{glossary_file, learning_language};
+use lightbookinput_windows_server::{
     AssemblySpec, LanguageModelFiles, Router, RouterConfig, ServerError, assembly, dispatch,
 };
 
-/// 用户数据目录 `%APPDATA%\Qingjian`。非 Windows 拿不到。
+/// 用户数据目录 `%APPDATA%\LightBookInput`。非 Windows 拿不到。
 fn user_dir() -> Option<PathBuf> {
-    qingjian_platform::dirs::user_dir()
+    lightbookinput_platform::dirs::user_dir()
 }
 
 fn config_path() -> Option<PathBuf> {
-    qingjian_platform::dirs::config_path()
+    lightbookinput_platform::dirs::config_path()
 }
 
-/// 首次启动把带说明的配置模板写到 `%APPDATA%\Qingjian\config.toml`（与 macOS 一致）；
+/// 首次启动把带说明的配置模板写到 `%APPDATA%\LightBookInput\config.toml`（与 macOS 一致）；
 /// 这时日志还没装好，结果交给 `main` 记。已有文件返回 `Ok(false)`。
 fn write_config_template() -> Option<Result<bool, ConfigError>> {
     Some(Config::write_template_if_missing(&config_path()?))
@@ -37,7 +37,7 @@ fn load_config() -> Config {
     }
 }
 
-/// 读密钥：工作目录 `.env`，再叠加 `%APPDATA%\Qingjian\.env`；不覆盖已有环境变量。
+/// 读密钥：工作目录 `.env`，再叠加 `%APPDATA%\LightBookInput\.env`；不覆盖已有环境变量。
 fn load_env() {
     let _ = dotenvy::dotenv();
     if let Some(env_file) = user_dir().map(|dir| dir.join(".env")) {
@@ -77,9 +77,9 @@ fn assemble_with_fallback(mut spec: AssemblySpec, root: &Path) -> Result<Engine,
     })
 }
 
-/// 三个进程共用的日志目录 `%LOCALAPPDATA%\Qingjian\logs`（见 `qingjian_platform::dirs`），这里顺手建出来。
+/// 三个进程共用的日志目录 `%LOCALAPPDATA%\LightBookInput\logs`（见 `lightbookinput_platform::dirs`），这里顺手建出来。
 fn log_dir() -> Option<PathBuf> {
-    let dir = qingjian_platform::dirs::log_dir()?;
+    let dir = lightbookinput_platform::dirs::log_dir()?;
     std::fs::create_dir_all(&dir).ok()?;
     Some(dir)
 }
@@ -105,7 +105,7 @@ fn init_logging(config: &Config) -> Option<tracing_appender::non_blocking::Worke
                 .build(&dir)
                 .expect("构建滚动日志文件");
             let (writer, guard) = tracing_appender::non_blocking(
-                qingjian_platform::logs::secrets::MaskingWriter::new(appender),
+                lightbookinput_platform::logs::secrets::MaskingWriter::new(appender),
             );
             tracing_subscriber::fmt()
                 .with_env_filter(filter)
@@ -136,11 +136,11 @@ fn main() {
     let language = learning_language(&config);
     // 装机布局与 exe 同级，开发布局是仓库 `ime/`；都找不到回落工作目录。
     let root = resources::bundled_root().unwrap_or_else(|| PathBuf::from("."));
-    let dict = std::env::var_os("QINGJIAN_DICT")
+    let dict = std::env::var_os("LIGHTBOOKINPUT_DICT")
         .map(PathBuf::from)
         .unwrap_or_else(|| default_dict(&root));
     let glossary_path = language.and_then(|language| {
-        std::env::var_os("QINGJIAN_GLOSSARY")
+        std::env::var_os("LIGHTBOOKINPUT_GLOSSARY")
             .map(PathBuf::from)
             .or_else(|| glossary_file(&root, language))
             .filter(|path| path.is_file())
@@ -221,13 +221,13 @@ fn main() {
         model = model_path.as_deref().map(|p| p.display().to_string()).unwrap_or_default(),
         model_enabled = config.model.enabled,
         sessions = router.session_count(),
-        "青简 Windows Server 就绪"
+        "轻书 Windows Server 就绪"
     );
 
     serve(router);
 }
 
-/// 日志目录 `%LOCALAPPDATA%\Qingjian\logs` 给 AppContainer 应用（任务栏搜索 / 设置）写权限：
+/// 日志目录 `%LOCALAPPDATA%\LightBookInput\logs` 给 AppContainer 应用（任务栏搜索 / 设置）写权限：
 /// 那些进程里的 DLL 默认写不了用户目录，出了问题连日志都没有。失败只记警告。
 #[cfg(windows)]
 fn grant_appcontainer_log_access() {
@@ -253,8 +253,8 @@ fn grant_appcontainer_log_access() {
 /// 起 UI 线程作为候选窗口 / 状态条的输出端（失败退化为不画），再在命名管道上服务到进程结束。
 #[cfg(windows)]
 fn serve(mut router: Router) {
-    use qingjian_windows_server::ipc::{Work, pipe};
-    use qingjian_windows_server::ui::UiHandle;
+    use lightbookinput_windows_server::ipc::{Work, pipe};
+    use lightbookinput_windows_server::ui::UiHandle;
     grant_appcontainer_log_access();
     // 工人循环的活：各连接的消息 + 状态条上的操作（UI 线程投进来）。
     let (work_tx, work_rx) = std::sync::mpsc::channel::<Work>();

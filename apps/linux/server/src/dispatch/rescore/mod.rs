@@ -11,9 +11,9 @@ mod state;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use qingjian_core::CandidateLayout;
-use qingjian_core::sentence::SentenceScorer;
-use qingjian_platform::LocalModelConfig;
+use lightbookinput_core::CandidateLayout;
+use lightbookinput_core::sentence::SentenceScorer;
+use lightbookinput_platform::LocalModelConfig;
 
 use self::loader::Loaded;
 pub(crate) use self::loader::ModelLoader;
@@ -37,7 +37,7 @@ pub fn find_model(user_dir: Option<&Path>, bundled_root: &Path) -> Option<PathBu
     candidates
         .into_iter()
         .flatten()
-        .find_map(|dir| qingjian_neural::find_model(&dir))
+        .find_map(|dir| lightbookinput_neural::find_model(&dir))
 }
 
 impl Router {
@@ -193,7 +193,7 @@ mod tests {
     #[test]
     fn p2c_precedes_old_model_and_user_precedes_bundled() {
         let root =
-            std::env::temp_dir().join(format!("qingjian-model-choice-{}", std::process::id()));
+            std::env::temp_dir().join(format!("lightbookinput-model-choice-{}", std::process::id()));
         let user = root.join("user");
         let bundled = root.join("bundled");
         let _ = std::fs::remove_dir_all(&root);

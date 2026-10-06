@@ -3,9 +3,9 @@
 use std::path::Path;
 use std::time::{Duration, Instant, SystemTime};
 
-use qingjian_core::Engine;
-use qingjian_dictionary::{Dictionary, import};
-use qingjian_platform::Config;
+use lightbookinput_core::Engine;
+use lightbookinput_dictionary::{Dictionary, import};
+use lightbookinput_platform::Config;
 
 use super::CONFIG_POLL_INTERVAL;
 use crate::dispatch::{DataDirs, Router, RouterConfig};
@@ -26,7 +26,7 @@ fn modified_at(path: &Path, seconds: u64) {
 
 #[test]
 fn import_replace_and_remove_without_config_changes() {
-    let dir = std::env::temp_dir().join(format!("qingjian-reload-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("lightbookinput-reload-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let config_path = dir.join("config.toml");
     std::fs::write(&config_path, "").unwrap();
@@ -103,7 +103,7 @@ fn import_replace_and_remove_without_config_changes() {
 
 #[test]
 fn dictionary_changes_do_not_retry_broken_config() {
-    let dir = std::env::temp_dir().join(format!("qingjian-reload-broken-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("lightbookinput-reload-broken-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let config_path = dir.join("config.toml");
     std::fs::write(&config_path, "[general]\npage_size = 5\n").unwrap();

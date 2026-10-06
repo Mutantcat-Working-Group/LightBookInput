@@ -1,18 +1,18 @@
 //! 「关于」页：版本、检查更新、许可证、随包数据的来源与署名（第三方许可要求署名在分发物里可见）、隐私与反馈。
 
-use qingjian_platform::UpdateChannel;
-use qingjian_update::Checker;
+use lightbookinput_platform::UpdateChannel;
+use lightbookinput_update::Checker;
 use windows_reactor::*;
 
 use crate::panel::controls::{field, note, page};
 use crate::panel::{Message, Settings};
 
-/// QINGJIAN_VERSION 由 build.rs 给：-dev 版接 git 短哈希。
-pub(crate) const VERSION: &str = env!("QINGJIAN_VERSION");
+/// LIGHTBOOKINPUT_VERSION 由 build.rs 给：-dev 版接 git 短哈希。
+pub(crate) const VERSION: &str = env!("LIGHTBOOKINPUT_VERSION");
 
-pub(crate) const WEBSITE_URL: &str = "https://qingjian.app";
+pub(crate) const WEBSITE_URL: &str = "https://lightbookinput.app";
 
-pub(crate) const REPOSITORY_URL: &str = "https://github.com/qingjian-team";
+pub(crate) const REPOSITORY_URL: &str = "https://github.com/mutantcat-working-group";
 
 /// 与仓库根 `LICENSE` 一致。
 const LICENSE_NOTE: &str = "自由软件，GPL-3.0-or-later 许可证：可以自由使用、修改与再分发，修改后分发须同样开源。官方渠道免费。";
@@ -27,7 +27,7 @@ const ATTRIBUTIONS: &[(&str, &str)] = &[
         "语言模型",
         "中文维基百科（CC BY-SA 4.0）与 LCCC（清华大学 CoAI，MIT）语料统计。",
     ),
-    ("释义表", "由大语言模型（DeepSeek）生成，青简自建。"),
+    ("释义表", "由大语言模型（DeepSeek）生成，轻书自建。"),
     ("emoji", "Unicode CLDR annotations（Unicode License v3）。"),
     (
         "英文词表",
@@ -39,7 +39,7 @@ const ATTRIBUTIONS: &[(&str, &str)] = &[
     ),
     (
         "五笔码表",
-        "86 五笔极点码表（sxjudya/rime-wubi86-jidian，Apache-2.0）；编码来自上游，词频由青简词库按词面回填。",
+        "86 五笔极点码表（sxjudya/rime-wubi86-jidian，Apache-2.0）；编码来自上游，词频由轻书词库按词面回填。",
     ),
     (
         "笔画码表",
@@ -47,7 +47,7 @@ const ATTRIBUTIONS: &[(&str, &str)] = &[
     ),
 ];
 
-const PRIVACY_NOTE: &str = "青简不上传任何数据。开着「自动检查更新」时每天向官网读一次版本列表，请求不带任何标识，上面可以关。开着云联想时，光标附近的文字与拼音会发给你在「云服务」页填的 AI 服务商（缺省 DeepSeek）的服务器，不经过作者。「高级」页的输入日志只写在本机，可以关掉或清空。";
+const PRIVACY_NOTE: &str = "轻书不上传任何数据。开着「自动检查更新」时每天向官网读一次版本列表，请求不带任何标识，上面可以关。开着云联想时，光标附近的文字与拼音会发给你在「云服务」页填的 AI 服务商（缺省 DeepSeek）的服务器，不经过作者。「高级」页的输入日志只写在本机，可以关掉或清空。";
 
 const FEEDBACK_NOTE: &str = "遇到问题点「打包日志到桌面」，把生成的 zip 发给作者即可（含三个进程的日志与配置文件，不含密钥）。缺省日志不含你敲的内容；排查排序问题时作者可能请你在「高级」页临时打开详细日志。";
 
@@ -90,14 +90,14 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
     }
     let body = StackPanel::new().spacing(12.0).children([
         TextBlock::new()
-            .text(format!("青简 Windows {VERSION}"))
+            .text(format!("轻书 Windows {VERSION}"))
             .font_size(16.0)
             .font_weight(FontWeight::SEMI_BOLD)
             .into(),
-        // QINGJIAN_BUILD 由 build.rs 从 git 取
+        // LIGHTBOOKINPUT_BUILD 由 build.rs 从 git 取
         note(&format!(
             "构建 {}",
-            option_env!("QINGJIAN_BUILD").unwrap_or("本地构建")
+            option_env!("LIGHTBOOKINPUT_BUILD").unwrap_or("本地构建")
         )),
         StackPanel::new()
             .orientation(Orientation::Horizontal)

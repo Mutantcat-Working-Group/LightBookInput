@@ -1,8 +1,8 @@
 //! Linux 事件测试构造器。
-use qingjian_core::Engine;
-use qingjian_dictionary::Dictionary;
-use qingjian_linux_server::{Router, RouterConfig};
-use qingjian_platform::protocol::{
+use lightbookinput_core::Engine;
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_linux_server::{Router, RouterConfig};
+use lightbookinput_platform::protocol::{
     ClientMessage, KeyEvent, KeyModifiers, PROTOCOL_VERSION, SessionId,
 };
 use serde_json::{Value, json};

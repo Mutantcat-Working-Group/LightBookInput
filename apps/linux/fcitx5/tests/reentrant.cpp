@@ -1,5 +1,5 @@
 //! 真实插件与 Server 的 watcher、UI、提交重入；检查消费结果及应用最终文本。
-#include "qingjian.h"
+#include "lightbookinput.h"
 #include "support/server.h"
 #include "support/input.h"
 #include <fcitx/inputcontextmanager.h>
@@ -9,11 +9,11 @@
 
 namespace {
 bool keyboardVisible = false;
-void type(fcitx::QingjianEngine &engine, Input &context, const std::string &text) {
+void type(fcitx::LightBookInputEngine &engine, Input &context, const std::string &text) {
     for (auto c : text) assert(engine.process(&context, fcitx::Key(static_cast<fcitx::KeySym>(c))));
 }
-qingjian::Session *session(Input &context) {
-    return static_cast<qingjian::Session *>(context.property("qingjian-session"));
+lightbookinput::Session *session(Input &context) {
+    return static_cast<lightbookinput::Session *>(context.property("lightbookinput-session"));
 }
 }
 // 和既有虚拟键盘测试相同，仅控制桌面可见性；IPC 与 Rust Server 均为真实实现。
@@ -23,11 +23,11 @@ int main(int argc, char **argv) {
     assert(argc == 2);
     const std::string scenario = argv[1];
     Server server;
-    char program[] = "qingjian-reentrant", disable[] = "--disable=all";
+    char program[] = "lightbookinput-reentrant", disable[] = "--disable=all";
     char *arguments[] = {program, disable, nullptr};
     fcitx::Instance instance(2, arguments); instance.initialize();
-    fcitx::QingjianEngine engine(&instance.addonManager());
-    fcitx::InputMethodEntry entry("qingjian", "qingjian", "zh_CN", "qingjian");
+    fcitx::LightBookInputEngine engine(&instance.addonManager());
+    fcitx::InputMethodEntry entry("lightbookinput", "lightbookinput", "zh_CN", "lightbookinput");
     auto a = std::make_unique<Input>(instance.inputContextManager());
     auto b = std::make_unique<Input>(instance.inputContextManager());
     auto c = std::make_unique<Input>(instance.inputContextManager());

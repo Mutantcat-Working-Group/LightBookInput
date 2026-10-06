@@ -3,14 +3,14 @@
 
 use std::path::{Path, PathBuf};
 
-use qingjian_dictionary::Dictionary;
-use qingjian_platform::extra_dictionaries;
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_platform::extra_dictionaries;
 use windows_reactor::*;
 
 use crate::panel::controls::{check_row, entry_title, note, page, repo_resource};
 use crate::panel::{Message, Settings};
 
-/// 用户词库目录 `%APPDATA%\Qingjian\dicts`。
+/// 用户词库目录 `%APPDATA%\LightBookInput\dicts`。
 fn user_dir(settings: &Settings) -> PathBuf {
     settings.data_dir().join("dicts")
 }
@@ -61,7 +61,7 @@ fn user_list(settings: &Settings, context: &mut ViewContext<Settings>) -> View {
     let dicts = extra_dictionaries::list(&user_dir(settings));
     if dicts.is_empty() {
         return note(
-            "还没有导入词库。点下面「导入词库」加一本，或把文件放进 %APPDATA%\\Qingjian\\dicts。",
+            "还没有导入词库。点下面「导入词库」加一本，或把文件放进 %APPDATA%\\LightBookInput\\dicts。",
         );
     }
     let mut rows: Vec<KeyedView> = Vec::with_capacity(dicts.len());
@@ -104,7 +104,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
                 Button::new()
                     .on_click(context.message(Message::ImportDictionary))
                     .content("导入词库…"),
-                note("接受青简 TSV、Rime .dict.yaml 与现成的 .qj；导入即转换进上面的目录，同名覆盖。"),
+                note("接受轻书 TSV、Rime .dict.yaml 与现成的 .qj；导入即转换进上面的目录，同名覆盖。"),
             )),
         note(&settings.dictionary_status),
     ]);
@@ -148,7 +148,7 @@ pub(crate) fn import(settings: &mut Settings) {
     let mut results = Vec::new();
     let mut succeeded = 0;
     for source in &sources {
-        match qingjian_core::dictionary::import::import(source, &dir) {
+        match lightbookinput_core::dictionary::import::import(source, &dir) {
             Ok(imported) => {
                 if let Some(stem) = imported.path.file_stem().and_then(|s| s.to_str()) {
                     disabled.retain(|name| name != stem);
@@ -172,7 +172,7 @@ pub(crate) fn import(settings: &mut Settings) {
         sources.len() - succeeded
     );
     if disabled != settings.config.dictionaries.disabled
-        && let Err(error) = qingjian_platform::Config::set_array(
+        && let Err(error) = lightbookinput_platform::Config::set_array(
             &settings.path,
             "dictionaries",
             "disabled",

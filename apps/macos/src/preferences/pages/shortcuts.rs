@@ -3,8 +3,8 @@
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSButton, NSPopUpButton};
-use qingjian_core::ModeKeys;
-use qingjian_platform::{Config, PAGE_KEY_OPTIONS};
+use lightbookinput_core::ModeKeys;
+use lightbookinput_platform::{Config, PAGE_KEY_OPTIONS};
 
 use crate::preferences::controls::{
     GROUP_GAP, button, checkbox, note, note_full, page_keys_label, row_checkbox, row_popup,

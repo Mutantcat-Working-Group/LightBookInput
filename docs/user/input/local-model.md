@@ -4,7 +4,7 @@ order: 5
 description: 随包的小模型在本机给整句候选重新排序：怎么生效、什么时候不生效、怎么关。
 ---
 
-青简的本地模型系列叫「含章」。含章·通变（Hanzhang Tongbian）负责拼音解码与纠错；含章·知微（Hanzhang Zhiwei）负责根据上下文重排候选。优先使用通变，设备上没有它时使用知微。全程离线，不联网、不发送任何内容。
+轻书的本地模型系列叫「含章」。含章·通变（Hanzhang Tongbian）负责拼音解码与纠错；含章·知微（Hanzhang Zhiwei）负责根据上下文重排候选。优先使用通变，设备上没有它时使用知微。全程离线，不联网、不发送任何内容。
 
 ## 怎么生效
 
@@ -21,12 +21,12 @@ description: 随包的小模型在本机给整句候选重新排序：怎么生�
 
 ## 关掉
 
-「偏好设置 → 云服务」（Windows：「设置 → 云服务」）关闭「本地整句模型」，或配置文件 `[model]` 里 `enabled = false`（Linux 只有这一种，改完重启青简服务）。关闭后只用词库统计，与云联想互不影响。
+「偏好设置 → 云服务」（Windows：「设置 → 云服务」）关闭「本地整句模型」，或配置文件 `[model]` 里 `enabled = false`（Linux 只有这一种，改完重启轻书服务）。关闭后只用词库统计，与云联想互不影响。
 
 ## 自己的模型
 
 把 `hanzhang-tongbian-small.qjm` 放进用户数据目录的 `models/hanzhang-tongbian/`，重启输入法后优先使用。含章·知微使用 `hanzhang-zhiwei-small.qjm`，放在 `models/hanzhang-zhiwei/`，仅在没有通变时使用。旧用户目录 `model-p2c/` 与 `model/` 仍可读取；同一模型的新目录优先。直接导出的 `model.safetensors`、`config.json`、`vocab.json` 三个文件也能识别；同目录里两种格式都有时优先用 `.qjm`：
 
-- **macOS**：`~/Library/Application Support/Qingjian/models/hanzhang-tongbian/`
-- **Windows**：`%APPDATA%\Qingjian\models\hanzhang-tongbian\`
-- **Linux**：`~/.local/share/qingjian/models/hanzhang-tongbian/`
+- **macOS**：`~/Library/Application Support/LightBookInput/models/hanzhang-tongbian/`
+- **Windows**：`%APPDATA%\LightBookInput\models\hanzhang-tongbian\`
+- **Linux**：`~/.local/share/lightbookinput/models/hanzhang-tongbian/`

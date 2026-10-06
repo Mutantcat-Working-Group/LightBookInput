@@ -3,10 +3,10 @@
 
 use std::sync::Arc;
 
-use qingjian_dictionary::{AuxCodeLookup, AuxCodeTable};
-use qingjian_platform::Config;
-use qingjian_platform::protocol::PreeditKind;
-use qingjian_windows_server::dispatch::DataDirs;
+use lightbookinput_dictionary::{AuxCodeLookup, AuxCodeTable};
+use lightbookinput_platform::Config;
+use lightbookinput_platform::protocol::PreeditKind;
+use lightbookinput_windows_server::dispatch::DataDirs;
 
 use super::support::*;
 
@@ -310,7 +310,7 @@ fn the_self_drawn_window_keeps_the_code_segment_for_an_old_dll() {
 /// 设置页刚导入一张码表：`codes/` 目录里出现新文件就重装，不必等配置改动、也不必重启。
 #[test]
 fn a_new_code_table_in_the_user_dir_hot_reloads() {
-    let dir = std::env::temp_dir().join(format!("qingjian-codes-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("lightbookinput-codes-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     let codes = dir.join("codes");
     std::fs::create_dir_all(&codes).unwrap();
@@ -351,7 +351,7 @@ fn a_new_code_table_in_the_user_dir_hot_reloads() {
 /// 同一张码表被就地改写（手工拷半个文件后补全同理）：快照按逐文件 mtime + 长度比，重装生效。
 #[test]
 fn a_rewritten_code_table_hot_reloads() {
-    let dir = std::env::temp_dir().join(format!("qingjian-codes-rw-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("lightbookinput-codes-rw-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     let codes = dir.join("codes");
     std::fs::create_dir_all(&codes).unwrap();

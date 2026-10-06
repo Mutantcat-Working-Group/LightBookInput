@@ -19,7 +19,7 @@ use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use qingjian_core::Engine;
+use lightbookinput_core::Engine;
 
 pub use report::Report;
 
@@ -233,5 +233,5 @@ pub enum EvalError {
     },
 
     #[error("P2C generation failed: {0}")]
-    Generate(#[from] qingjian_neural::NeuralError),
+    Generate(#[from] lightbookinput_neural::NeuralError),
 }

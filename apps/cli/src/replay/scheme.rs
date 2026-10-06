@@ -5,9 +5,9 @@
 //! 整份日志通常只有一套方案，所以只在方案串变化时才动码表——`Engine::set_code_table` 收所有权，
 //! 换一次要克隆一份 8.9 万条的码表。
 
-use qingjian_core::Engine;
-use qingjian_dictionary::CodeTable;
-use qingjian_platform::Scheme;
+use lightbookinput_core::Engine;
+use lightbookinput_dictionary::CodeTable;
+use lightbookinput_platform::Scheme;
 
 /// 按日志里的方案串装配引擎，并记住当前装的是哪套。
 pub struct SchemeSwitcher {
@@ -76,8 +76,8 @@ mod tests {
 
     #[test]
     fn applying_a_code_scheme_hands_the_table_to_the_engine() {
-        use qingjian_core::Engine;
-        use qingjian_dictionary::Dictionary;
+        use lightbookinput_core::Engine;
+        use lightbookinput_dictionary::Dictionary;
 
         let table = CodeTable::parse("一\tggll\t100\n").unwrap();
         let mut switcher = SchemeSwitcher::new(Some(table));
@@ -105,7 +105,7 @@ mod tests {
         assert_eq!(
             split("xiaohe"),
             (
-                Scheme::Shuangpin(qingjian_core::ShuangpinScheme::Xiaohe),
+                Scheme::Shuangpin(lightbookinput_core::ShuangpinScheme::Xiaohe),
                 false
             )
         );
@@ -115,7 +115,7 @@ mod tests {
         assert_eq!(
             split("xiaohe+wubi"),
             (
-                Scheme::Shuangpin(qingjian_core::ShuangpinScheme::Xiaohe),
+                Scheme::Shuangpin(lightbookinput_core::ShuangpinScheme::Xiaohe),
                 true
             )
         );

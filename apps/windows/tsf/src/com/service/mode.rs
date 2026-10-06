@@ -9,8 +9,8 @@ use std::time::Instant;
 use windows::Win32::UI::TextServices::{ITfKeystrokeMgr, ITfLangBarItemMgr};
 use windows::core::Interface;
 
-use qingjian_platform::SwitchKeys;
-use qingjian_platform::protocol::InputSettings;
+use lightbookinput_platform::SwitchKeys;
+use lightbookinput_platform::protocol::InputSettings;
 
 use super::TextService_Impl;
 use crate::com::key::preserved;

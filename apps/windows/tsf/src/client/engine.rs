@@ -1,6 +1,6 @@
 use std::io::{Read, Write};
 
-use qingjian_platform::protocol::{
+use lightbookinput_platform::protocol::{
     ClientMessage, Frame, IndicatorCommand, InputSettings, KeyEvent, PROTOCOL_VERSION, ScreenRect,
     ServerMessage, SessionId, read_message, write_message,
 };

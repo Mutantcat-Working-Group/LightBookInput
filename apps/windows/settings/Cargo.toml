@@ -1,18 +1,18 @@
 [package]
-name = "qingjian-windows-settings"
-description = "Windows 输入法的设置界面：左侧导航栏 + 各分节表单，读写 %APPDATA%\\Qingjian\\config.toml，对齐 macOS 偏好设置"
+name = "lightbookinput-windows-settings"
+description = "Windows 输入法的设置界面：左侧导航栏 + 各分节表单，读写 %APPDATA%\\LightBookInput\\config.toml，对齐 macOS 偏好设置"
 version = "0.1.5-dev"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
 
 [[bin]]
-name = "qingjian-settings"
+name = "lightbookinput-settings"
 path = "src/main.rs"
 
 [dependencies]
-qingjian-platform.workspace = true
-qingjian-predict.workspace = true
+lightbookinput-platform.workspace = true
+lightbookinput-predict.workspace = true
 toml_edit.workspace = true
 
 # UI 本体只在 Windows 编
@@ -25,12 +25,12 @@ windows = { version = "0.62.2", features = [
     "Win32_UI_WindowsAndMessaging",
 ] }
 # 只用它的 system_fonts（DirectWrite 列字族）
-qingjian-render.workspace = true
-qingjian-learning.workspace = true
-qingjian-core.workspace = true
-qingjian-dictionary.workspace = true
-qingjian-translate.workspace = true
-qingjian-update.workspace = true
+lightbookinput-render.workspace = true
+lightbookinput-learning.workspace = true
+lightbookinput-core.workspace = true
+lightbookinput-dictionary.workspace = true
+lightbookinput-translate.workspace = true
+lightbookinput-update.workspace = true
 jiff.workspace = true
 rfd = "0.17"
 

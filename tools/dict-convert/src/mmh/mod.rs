@@ -50,7 +50,7 @@ pub fn generate(options: &MmhReferenceOptions) -> Result<(), ConvertError> {
     )?;
     writeln!(
         counts,
-        "# 不进仓库、不随包分发；再生成：cargo run -p qingjian-dict-convert -- mmh-reference（见 assets/stroke/README.md）。"
+        "# 不进仓库、不随包分发；再生成：cargo run -p lightbookinput-dict-convert -- mmh-reference（见 assets/stroke/README.md）。"
     )?;
     writeln!(
         firsts,
@@ -62,7 +62,7 @@ pub fn generate(options: &MmhReferenceOptions) -> Result<(), ConvertError> {
     )?;
     writeln!(
         firsts,
-        "# 类别只用来找不一致，不是规范口径；再生成：cargo run -p qingjian-dict-convert -- mmh-reference。"
+        "# 类别只用来找不一致，不是规范口径；再生成：cargo run -p lightbookinput-dict-convert -- mmh-reference。"
     )?;
     let mut written = 0usize;
     let mut missing = 0usize;

@@ -23,8 +23,8 @@ use windows::Win32::UI::TextServices::{
 };
 use windows::core::{ComObject, implement};
 
-use qingjian_platform::KeyCombo;
-use qingjian_platform::protocol::{IndicatorState, InputSettings};
+use lightbookinput_platform::KeyCombo;
+use lightbookinput_platform::protocol::{IndicatorState, InputSettings};
 
 use super::composition::Shared;
 use super::key::KeyTap;

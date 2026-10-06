@@ -10,7 +10,7 @@ use crate::log;
 
 /// 随包资源（相对随包根，如 `data/generated/dicts`），定位逻辑与 Server 共用。
 pub(super) fn repo_resource(rel: &str) -> Option<PathBuf> {
-    qingjian_platform::resources::bundled_resource(rel)
+    lightbookinput_platform::resources::bundled_resource(rel)
 }
 
 pub(super) fn open_in_editor(path: &Path) {
@@ -28,12 +28,12 @@ pub(super) fn open_with_explorer(target: &str) {
 
 /// 三个进程共用的日志目录，没有就建出来（Server 没跑过时它还不存在）。
 pub(super) fn log_dir() -> Option<PathBuf> {
-    let dir = qingjian_platform::dirs::log_dir()?;
+    let dir = lightbookinput_platform::dirs::log_dir()?;
     std::fs::create_dir_all(&dir).ok()?;
     Some(dir)
 }
 
-/// 把整个日志目录加 `config.toml` 打成 `qingjian-logs-<日期>.zip` 放到桌面，再在资源管理器里选中它——
+/// 把整个日志目录加 `config.toml` 打成 `lightbookinput-logs-<日期>.zip` 放到桌面，再在资源管理器里选中它——
 /// 用户反馈问题时一个附件搞定。压缩交给 PowerShell 的 Compress-Archive，不为此拉一个压缩库；
 /// 桌面路径也让 PowerShell 取（OneDrive 会把桌面挪到别处）。脚本先写成临时 .ps1 再跑，免得命令行引号转义。
 pub(super) fn export_logs() {
@@ -44,11 +44,11 @@ pub(super) fn export_logs() {
     };
     log::warn("用户导出日志");
     let mut sources = vec![format!("'{}\\*'", logs.display())];
-    if let Some(config) = qingjian_platform::dirs::config_path().filter(|path| path.is_file()) {
+    if let Some(config) = lightbookinput_platform::dirs::config_path().filter(|path| path.is_file()) {
         sources.push(format!("'{}'", config.display()));
     }
     let zip_name = format!(
-        "qingjian-logs-{}.zip",
+        "lightbookinput-logs-{}.zip",
         jiff::Zoned::now().strftime("%Y-%m-%d")
     );
     let script = format!(
@@ -57,7 +57,7 @@ pub(super) fn export_logs() {
          explorer.exe \"/select,`\"$zip`\"\"\n",
         sources.join(",")
     );
-    let script_path = std::env::temp_dir().join("qingjian-export-logs.ps1");
+    let script_path = std::env::temp_dir().join("lightbookinput-export-logs.ps1");
     if let Err(error) = std::fs::write(&script_path, script) {
         log::warn(format!("写导出脚本失败: {error}"));
         return;

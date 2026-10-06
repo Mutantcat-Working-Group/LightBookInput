@@ -1,11 +1,11 @@
-//! 青简渲染器在 Windows 壳里的落地：字体库 + 渲染器一份，候选窗口与状态条共用（字形缓存共享）。
+//! 轻书渲染器在 Windows 壳里的落地：字体库 + 渲染器一份，候选窗口与状态条共用（字形缓存共享）。
 //! 配置 `[general] renderer = "system"` 时没有它，两个窗口走原来的 GDI 画法（过渡期退路）。
 
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use qingjian_platform::{CandidateRenderer, LayoutMode};
-use qingjian_render::{
+use lightbookinput_platform::{CandidateRenderer, LayoutMode};
+use lightbookinput_render::{
     FontLibrary, Frame, Layout, Rendered, RenderedStatus, Renderer, Shadow, StatusCell, Theme,
     UiFont, system_fonts,
 };
@@ -46,7 +46,7 @@ impl Painter {
         tracing::info!(
             elapsed = ?started.elapsed(),
             font = library.ui_family(),
-            "候选窗口与状态条使用青简渲染器"
+            "候选窗口与状态条使用轻书渲染器"
         );
         Some(Self {
             renderer: Renderer::new(library),
@@ -58,7 +58,7 @@ impl Painter {
     pub(super) fn configure(shared: &SharedPainter, settings: &RenderSettings) {
         let mut painter = shared.borrow_mut();
         match settings.renderer {
-            CandidateRenderer::Qingjian => {
+            CandidateRenderer::LightBookInput => {
                 if painter.as_ref().map(|p| p.font.as_str()) != Some(settings.font.as_str()) {
                     *painter = Self::new(&settings.font);
                 }

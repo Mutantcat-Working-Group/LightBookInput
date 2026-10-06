@@ -21,10 +21,10 @@ impl Server {
             root.join("assets/sample/dict.tsv"),
         )
         .unwrap();
-        let child = Command::new(env!("CARGO_BIN_EXE_qingjian-linux-server"))
-            .env("QINGJIAN_SOCKET", directory.join("server.sock"))
-            .env("QINGJIAN_RESOURCES", &root)
-            .env("QINGJIAN_DICT", root.join("assets/sample/dict.tsv"))
+        let child = Command::new(env!("CARGO_BIN_EXE_lightbookinput-linux-server"))
+            .env("LIGHTBOOKINPUT_SOCKET", directory.join("server.sock"))
+            .env("LIGHTBOOKINPUT_RESOURCES", &root)
+            .env("LIGHTBOOKINPUT_DICT", root.join("assets/sample/dict.tsv"))
             .env("XDG_CONFIG_HOME", directory.join("config"))
             .env("XDG_DATA_HOME", directory.join("data"))
             .env("XDG_STATE_HOME", directory.join("state"))

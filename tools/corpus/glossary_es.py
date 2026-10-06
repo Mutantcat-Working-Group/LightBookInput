@@ -2,7 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""把中文词表翻成青简的 `glossary-es.tsv`（`词\t[词性. ]译词\t…`），译文来自 Azure Translator。
+"""把中文词表翻成轻书的 `glossary-es.tsv`（`词\t[词性. ]译词\t…`），译文来自 Azure Translator。
 
 词表、词性、英文释义三样都取自 `assets/glossary/glossary-en.tsv`：那张表是 LLM 生成的，
 义项已经挑过一遍，直接复用等于免费多做一次义项消歧（动词尤其明显，见下面的翻译策略）。
@@ -35,7 +35,7 @@ Azure Translator F0 免费层每月 200 万字符，跑完这 23 万词用掉约
 
 要点（踩过的坑）：
 
-  * 输出必须是 UTF-8 **无 BOM**、LF 换行。带 BOM 会让青简报
+  * 输出必须是 UTF-8 **无 BOM**、LF 换行。带 BOM 会让轻书报
     `load glossary: line 1: missing senses`，并导致整个词库装配失败。
   * 释义表解析是严格的：任一行缺词或缺释义 → 整张表加载失败。所以写盘前逐行校验，
     校验不过的条目直接丢掉。
@@ -54,7 +54,7 @@ import sys
 import time
 from pathlib import Path
 
-# 释义表允许的词性（见 tools/gloss-gen 与 crates/qingjian-translate/src/glossary/mod.rs）
+# 释义表允许的词性（见 tools/gloss-gen 与 crates/lightbookinput-translate/src/glossary/mod.rs）
 ALLOWED_POS = {
     "n.", "v.", "adj.", "adv.", "pron.", "prep.", "conj.", "num.",
     "m.", "part.", "int.", "phr.",
@@ -270,7 +270,7 @@ def translate_batch(
 
 
 def verify_table(path: Path) -> tuple[int, list[str]]:
-    """按 `crates/qingjian-translate/src/glossary/mod.rs::parse` 的规则逐行校验。"""
+    """按 `crates/lightbookinput-translate/src/glossary/mod.rs::parse` 的规则逐行校验。"""
     errors: list[str] = []
     ok = 0
     with path.open(encoding="utf-8") as f:

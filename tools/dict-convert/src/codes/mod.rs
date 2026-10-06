@@ -17,8 +17,8 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::time::Instant;
 
-use qingjian_dictionary::{AuxCodeTable, Dictionary};
-use qingjian_format::Metadata;
+use lightbookinput_dictionary::{AuxCodeTable, Dictionary};
+use lightbookinput_format::Metadata;
 
 use crate::error::ConvertError;
 use crate::stroke::{malformed, single_char};

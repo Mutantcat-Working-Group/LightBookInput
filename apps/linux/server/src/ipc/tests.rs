@@ -1,9 +1,9 @@
 //! 真实连接处理器与 Router 的资源回收；不增加产品诊断消息。
 use super::{Request, connection::serve_connection};
 use crate::dispatch::{Router, RouterConfig};
-use qingjian_core::Engine;
-use qingjian_dictionary::Dictionary;
-use qingjian_platform::protocol::{PROTOCOL_VERSION, read_message, write_message};
+use lightbookinput_core::Engine;
+use lightbookinput_dictionary::Dictionary;
+use lightbookinput_platform::protocol::{PROTOCOL_VERSION, read_message, write_message};
 use serde_json::{Value, json};
 use std::os::unix::net::UnixStream;
 use std::sync::{

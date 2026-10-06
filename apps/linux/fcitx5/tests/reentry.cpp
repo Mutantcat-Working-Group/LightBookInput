@@ -1,5 +1,5 @@
 //! 真 Server 响应绘制同步重入框架生命周期时，撤销旧提交并保留已消费按键。
-#include "qingjian.h"
+#include "lightbookinput.h"
 #include "support/context.h"
 #include <fcitx/inputcontextmanager.h>
 #include <fcitx/inputpanel.h>
@@ -14,13 +14,13 @@
 int main(int argc, char **argv) {
     assert(argc == 4);
     const std::string scenario = argv[3];
-    char directory[] = "/tmp/qingjian-reentry-XXXXXX";
+    char directory[] = "/tmp/lightbookinput-reentry-XXXXXX";
     assert(mkdtemp(directory));
     const std::string socketPath = std::string(directory) + "/server.sock";
     const std::string dictionary = std::string(argv[2]) + "/assets/sample/dict.tsv";
-    setenv("QINGJIAN_SOCKET", socketPath.c_str(), 1);
-    setenv("QINGJIAN_RESOURCES", directory, 1);
-    setenv("QINGJIAN_DICT", dictionary.c_str(), 1);
+    setenv("LIGHTBOOKINPUT_SOCKET", socketPath.c_str(), 1);
+    setenv("LIGHTBOOKINPUT_RESOURCES", directory, 1);
+    setenv("LIGHTBOOKINPUT_DICT", dictionary.c_str(), 1);
     setenv("XDG_CONFIG_HOME", directory, 1);
     setenv("XDG_DATA_HOME", directory, 1);
     setenv("XDG_STATE_HOME", directory, 1);
@@ -31,11 +31,11 @@ int main(int argc, char **argv) {
     for (int i = 0; i < 500 && !std::filesystem::exists(socketPath); ++i) std::this_thread::sleep_for(std::chrono::milliseconds(10));
     assert(std::filesystem::exists(socketPath));
     {
-        char program[] = "qingjian-test"; char disable[] = "--disable=all";
+        char program[] = "lightbookinput-test"; char disable[] = "--disable=all";
         char *arguments[] = {program, disable, nullptr};
         fcitx::Instance instance(2, arguments);
         instance.initialize();
-        fcitx::QingjianEngine engine(&instance.addonManager());
+        fcitx::LightBookInputEngine engine(&instance.addonManager());
         auto owned = std::make_unique<Context>(instance.inputContextManager());
         auto *context = owned.get();
         context->setCapabilityFlags(fcitx::CapabilityFlag::Preedit);
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
             else if (scenario == "sensitive") context->setCapabilityFlags(fcitx::CapabilityFlag::Sensitive);
             else if (scenario == "disable") context->setCapabilityFlags(fcitx::CapabilityFlag::Disable);
             else if (scenario == "reset" || scenario == "ui-reset") {
-                fcitx::InputMethodEntry entry("qingjian", "qingjian", "zh_CN", "qingjian");
+                fcitx::InputMethodEntry entry("lightbookinput", "lightbookinput", "zh_CN", "lightbookinput");
                 fcitx::InputContextEvent reset(context, fcitx::EventType::InputContextReset);
                 engine.reset(entry, reset);
             } else if (scenario == "focus") {

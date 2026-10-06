@@ -2,9 +2,9 @@
 
 use std::rc::Rc;
 
-use qingjian_platform::protocol::{Frame, PreeditKind};
-use qingjian_platform::{LayoutMode, ThemeMode};
-use qingjian_render::{Preedit, PreeditSegment, PreeditStyle, Row};
+use lightbookinput_platform::protocol::{Frame, PreeditKind};
+use lightbookinput_platform::{LayoutMode, ThemeMode};
+use lightbookinput_render::{Preedit, PreeditSegment, PreeditStyle, Row};
 
 use super::row;
 use super::theme::Theme;
@@ -83,7 +83,7 @@ impl RenderData {
     }
 
     /// 渲染器要的帧。提示（删了什么词）在渲染器里画在拼音行右侧，与 macOS 一致。
-    pub(super) fn render_frame(&self) -> qingjian_render::Frame {
+    pub(super) fn render_frame(&self) -> lightbookinput_render::Frame {
         let preedit = (!self.preedit.is_empty()).then(|| Preedit {
             segments: self
                 .preedit
@@ -100,7 +100,7 @@ impl RenderData {
                 .collect(),
             cursor: self.cursor,
         });
-        qingjian_render::Frame {
+        lightbookinput_render::Frame {
             preedit,
             rows: self.rows.clone(),
             // 协议里 usize::MAX 表示不高亮。
@@ -129,8 +129,8 @@ fn window_preedit(frame: &Frame) -> Vec<(String, PreeditKind)> {
 
 #[cfg(test)]
 mod tests {
-    use qingjian_platform::PreeditMode;
-    use qingjian_platform::protocol::{Frame, PreeditKind, PreeditSegment};
+    use lightbookinput_platform::PreeditMode;
+    use lightbookinput_platform::protocol::{Frame, PreeditKind, PreeditSegment};
 
     use super::window_preedit;
 

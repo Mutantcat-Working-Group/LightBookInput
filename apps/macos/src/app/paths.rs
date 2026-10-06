@@ -1,4 +1,4 @@
-//! 数据文件位置：只读数据在 `.app/Contents/Resources/`，用户数据在 `~/Library/Application Support/Qingjian/`。
+//! 数据文件位置：只读数据在 `.app/Contents/Resources/`，用户数据在 `~/Library/Application Support/LightBookInput/`。
 
 use std::path::PathBuf;
 
@@ -41,19 +41,19 @@ pub fn code_table_path() -> Option<PathBuf> {
     bundled.is_file().then_some(bundled)
 }
 
-/// 配置文件：`~/Library/Application Support/Qingjian/config.toml`。
+/// 配置文件：`~/Library/Application Support/LightBookInput/config.toml`。
 pub fn config_file() -> Option<PathBuf> {
     user_data_dir().map(|dir| dir.join("config.toml"))
 }
 
 /// 用户数据目录，不存在则创建。
 pub fn user_data_dir() -> Option<PathBuf> {
-    let dir = PathBuf::from(std::env::var_os("HOME")?).join("Library/Application Support/Qingjian");
+    let dir = PathBuf::from(std::env::var_os("HOME")?).join("Library/Application Support/LightBookInput");
     std::fs::create_dir_all(&dir).ok()?;
     Some(dir)
 }
 
-/// 附加词库目录：`~/Library/Application Support/Qingjian/dicts/`，不存在则创建。
+/// 附加词库目录：`~/Library/Application Support/LightBookInput/dicts/`，不存在则创建。
 pub fn dicts_dir() -> Option<PathBuf> {
     let dir = user_data_dir()?.join("dicts");
     std::fs::create_dir_all(&dir).ok()?;
@@ -65,20 +65,20 @@ pub fn dicts_dir() -> Option<PathBuf> {
 pub fn model_path() -> Option<PathBuf> {
     let user = user_data_dir()?;
     for dir in ["models/hanzhang-zhiwei", "model"] {
-        if let Some(found) = qingjian_neural::find_model(&user.join(dir)) {
+        if let Some(found) = lightbookinput_neural::find_model(&user.join(dir)) {
             return Some(found);
         }
     }
-    qingjian_neural::find_model(&resources_dir().ok()?.join("models/hanzhang-zhiwei"))
+    lightbookinput_neural::find_model(&resources_dir().ok()?.join("models/hanzhang-zhiwei"))
 }
 
 /// 含章·通变（P2C，带噪拼音 → 汉字）：用户新目录优先，兼容旧 `model-p2c/`。
 pub fn p2c_model_path() -> Option<PathBuf> {
     let user = user_data_dir()?;
     for dir in ["models/hanzhang-tongbian", "model-p2c"] {
-        if let Some(found) = qingjian_neural::find_model(&user.join(dir)) {
+        if let Some(found) = lightbookinput_neural::find_model(&user.join(dir)) {
             return Some(found);
         }
     }
-    qingjian_neural::find_model(&resources_dir().ok()?.join("models/hanzhang-tongbian"))
+    lightbookinput_neural::find_model(&resources_dir().ok()?.join("models/hanzhang-tongbian"))
 }

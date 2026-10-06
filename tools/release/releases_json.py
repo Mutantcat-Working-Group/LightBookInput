@@ -33,8 +33,8 @@ meta-dir 下每个 tag 一个目录，放那次发布的 SHA256SUMS（每个包�
         "mirrors": [{"name": "夸克网盘", "url": "https://pan.quark.cn/s/…"}],
         "commit": "869ad00…（40 位）", "built_at": "2026-09-07T08:38:12Z", "toolchain": "rustc 1.96.0 (…)",
         "assets": [
-          {"platform": "macos", "arch": "Apple Silicon", "cpu": "arm64", "file": "qingjian-0.1.3-macos-arm64.pkg",
-           "url": "https://github.com/…/releases/download/macos-v0.1.3/qingjian-0.1.3-macos-arm64.pkg", "size": 123456, "sha256": "…"}
+          {"platform": "macos", "arch": "Apple Silicon", "cpu": "arm64", "file": "lightbookinput-0.1.3-macos-arm64.pkg",
+           "url": "https://github.com/…/releases/download/macos-v0.1.3/lightbookinput-0.1.3-macos-arm64.pkg", "size": 123456, "sha256": "…"}
         ]
       }
     ]
@@ -59,15 +59,15 @@ CHANNELS = ("alpha", "beta", "rc", "stable")
 SCHEMA_VERSION = 1
 
 # 安装包文件名 → 平台、架构说明（给人看）、CPU（给程序比对）；不匹配的附件不进列表。
-# 0.1.3 起文件名是 qingjian-<版本>-<平台>-<cpu>[-setup].<扩展名>，后三条认 0.1.2 及更早的旧名。
+# 0.1.3 起文件名是 lightbookinput-<版本>-<平台>-<cpu>[-setup].<扩展名>，后三条认 0.1.2 及更早的旧名。
 ASSET_KINDS = [
-    (re.compile(r"^qingjian-.+-macos-arm64\.pkg$"), "macos", "Apple Silicon", "arm64"),
-    (re.compile(r"^qingjian-.+-macos-x86_64\.pkg$"), "macos", "Intel", "x86_64"),
-    (re.compile(r"^qingjian-.+-windows-x86_64-setup\.exe$"), "windows", "x64", "x86_64"),
-    (re.compile(r"^qingjian-.+-linux-x86_64\.tar\.gz$"), "linux", "x64", "x86_64"),
-    (re.compile(r"^Qingjian-.+-arm64\.pkg$"), "macos", "Apple Silicon", "arm64"),
-    (re.compile(r"^Qingjian-.+-x86_64\.pkg$"), "macos", "Intel", "x86_64"),
-    (re.compile(r"^Qingjian-.+-Setup\.exe$"), "windows", "x64", "x86_64"),
+    (re.compile(r"^lightbookinput-.+-macos-arm64\.pkg$"), "macos", "Apple Silicon", "arm64"),
+    (re.compile(r"^lightbookinput-.+-macos-x86_64\.pkg$"), "macos", "Intel", "x86_64"),
+    (re.compile(r"^lightbookinput-.+-windows-x86_64-setup\.exe$"), "windows", "x64", "x86_64"),
+    (re.compile(r"^lightbookinput-.+-linux-x86_64\.tar\.gz$"), "linux", "x64", "x86_64"),
+    (re.compile(r"^LightBookInput-.+-arm64\.pkg$"), "macos", "Apple Silicon", "arm64"),
+    (re.compile(r"^LightBookInput-.+-x86_64\.pkg$"), "macos", "Intel", "x86_64"),
+    (re.compile(r"^LightBookInput-.+-Setup\.exe$"), "windows", "x64", "x86_64"),
 ]
 
 
