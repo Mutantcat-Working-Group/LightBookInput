@@ -146,7 +146,8 @@ jobs:
       - name: Install NSIS
         run: |
           choco install nsis -y --no-progress
-          "/c/Program Files (x86)/NSIS/makensis.exe" /VERSION
+          # Git Bash 会把 /VERSION 当 Unix 绝对路径转换成 C:/...，禁掉 pathconv 再验证
+          MSYS_NO_PATHCONV=1 "/c/Program Files (x86)/NSIS/makensis.exe" /VERSION
 
       - name: Build NSIS installer
         run: |
