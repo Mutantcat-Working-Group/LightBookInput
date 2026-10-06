@@ -230,9 +230,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           work="$(mktemp -d)"
-          gh release download "$GITHUB_REF_NAME" --pattern 'SHA256SUMS-*' --dir "$work" --clobber
+          # 本 job 不 checkout，gh 解析不到仓库，显式 -R
+          gh release download "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --pattern 'SHA256SUMS-*' --dir "$work" --clobber
           cat "$work"/SHA256SUMS-* | sort -k2 | tee "$work/SHA256SUMS"
-          gh release upload "$GITHUB_REF_NAME" "$work/SHA256SUMS" --clobber
+          gh release upload "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" "$work/SHA256SUMS" --clobber
           for fragment in "$work"/SHA256SUMS-*; do
-            gh release delete-asset "$GITHUB_REF_NAME" "$(basename "$fragment")" --yes
+            gh release delete-asset "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" "$(basename "$fragment")" --yes
           done
