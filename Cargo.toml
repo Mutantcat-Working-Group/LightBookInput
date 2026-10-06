@@ -96,4 +96,4 @@ windows-registry = "0.6.1"
 # cosmic-text 加了 opsz 光学字号支持（FontSystem::set_optical_size），补丁在 mutantcat-working-group 的 fork，分支 lightbookinput-opsz 基于 0.19.0；
 # 上游收了就删掉这段回 crates.io。见 docs/design/rendering.md
 [patch.crates-io]
-cosmic-text = { git = "https://github.com/mutantcat-working-group/cosmic-text", rev = "9cf0d65a5e4db381e34907103326673386096be3" }
+cosmic-text = { git = "https://github.com/mutantcat-working-group/cosmic-text", rev = "4482ea055c88b3b1465b9ad161fe67c614da4f6d" }
