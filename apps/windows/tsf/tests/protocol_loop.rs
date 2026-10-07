@@ -10,7 +10,7 @@ use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
 use std::thread;
 
-use lightbookinput_platform::protocol::{KeyEvent, KeyModifiers, KeyOutcome, SessionId};
+use lightbookinput_platform::protocol::{KeyEvent, KeyOutcome, SessionId};
 use lightbookinput_tsf::client::{EngineClient, KeyReply, KeyResponse};
 use lightbookinput_windows_server::{AssemblySpec, Router, RouterConfig, assembly, ipc};
 
