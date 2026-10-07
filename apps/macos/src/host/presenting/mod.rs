@@ -86,6 +86,8 @@ impl Host {
                         index: if columns == 0 { index } else { String::new() },
                         text: String::new(),
                         annotation: Vec::new(),
+                        gloss: Vec::new(),
+                        gloss_selected: 0,
                         cloud: false,
                     };
                 };

@@ -30,6 +30,7 @@ fn raw_segment_preserves_digit_and_space_exactly_once() {
 #[test]
 fn english_candidates_select_current_page_and_preserve_trailing_space() {
     let mut router = router(1);
+    router.config.english_candidates = true;
     let english = KeyModifiers {
         english_mode: true,
         ..Default::default()

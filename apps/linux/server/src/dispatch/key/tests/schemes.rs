@@ -7,6 +7,7 @@ use lightbookinput_platform::protocol::{KeyModifiers, KeyOutcome};
 fn shuangpin_shift_mode_keys_respect_custom_bindings_and_english() {
     let mut router = router(5);
     let normal = KeyModifiers::default();
+    router.config.english_candidates = true;
     router.engine.set_shuangpin(Some(ShuangpinScheme::Xiaohe));
     compose(&mut router, "V1+2", normal);
     assert!(router.engine.expression_mode());

@@ -105,6 +105,7 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             page_keys: lightbookinput_platform::DEFAULT_PAGE_KEYS,
             delete_keys: ShortcutConfig::default().delete_keys(),
             programmer_mode: false,
+            gloss_index: 0,
             status: None,
             input_log_enabled: None,
             preedit_mode: PreeditMode::default(),

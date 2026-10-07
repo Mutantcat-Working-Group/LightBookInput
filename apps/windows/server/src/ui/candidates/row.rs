@@ -28,6 +28,8 @@ pub(crate) fn from_candidate(position: usize, candidate: &Candidate, show_code: 
         text: candidate.text.clone(),
         code,
         annotation,
+        gloss: Vec::new(),
+        gloss_selected: 0,
         cloud: candidate.kind == CandidateKind::Cloud,
     }
 }

@@ -37,6 +37,7 @@ fn tab_and_backtab_page_boundaries_and_current_page_selection() {
 fn shift_tab_precedes_prediction_and_english_commit() {
     let mut router = router(1);
     let normal = KeyModifiers::default();
+    router.config.english_candidates = true;
     compose(&mut router, "qq", normal);
     router.sentence = Some("可控补全".into());
     let result = key(
