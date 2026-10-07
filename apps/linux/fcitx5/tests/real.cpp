@@ -54,9 +54,10 @@ int main(int argc, char **argv) {
         fcitx::FocusOutEvent out(&context);
         engine.deactivate(entry, out);
         context.focusIn();
-        engine.process(&context, fcitx::Key(FcitxKey_h));
-        assert(context.inputPanel().preedit().toString() == "h");
-        assert(context.inputPanel().candidateList() && context.inputPanel().candidateList()->candidate(0).text().toString() == "hello");
+        // 英文模式缺省直插：字母直接上屏，不出候选、不留拼音行。
+        assert(engine.process(&context, fcitx::Key(FcitxKey_h)));
+        assert(context.committed == "你好h");
+        assert(context.inputPanel().empty());
         fcitx::InputContextEvent reset(&context, fcitx::EventType::InputContextReset);
         engine.reset(entry, reset);
         assert(context.inputPanel().empty());

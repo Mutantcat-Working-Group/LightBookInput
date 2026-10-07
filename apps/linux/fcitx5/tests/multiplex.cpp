@@ -51,8 +51,10 @@ int main() {
         fcitx::KeyEvent down(&a, fcitx::Key(FcitxKey_Shift_L), false), up(&a, fcitx::Key(FcitxKey_Shift_L), true);
         engine.keyEvent(entry, down); engine.keyEvent(entry, up);
     };
-    a.committed.clear(); tapShift(); type(a, "ni"); assert(engine.process(&a, fcitx::Key(FcitxKey_space)));
-    assert(a.committed != "你");
+    // 英文模式缺省直插：字母直接上屏、不出候选，空格交给应用。
+    a.committed.clear(); tapShift(); type(a, "ni");
+    assert(a.committed == "ni");
+    assert(!engine.process(&a, fcitx::Key(FcitxKey_space)));
     type(b, "ni"); assert(engine.process(&b, fcitx::Key(FcitxKey_space))); assert(b.committed == "好你");
     tapShift(); a.committed.clear(); type(a, "ni"); assert(engine.process(&a, fcitx::Key(FcitxKey_space))); assert(a.committed == "你");
     b.committed = "好";
