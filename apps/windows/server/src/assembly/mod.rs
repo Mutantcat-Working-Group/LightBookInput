@@ -30,8 +30,7 @@ pub fn assemble(spec: &AssemblySpec) -> Result<Engine, ServerError> {
     );
     let mut engine = Engine::new(dictionary).with_learner(Box::new(learner));
     if let Some(dir) = &spec.user_dir {
-        engine = engine
-            .with_usage_meter(Box::new(UsageStats::open(dir.join("usage.tsv"))));
+        engine = engine.with_usage_meter(Box::new(UsageStats::open(dir.join("usage.tsv"))));
         if spec.input_log {
             let path = dir.join("input-log.jsonl");
             tracing::info!(path = %path.display(), "输入日志开着");

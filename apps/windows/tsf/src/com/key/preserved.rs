@@ -4,7 +4,9 @@
 //! 切换键来自 `[shortcut] switch_mode`，那个值由 Server 经协议下发（DLL 不读配置文件），变了就地重登记。
 
 use windows::Win32::UI::Input::KeyboardAndMouse::VK_SPACE;
-use windows::Win32::UI::TextServices::{ITfKeystrokeMgr, TF_MOD_ALT, TF_MOD_CONTROL, TF_PRESERVEDKEY};
+use windows::Win32::UI::TextServices::{
+    ITfKeystrokeMgr, TF_MOD_ALT, TF_MOD_CONTROL, TF_PRESERVEDKEY,
+};
 use windows::core::{GUID, Result};
 
 /// Ctrl + Alt + Space 中英切换键的保留键标识。

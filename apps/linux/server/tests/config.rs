@@ -8,7 +8,8 @@ use server::Server;
 
 #[test]
 fn english_glossary_rides_along_with_the_candidates() {
-    let directory = std::env::temp_dir().join(format!("lightbookinput-gloss-{}", std::process::id()));
+    let directory =
+        std::env::temp_dir().join(format!("lightbookinput-gloss-{}", std::process::id()));
     std::fs::create_dir_all(directory.join("resources/assets/glossary")).unwrap();
     std::fs::write(
         directory.join("resources/assets/glossary/glossary-en.tsv"),

@@ -20,8 +20,8 @@ use crate::menubar;
 mod command;
 mod commit;
 mod display;
-mod text;
 mod programmer;
+mod text;
 
 define_class!(
     // SAFETY:

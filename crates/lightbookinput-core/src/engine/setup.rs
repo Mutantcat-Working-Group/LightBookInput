@@ -379,7 +379,9 @@ impl Engine {
 
     /// 中→英释义表里有多少条（启动日志与诊断信息用）。
     pub fn english_glossary_len(&self) -> usize {
-        self.english_glossary.as_ref().map_or(0, EnglishGlossary::len)
+        self.english_glossary
+            .as_ref()
+            .map_or(0, EnglishGlossary::len)
     }
 
     /// 一个中文词的英文释义：表里没有、或没装表时返回 `None`（壳照常上屏中文）。

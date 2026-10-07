@@ -63,12 +63,7 @@ impl Router {
     /// 开启热加载：记下路径与当前已应用的 predict / dictionaries / aux_code，
     /// 以及启动用的那批数据目录。目录必须与启动同款语义（`dicts/` / `codes/`），
     /// 热加载才找得到文件。
-    pub fn watch_config(
-        &mut self,
-        config: &Config,
-        config_path: PathBuf,
-        dirs: DataDirs,
-    ) {
+    pub fn watch_config(&mut self, config: &Config, config_path: PathBuf, dirs: DataDirs) {
         let last_mtime = mtime(&config_path);
         let code_files = dirs.code_snapshot();
         let dictionary_files = dirs.dict_snapshot();
@@ -210,5 +205,7 @@ impl Router {
 
 /// 配置文件 mtime；读不到当没变（首次看到时记下当前值，之后比对）。
 fn mtime(path: &Path) -> Option<SystemTime> {
-    std::fs::metadata(path).and_then(|meta| meta.modified()).ok()
+    std::fs::metadata(path)
+        .and_then(|meta| meta.modified())
+        .ok()
 }

@@ -205,12 +205,9 @@ fn format_candidate(candidate: &Candidate, width: usize) -> String {
         lightbookinput_core::CandidateKind::Generated => "[生成] ",
         lightbookinput_core::CandidateKind::Emoji => "",
     };
-    format!(
-        "{}{padding}{marker}{reading}{aux}",
-        candidate.text
-    )
-    .trim_end()
-    .to_owned()
+    format!("{}{padding}{marker}{reading}{aux}", candidate.text)
+        .trim_end()
+        .to_owned()
 }
 
 /// 终端显示宽度：CJK 算两格。够 CLI 对齐用，不引入 unicode-width。

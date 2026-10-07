@@ -1,8 +1,6 @@
 //! Linux 版本化显示初始化，Windows 协议保持不变。
 use super::Router;
-use crate::protocol::{
-    DisplayIdentity, LINUX_UI_PROTOCOL, LinuxEvent, LinuxRequest,
-};
+use crate::protocol::{DisplayIdentity, LINUX_UI_PROTOCOL, LinuxEvent, LinuxRequest};
 use lightbookinput_platform::protocol::{ClientMessage, ServerMessage, SessionId};
 use serde_json::{Value, json};
 

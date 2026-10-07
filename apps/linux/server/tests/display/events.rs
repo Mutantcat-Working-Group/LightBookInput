@@ -49,9 +49,7 @@ fn reopened_context_rejects_old_revision_even_with_same_local_id() {
     assert_ne!(old, new);
     let ignored = router.handle_linux(json!({"LinuxEvent": {"session": 1, "event": {"Candidate": {"identity": old, "index": 0}}}})).unwrap();
     assert_eq!(ignored["Ignored"]["session"], 1);
-    router.handle_linux(
-        json!({"DisplayAcknowledged": {"session": 1, "identity": old}}),
-    );
+    router.handle_linux(json!({"DisplayAcknowledged": {"session": 1, "identity": old}}));
     key(&mut router, &book, ' ');
     assert_eq!(*book.lock().unwrap(), ["你好"]);
 }

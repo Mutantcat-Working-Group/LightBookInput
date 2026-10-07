@@ -124,4 +124,3 @@ fn commit_returns_raw_text() {
     client.close().expect("close session");
     server.join().unwrap();
 }
-

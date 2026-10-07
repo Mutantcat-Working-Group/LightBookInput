@@ -128,8 +128,7 @@ fn poll_once(context: &PollContext) {
         return;
     };
     match client.poll() {
-        Ok(_) => {
-        }
+        Ok(_) => {}
         Err(error) => {
             log(&format!("云联想轮询失败，断开，下一键重连: {error}"));
             *guard = None;

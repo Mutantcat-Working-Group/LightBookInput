@@ -256,10 +256,7 @@ fn nihao() -> Frame {
             annotated(
                 0,
                 "你好",
-                &[
-                    ("int. ", Tone::Faint),
-                    ("hello", Tone::Gloss),
-                ],
+                &[("int. ", Tone::Faint), ("hello", Tone::Gloss)],
                 false,
             ),
             annotated(1, "👋", &[("你好", Tone::Gloss)], false),
@@ -344,19 +341,13 @@ fn corrected_gloss() -> Frame {
             annotated(
                 0,
                 "开发",
-                &[
-                    ("v. ", Tone::Faint),
-                    ("develop", Tone::Gloss),
-                ],
+                &[("v. ", Tone::Faint), ("develop", Tone::Gloss)],
                 false,
             ),
             annotated(
                 1,
                 "开",
-                &[
-                    ("v. ", Tone::Faint),
-                    ("open", Tone::Fresh),
-                ],
+                &[("v. ", Tone::Faint), ("open", Tone::Fresh)],
                 false,
             ),
         ],

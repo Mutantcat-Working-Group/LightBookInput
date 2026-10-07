@@ -65,8 +65,7 @@ impl Report {
             InputSource::Custom
             | InputSource::Cloud
             | InputSource::CloudSentence
-            | InputSource::Raw
-            => None,
+            | InputSource::Raw => None,
         }
     }
 

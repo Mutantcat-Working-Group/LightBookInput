@@ -225,8 +225,8 @@ impl Host {
             (Setting::DeleteCandidateKeys, SettingValue::Text(text)) => {
                 match text.parse::<Modifiers>() {
                     Ok(chosen) => {
-                            self.settings
-                                .set_value("shortcut", "delete_candidate", chosen.key());
+                        self.settings
+                            .set_value("shortcut", "delete_candidate", chosen.key());
                     }
                     Err(error) => tracing::warn!(%error, "修饰键组合不合法，未改"),
                 }

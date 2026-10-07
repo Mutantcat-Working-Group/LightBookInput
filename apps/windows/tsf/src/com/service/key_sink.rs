@@ -121,11 +121,7 @@ impl TextService_Impl {
             .input_settings
             .get()
             .is_some_and(|input| input.shift_letter_compose);
-        eats_key(
-            event,
-            self.shared.composing(),
-            shift_letter_compose,
-        )
+        eats_key(event, self.shared.composing(), shift_letter_compose)
     }
 
     /// 不吃的键绝不碰组句（否则光标一移，组句会把拼音重插到别处）。
@@ -264,11 +260,7 @@ fn eats_without_server(event: &KeyEvent) -> bool {
 ///   `⇧C` 接 `pan` 才能出「C盘」；组句一开始，后面的 Shift 字母本来就被 `composing` 兜住；
 /// - 组句中功能键 / 方向键 / 可打印字符都吃；
 /// - 没在组句时数字 / 标点也先「测吃」送去转全角（中英各有一份开关），Server 不转的回 Passthrough 再放行；`?` 是问字前缀。
-fn eats_key(
-    event: &KeyEvent,
-    composing: bool,
-    shift_letter_compose: bool,
-) -> bool {
+fn eats_key(event: &KeyEvent, composing: bool, shift_letter_compose: bool) -> bool {
     let modifiers = event.modifiers;
     if modifiers.has_command_key() {
         return composing && digit_key(event.virtual_key);
@@ -328,7 +320,11 @@ mod tests {
         // 双拼下 Shift + V / U / I 是表达式 / 问字入口：没在组句也吃
         assert!(eats_key(&with_modifiers(0x56, 'V', shifted), false, false));
         // 不带 Shift 的字母本来就吃
-        assert!(eats_key(&with_modifiers(0x41, 'a', KeyModifiers::default()), false, false));
+        assert!(eats_key(
+            &with_modifiers(0x41, 'a', KeyModifiers::default()),
+            false,
+            false
+        ));
         // Caps 亮着（直通大写）也吃，由我们插入
         let caps = KeyModifiers {
             caps: true,

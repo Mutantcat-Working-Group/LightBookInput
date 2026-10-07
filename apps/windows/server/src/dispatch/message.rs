@@ -74,7 +74,13 @@ impl Router {
             } => {
                 // 老的 DLL 还会回这条（以前「翻译选中文字」用它带选区回来）；现在没有人请求选区，
                 // 直接忽略，只是记一条。协议类型留着，免得老 DLL 整条消息解析失败。
-                tracing::trace!(?session, request, chars = text.chars().count(), ?rect, "收到选区回执");
+                tracing::trace!(
+                    ?session,
+                    request,
+                    chars = text.chars().count(),
+                    ?rect,
+                    "收到选区回执"
+                );
                 None
             }
             ClientMessage::PositionCandidates { session, rect } => {

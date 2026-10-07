@@ -87,9 +87,7 @@ fn strip_part_of_speech(sense: &str) -> &str {
     if let Some(dot) = trimmed.find('.') {
         let head = &trimmed[..dot];
         if !head.is_empty()
-            && head
-                .chars()
-                .all(|c| c.is_ascii_alphabetic() || c == '-')
+            && head.chars().all(|c| c.is_ascii_alphabetic() || c == '-')
             && trimmed[dot..].starts_with(". ")
         {
             return trimmed[dot + 2..].trim_start();
