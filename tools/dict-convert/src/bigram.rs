@@ -196,7 +196,7 @@ pub struct MineOptions {
 /// 挖词库里没有的词：分词时连续落成单字的那一段（2–`max_chars` 个字）多半是一个词库没收的词，
 /// 按出现次数统计，出现 `min_count` 次以上的写到 `oov-candidates.tsv`（`词\t次数`），
 /// 再经 [`OovFilter`]（虚词规则 + 相邻字对 PMI）筛成 `oov-filtered.tsv` 与一行一词的 `oov-words.txt`，
-/// 后者交给 `gloss-gen pinyin` 标音、前者给 `lexicon --extra-words` 并进词库。
+/// 后者交给 LLM 离线标音、前者给 `lexicon --extra-words` 并进词库。
 /// 单字词本身在词库里（规范字全收了），所以这里只看「本可以成词却被拆成单字」的连续段：
 /// 段内每个字都是词库里的单字词、且整段不在词库里。
 pub fn mine(options: &MineOptions, out_dir: &Path) -> Result<(), ConvertError> {

@@ -25,7 +25,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-PRODUCT_FILES=(dict.qj lm.qj glossary-en.qj english.tsv english-frequency.tsv)
+PRODUCT_FILES=(dict.qj lm.qj english.tsv english-frequency.tsv)
 MODEL_FILE=data/models/hanzhang-zhiwei/hanzhang-zhiwei-small.qjm
 P2C_MODEL_FILE=data/models/hanzhang-tongbian/hanzhang-tongbian-small.qjm
 
@@ -70,7 +70,7 @@ gh release view "$TAG" >/dev/null 2>&1 && { echo "$TAG 已存在，数据版本�
 
 sha_of() { grep " ./$1\$" "$OUT/SHA256SUMS" | cut -d' ' -f1; }
 gh release create "$TAG" --prerelease --target "$TARGET" --title "产品数据 $TAG" \
-  --notes "单个 lightbookinput-data.tar.gz 包含运行时词库、语言模型、中英释义表（程序员模式）、含章·通变（hanzhang-tongbian-small.qjm）和含章·知微（hanzhang-zhiwei-small.qjm）。仓库 tools/release/data.lock 钉住压缩包的 SHA-256。" \
+  --notes "单个 lightbookinput-data.tar.gz 包含运行时词库、语言模型、英文词表、含章·通变（hanzhang-tongbian-small.qjm）和含章·知微（hanzhang-zhiwei-small.qjm）。中英释义表（程序员模式）随 assets/glossary/glossary-en.tsv 一并提交，不进数据包。仓库 tools/release/data.lock 钉住压缩包的 SHA-256。" \
   "$OUT/lightbookinput-data.tar.gz"
 
 cat > "$LOCK" <<EOF

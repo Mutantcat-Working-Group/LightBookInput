@@ -44,7 +44,7 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
         engine = engine.with_english(words);
     }
     // 中→英释义表（程序员模式）可选：没有这张表，按住 ~ 时数字键照常上屏中文
-    match paths::resource("glossary-en.qj").or_else(|_| paths::resource("glossary-en.tsv")) {
+    match paths::resource("glossary-en.tsv") {
         Ok(path) => match EnglishGlossary::from_path(&path) {
             Ok(glossary) => {
                 tracing::info!(glosses = glossary.len(), "中英释义表已加载");

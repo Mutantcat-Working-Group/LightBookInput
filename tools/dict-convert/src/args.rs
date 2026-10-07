@@ -31,7 +31,7 @@ pub enum Command {
         #[arg(long, default_value = "data/unihan/Unihan_Readings.txt")]
         unihan: PathBuf,
 
-        /// LLM 标注的多音字词读音（`gloss-gen pinyin` 的 JSONL）
+        /// LLM 标注的多音字词读音（离线标音写出的 JSONL）
         #[arg(long)]
         pinyin: Option<PathBuf>,
 
@@ -39,7 +39,7 @@ pub enum Command {
         #[arg(long)]
         frequency: Option<PathBuf>,
 
-        /// 把仍靠猜读音的多音字词写到这个文件（一行一个），交给 `gloss-gen pinyin`
+        /// 把仍靠猜读音的多音字词写到这个文件（一行一个），交给 LLM 离线标音
         #[arg(long)]
         emit_ambiguous: Option<PathBuf>,
 
@@ -122,7 +122,7 @@ pub enum Command {
         max_bigrams: usize,
     },
 
-    /// 从语料里挖词库没收的词：分词时被拆成连续单字的段按子串计数，出现够多的写到 oov-candidates.tsv（再交给 gloss-gen pinyin 标音、lexicon --extra-words 并入）
+    /// 从语料里挖词库没收的词：分词时被拆成连续单字的段按子串计数，出现够多的写到 oov-candidates.tsv（再交给 LLM 离线标音、lexicon --extra-words 并入）
     Mine {
         /// 语料文件（UTF-8 纯文本，简体）；给了 --candidates 就不用扫语料
         #[arg(required_unless_present = "candidates")]

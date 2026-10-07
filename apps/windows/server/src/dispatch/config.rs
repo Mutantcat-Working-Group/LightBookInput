@@ -58,7 +58,6 @@ pub struct RouterConfig {
     /// 按应用的设置（`[apps]`），按宿主 exe 名认。
     pub apps: AppsConfig,
 
-    /// 上屏第一 / 第二个译词的修饰键（`[shortcut] translation` / `translation_second`）。
     /// 删候选的修饰键（`[shortcut] delete_candidate`）。
     pub delete_keys: KeyModifiers,
 

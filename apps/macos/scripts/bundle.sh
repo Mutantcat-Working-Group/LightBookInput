@@ -114,14 +114,10 @@ if [[ -f data/generated/dict.tsv || -f data/generated/dict.qj ]]; then
     chmod 644 "$APP/Contents/Resources/models/hanzhang-tongbian/hanzhang-tongbian-small.qjm"
     echo "打包含章·通变：$p2c_dir/hanzhang-tongbian-small.qjm"
   fi
-  # 程序员模式用的中→英释义表打成 .qj（TSV 比 .qj 新时重打），英文词表仍是 TSV。来源见 assets/glossary/README.md
-  src="assets/glossary/glossary-en.tsv"
-  out="data/generated/glossary-en.qj"
-  if [[ -f "$src" && ( ! -f "$out" || "$src" -nt "$out" ) ]]; then
-    cargo run --release -q -p lightbookinput-dict-convert -- pack glossary --language en --input "$src" \
-      --name "轻书中英释义表（程序员模式）" --license "MIT" --attribution "LLM 生成（DeepSeek）"
-  fi
-  [[ -f "$out" ]] && cp "$out" "$APP/Contents/Resources/"
+  # 程序员模式用的中→英释义表：EnglishGlossary 只读 TSV，与英文词表一样直接带。来源见 assets/glossary/README.md
+  for f in assets/glossary/glossary-en.tsv data/generated/glossary-en.tsv; do
+    [[ -f "$f" ]] && cp "$f" "$APP/Contents/Resources/"
+  done
   for f in assets/lexicon/english.tsv data/generated/english.tsv; do
     [[ -f "$f" ]] && cp "$f" "$APP/Contents/Resources/"
   done

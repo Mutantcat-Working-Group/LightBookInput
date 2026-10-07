@@ -141,7 +141,7 @@ fn main() {
     let bundled_codes_dir = Some(root.join("data/generated/codes")).filter(|dir| dir.is_dir());
     let spec = AssemblySpec {
         // 中→英释义表：程序员模式（按住 ~）按数字 / 空格上屏候选的英文
-        english_glossary: generated(&root, "glossary-en.qj")
+        english_glossary: generated(&root, "glossary-en.tsv")
             .or_else(|| asset(&root, "glossary/glossary-en.tsv")),
         english: generated(&root, "english.tsv"),
         emoji: ["emoji-zh.tsv", "emoji-en.tsv"]

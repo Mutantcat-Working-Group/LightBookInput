@@ -38,8 +38,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .map(PathBuf::from)
         .or_else(|| paths::generated(&root, "dict.qj"))
         .unwrap_or_else(|| root.join("assets/sample/dict.tsv"));
-    // 程序员模式的中→英释义表：优先生成目录的 `.qj`，退回随包 TSV。
-    let english_glossary = paths::generated(&root, "glossary-en.qj")
+    // 程序员模式的中→英释义表：生成目录里有就用它，否则退回随包 TSV（与英文词表同一套找法）。
+    let english_glossary = paths::generated(&root, "glossary-en.tsv")
         .or_else(|| paths::asset(&root, "glossary/glossary-en.tsv"));
     let user_dir = paths::user_dir();
     let mut spec = AssemblySpec {

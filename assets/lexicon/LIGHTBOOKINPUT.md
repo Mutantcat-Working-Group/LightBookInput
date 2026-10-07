@@ -13,8 +13,7 @@
 # 1. 第一遍：写初版 dict.tsv，并列出要交给 LLM 定读音的词：没有拼音的领域词里含多音字的，以及常用词表里含多音字的
 #    （常用词表自带的拼音对多音字有错，如 重庆 zhong4'qing4，所以也要标；标注与原表不同时标注为主读音，原表读音降权保留）
 cargo run --release -p lightbookinput-dict-convert -- lexicon --emit-ambiguous data/generated/lexicon-ambiguous.txt
-# 2. 多音字词交给 LLM 标读音（可中断续跑；结果 data/generated/pinyin-llm.jsonl，不进 git，发布时作为 Release 附件保存）
-cargo run --release -p lightbookinput-gloss-gen -- pinyin
+# 2. 多音字词交给 LLM 离线标读音（标音工具不在仓库里，随 gloss-gen 一起移除；结果 data/generated/pinyin-llm.jsonl，不进 git，发布时作为 Release 附件保存）
 # 3. 用初版词库分词、统计语料词频（语料在 data/corpus/，见 docs/design/landscape.md）
 cargo run --release -p lightbookinput-dict-convert -- bigram data/corpus/*.txt
 # 4. 第二遍：带标注与词频写最终 dict.tsv；再统计一次语料让分词用上真实词频
@@ -24,7 +23,7 @@ cargo run --release -p lightbookinput-dict-convert -- lexicon --pinyin data/gene
 cargo run --release -p lightbookinput-dict-convert -- bigram data/corpus/*.txt
 # 4b. 语料挖词库没收的高频词（分词落成连续单字的段），mine 自带虚词规则 + 相邻字对 PMI≥3 过滤（--min-pmi 调，
 #     --candidates 可跳过扫语料只重过滤）：写 oov-candidates.tsv（原始）、oov-filtered.tsv（过滤后，拷成 assets/lexicon/mined_words.tsv）、
-#     oov-words.txt（交 gloss-gen pinyin 标音）；lexicon 加 --extra-words 并入，然后重跑一次 bigram。
+#     oov-words.txt（交 LLM 离线标音，见第 2 步）；lexicon 加 --extra-words 并入，然后重跑一次 bigram。
 #     注意 PMI 用当前的一元表：并入挖出的词并重跑 bigram 之后单字次数会变，再挖一遍结果不同是正常的
 cargo run --release -p lightbookinput-dict-convert -- mine data/corpus/*.txt
 cp data/generated/oov-filtered.tsv assets/lexicon/mined_words.tsv
