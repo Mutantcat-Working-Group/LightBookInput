@@ -14,7 +14,7 @@
   Candidate UI      Candidate UI      Candidate UI
 ```
 
-词库、拼音解析、候选生成、排序、用户词频学习和翻译能力全部属于 Core。
+词库、拼音解析、候选生成、排序、用户词频学习和程序员模式的英文释义查询全部属于 Core。
 平台层只做两件事：把系统输入事件翻译成 Core 的输入，把 Core 返回的候选画到候选窗口。
 
 判断标准：把 IMK 换成 TSF，不应该需要改 Core 的任何一行。
@@ -24,13 +24,11 @@
 这些是核心设计决定，不要违反。
 
 1. **Core 平台无关。** `lightbookinput-core` 及其兄弟 crate 不允许依赖任何平台 API。
-   平台层里不允许出现排序逻辑、词库访问或翻译调用。
-2. **一个候选词只显示一种辅助语言。** 用户配置 Primary Language + 单个 Learning Language。
-   不要设计成 `translations: Vec<Translation>` 或 `HashMap<Lang, String>` 这类多语言并列的数据结构，
-   那会在 API 层面把「一次只学一种语言」这条产品原则给破坏掉。
-   翻译是候选词的 annotation（可选、单条），不是并列的第二套候选系统。
+    平台层里不允许出现排序逻辑或词库访问。
+2. **程序员模式的英文释义按需出、可弃。** 按住 `~`（·）时才查中英释义表，默认不给候选加英文；
+   不设计成多语言并列的数据结构——`Candidate::gloss` 可选、单条，够用。
 3. **输入优先于学习。** 任何为学习功能增加的延迟、弹窗、UI 干扰都是设计错误。
-   翻译查询不能阻塞候选生成，Core 必须能在翻译尚未就绪时先返回候选。
+   释义查询不能阻塞候选生成，Core 必须能在释义尚未就绪时先返回候选。
 
 ## Workspace 结构
 
@@ -39,8 +37,7 @@ lightbookinput/
 ├── crates/
 │   ├── lightbookinput-core/          # composition / parser / correction / candidate / ranking / sentence / engine …（下面单列）
 │   ├── lightbookinput-dictionary/    # 词库加载与查询
-│   ├── lightbookinput-translate/     # 候选翻译 annotation
-│   ├── lightbookinput-learning/      # 用户词频、用户词、个人英文词、个人 n-gram、个人敲错表（user.tsv / user-words.tsv / user-english.tsv / user-ngram.tsv / user-typos.tsv）、输入日志（input-log.jsonl）、输入统计（usage.tsv）、词汇记录（user-vocab.tsv）
+│   ├── lightbookinput-learning/      # 用户词频、用户词、个人英文词、个人 n-gram、个人敲错表（user.tsv / user-words.tsv / user-english.tsv / user-ngram.tsv / user-typos.tsv）、输入日志（input-log.jsonl）、输入统计（usage.tsv）
 │   ├── lightbookinput-predict/       # 云联想：Predictor 的网络实现（OpenAI 兼容接口）
 │   ├── lightbookinput-lm/            # 整句转换的 bigram 语言模型：LanguageModel 的实现
 │   ├── lightbookinput-neural/        # 字级 Transformer 的本地推理（candle）：SentenceScorer 的实现，给整句前几条路径重打分
@@ -56,10 +53,9 @@ lightbookinput/
 │
 ├── tools/
 │   ├── dict-convert/           # 产品数据生成：lexicon / bigram / mine / english / emoji / pack
-│   ├── gloss-gen/              # LLM 批量生成释义表与多音字标注
 │   └── corpus/                 # 语料预处理脚本（uv）
 │
-├── assets/                     # 随仓库的产品数据源：词库源、释义表、emoji 表、词汇等级表（levels/，CEFR-J / Octanove / JLPT）、图标、样例
+├── assets/                     # 随仓库的产品数据源：词库源、中英释义表、emoji 表、英文词表、辅码表、图标、样例
 ├── data/                       # gitignore：语料、Unihan、生成物 data/generated/
 ├── docs/
 └── README.md
@@ -71,7 +67,7 @@ lightbookinput/
 lightbookinput-core
 ├── composition     # 输入状态机：拼音缓冲、光标、上屏
 ├── parser          # 拼音切分（全拼 / 简拼 / 双拼 / 模糊音）
-├── candidate       # 候选数据模型（Candidate / Translation / Sense / PartOfSpeech / Language）；layout 是分页排布（本地候选 + 云端固定槽位），各平台壳共用
+├── candidate       # 候选数据模型（Candidate / CandidateKind，以及程序员模式的英文 gloss）；layout 是分页排布（本地候选 + 云端固定槽位），各平台壳共用
 ├── ranking         # 候选排序
 ├── shortcut        # 快捷候选：日期 / 时间 / 星期、v 表达式模式（四则运算、中文数字），不查词库
 ├── english         # 英文模式候选：词表精确词 / 前缀补全 / 一处编辑纠正（edit.rs），大小写跟着敲的走
@@ -81,7 +77,7 @@ lightbookinput-core
 ├── fuzzy           # 模糊音：FuzzyRules（配置 [fuzzy]）把每个音节扩展成多种写法，Expanded 借出给词库多写法查询
 ├── shuangpin       # 双拼：Scheme 七套方案的键位表，decode 把敲的键解成全拼（音节间带 '），Decoded 把上屏消耗换算回键数；切分之后全部复用全拼
 │                   # engine::ModeKeys（配置 [shortcut]）：表达式 / 问字前缀键，只能是 v / u / i；问字键后跟十六进制出码点字符
-├── engine          # 对外门面：Engine，以及 Translator / Learner trait 与空实现
+├── engine          # 对外门面：Engine，以及 Learner trait 与空实现
 └── storage         # 小文件落盘原语：write_atomic（临时文件 + fsync + 改名）、read_text_lossy；学习 crate 与配置都用它
 ```
 
@@ -106,8 +102,8 @@ lightbookinput-core
 模块文件只做 `mod` 声明、re-export 和自由函数；结构体字段逐条 `///` 注释并用空行分隔；
 `thiserror` 的 `#[error]` 文案用英文，日志与 UI 文案用中文。
 
-`Engine` 的会话 API：`set_input / push / backspace` 喂拼音，`query()` 返回不带译文的
-`Query { segmentations, candidates, timings }`，`annotate(&mut CandidateList)` 补译文，
+`Engine` 的会话 API：`set_input / push / backspace` 喂拼音，`query()` 返回
+`Query { segmentations, candidates, timings }`，
 `commit(&Candidate)` 上屏并喂给 Learner（词频、词转移、自动造词）。`Learner::flush()` 由壳在退出 / 停用时调用，
 失败只记日志不返回错误；壳停用时还调 `break_chain()`，之后上屏的词按句首记；
 `Engine::flush_learning()` 把学习数据与输入日志一起落盘且不作废格子缓存，壳激活期间也定时调它。
@@ -116,7 +112,7 @@ lightbookinput-core
 
 输入法进程随时会被 launchd 杀掉或自己崩掉，用户攒的学习数据和正在打的字都不能因此没了：
 
-- **原子写**（`lightbookinput_core::storage::write_atomic`）：学习 crate 的六张 TSV、输入统计 `usage.tsv`、词汇记录 `user-vocab.tsv`、`config.toml`、`.env` 都先写同目录的临时文件，
+- **原子写**（`lightbookinput_core::storage::write_atomic`）：学习 crate 的六张 TSV、输入统计 `usage.tsv`、`config.toml`、`.env` 都先写同目录的临时文件，
   flush + fsync 后改名覆盖；任何时刻磁盘上要么是旧文件要么是新文件。输入日志 `input-log.jsonl` 是追加写不走这条路，
   崩溃最多留半行，回放工具按行跳过坏行并计数。
 - **损坏容忍**：学习数据各文件按行解析，格式不对的行记一条警告跳过（下次落盘就清掉了），编码坏掉的字节按替换字符读进来；
@@ -140,34 +136,26 @@ lightbookinput-core
 ```text
 lightbookinput-dictionary        （纯数据加载与查询，不依赖任何兄弟 crate）
         ▲
-lightbookinput-core              （定义 Translator / Learner / Predictor trait，依赖 dictionary）
+lightbookinput-core              （定义 Learner / Predictor / InputLogger / UsageMeter trait，依赖 dictionary）
         ▲           ▲            ▲
-lightbookinput-translate  lightbookinput-learning  lightbookinput-predict  lightbookinput-lm  lightbookinput-neural   （实现 core 的 trait，依赖 core；learning 另依赖 translate 的 LevelTable 做词汇按级汇总）
+lightbookinput-learning  lightbookinput-predict  lightbookinput-lm  lightbookinput-neural   （实现 core 的 trait，依赖 core）
         ▲           ▲            ▲
 lightbookinput-platform          （配置文件 Config：general / shortcut / fuzzy / predict 分节，toml_edit 原地改键保留注释；协议类型，可序列化；依赖 core、predict）
         ▲
-apps/*                     （组装：Engine::new(dict).with_translator(..).with_learner(..).with_predictor(..)）
+apps/*                     （组装：Engine::new(dict).with_learner(..).with_predictor(..)）
 ```
 
 `apps/cli` 是 Phase 1 的测试壳：`cargo run -p lightbookinput-cli -- kaifa` 直接查询，
-不带参数进入交互模式（拼音查询、序号上屏、`:q` 退出），`--user-dict` 指定用户词频文件，
-`--language en|ja|es` 或环境变量 `LIGHTBOOKINPUT_LEARNING_LANGUAGE` 选学习语言。
-`--typing` 是性能测试模式：把输入当一键一键敲进去，每个前缀查一次并标注译文，一行一键打印各阶段耗时
+不带参数进入交互模式（拼音查询、序号上屏、`:q` 退出），`--user-dict` 指定用户词频文件。
+`--typing` 是性能测试模式：把输入当一键一键敲进去，每个前缀查一次，一行一键打印各阶段耗时
 （这是输入法每键的真实工作量，联想在后台线程不算），启动日志里带各数据文件的加载耗时。
 性能改动要用 release 构建跑它看数字，目标每键 10 ms 以内。
 
-- Core 只依赖 dictionary，不依赖 translate 和 learning。翻译与学习通过 trait 注入（`Translator` / `Learner` / `InputLogger` / `UsageMeter` / `VocabularyTracker`，
+- Core 只依赖 dictionary，不依赖 learning 和 predict。学习、联想、输入日志与统计通过 trait 注入（`Learner` / `Predictor` / `InputLogger` / `UsageMeter`，
   缺省实现都是空操作），这样 Core 的单元测试和 CLI 工具不需要真实词典也能跑。
 - `lightbookinput-platform` 里的类型必须可序列化（serde）：macOS 上 Core 与壳同进程，
   Windows 和 Linux 上 Core 在独立 Server 进程，同一套协议类型两边都用。
 - `storage` 只放 Core 自己的持久化原语，用户词频的数据模型归 `lightbookinput-learning`。
-
-## 翻译的异步模型
-
-Core 的会话 API 分两步返回：`update(input) -> CandidateList` 立即返回不带译文的候选；
-译文由 translate 在后台查表，通过 `poll_annotations()` 或回调补上。
-本地查表通常在一次事件循环内就绪，但接口上必须允许「候选先到、译文后到」，
-平台层收到 annotation 更新后只重绘对应行。
 
 ## Core 的关键技术决定
 
@@ -226,29 +214,18 @@ bigram 语言模型 + Viterbi，加上简拼、模糊音、双拼。没有整句
 
 词库与语言模型不自造，见 [landscape.md](landscape.md) 的数据源一节。
 
-### 翻译只是 annotation
+### 程序员模式的英文释义
 
-翻译 annotation 只对词典词候选有意义。整句引擎产出的候选多数不是词典词
-（一整句，或者「的」这种单字），引擎越好，能标注的候选反而越少。
+英文释义只对词典词候选有意义。整句引擎产出的候选多数不是词典词
+（一整句，或者「的」这种单字），引擎越好，能释义的候选反而越少：
 
-待确认的策略：
-- 只给词典词候选标注，句子候选和单字虚词留空。
-- 一词多义（开发 → develop / development）只取最高频义项，不展开。
+- 只给词典词候选释义，句子候选和单字虚词留空。
+- 一词多义（开发 → develop / development）取表里的一条，不展开。
 
-### 翻译数据本地化
-
-翻译走本地查表，运行时不调网络。这样天然满足「翻译不阻塞候选」的约束。
-随包的释义表由 `tools/gloss-gen` 用 LLM 离线批量生成（2026-09-04 定的路线，不用有道等网页接口：逆向接口不稳，
-攒下来的结果再分发有版权问题；LLM 输出许可干净）：从我们自己统计的一元词频表挑常用词（次数 ≥ 200、不超过 4 个字，约 6.4 万词），
-每个词一次请求同时要「词性 + 英文译词 + 日文译词与假名读音」，结果 JSONL 可续跑，`export` 转成 `glossary-en.tsv` / `glossary-ja.tsv`。
-释义格式 `词\t词性. 译词\t词性. 译词`，日文译词后 `|假名`；`Sense.reading` 存整词假名，`Sense::furigana()`（Core `candidate::furigana`）用译词里的假名段当锚点把读音对到各段汉字上，
-候选窗口按 `開発(かいはつ)する` 显示，假名淡色；纯假名 / 片假名词不注，对不上就整体注在后面。不用罗马音。
-CC-CEDICT 表（`dict-convert cedict`）保留为备用来源，覆盖面广但没有词性、释义偏长。
-运行时查不到的词走同一条 LLM 通道补进用户目录的个人释义表（**释义兜底**）：Core `GlossFiller` trait 与 `Predictor` 分开注入——联想是「最新请求优先」、
-防抖会丢旧请求，兜底恰恰要每个词都问到、慢点没关系。词库词 / 云端词**上屏后**发现随包表没有就入队（只在云联想开着时，发出去的只有那个词），
-`lightbookinput-predict::CloudGlossFiller` 在独立线程攒 1.5 秒或 8 个词发一次请求（提示词与 gloss-gen 同源，只要当前学习语言），问过的本进程内不再问；
-壳每秒 `Engine::poll_glosses` 把结果经 `Translator::learn` 写进 `PersonalGlossary`（`user-glossary-<语言>.tsv`，格式同随包表，可手改），
-`LayeredTranslator` 个人表优先叠在随包表上，随 `flush_learning` 原子落盘。`Translator::translate` 本身仍不联网。
+释义走本地查表，运行时不调网络，因此天然满足「释义不阻塞候选」的约束。
+随包释义表 `assets/glossary/glossary-en.tsv` 由 LLM（DeepSeek）离线批量生成：从轻书自己统计的一元词频表挑常用词，
+每个词要「词性 + 英文译词」，格式 `词\t词性. 译词\t词性. 译词`，随仓库提交、不进数据包。
+壳在出帧时按表补 `Candidate::gloss`：表里有就画在候选旁，没有只记一条警告，不给候选加占位。
 
 ### 联想与个人模型的边界
 
@@ -301,7 +278,7 @@ CC-CEDICT 表（`dict-convert cedict`）保留为备用来源，覆盖面广但�
   模型把「我的」读音给成 `wo di` 之后，这条用户词按错读音出现在候选里，把正确的整句候选「我的」顶掉、自己又排在「沃德」后面，就是这么来的。
   用户点选的转移记双份（`EXPLICIT_TRANSITION_WEIGHT`），整句路径里顺带的记一份：整句是模型自己算的，按空格接受会把它喂回模型形成回声，
   用户明确改选一次就要能压过去。选择次数在整句路径上的加分取对数并封顶（`viterbi::WEIGHT_CAP`），只管同音词偏好，不许它抬起拆分路径。
-- 联想通过 `Predictor` trait 注入，与翻译一样是异步补充：**不阻塞候选、不重排已有候选**，超时即丢。
+- 联想通过 `Predictor` trait 注入，是异步补充：**不阻塞候选、不重排已有候选**，超时即丢。
   网络实现放 `lightbookinput-predict`，Core 不依赖它，也永远不联网。
   请求带 `reasoning_effort`（配置 `[predict] reasoning_effort`，缺省 `none`）：DeepSeek V4 这类默认思考的模型不关会把 token 预算花光、正文为空；
   密钥环境变量缺省 `LIGHTBOOKINPUT_API_KEY`（`api_key_env` 可改），名字跟产品不跟供应商，因为 `base_url` 本来就可以指到别家。
@@ -338,7 +315,7 @@ CC-CEDICT 表（`dict-convert cedict`）保留为备用来源，覆盖面广但�
   `main.rs` 初始化 host、建 IMKServer 并跑 NSApplication；
   `host/` 是进程级单例（一个 Engine + 一个候选窗口，`thread_local`，IMK 回调全在主线程；`mod.rs` 放结构体与 `with`，`init.rs` 启动加载、`config.rs` 热加载、`settings.rs` 菜单 / 偏好设置动作、`dictionaries.rs` 词库管理、`cloud.rs` 云端、`diagnostics.rs` 诊断与日志、`presenting.rs` 呈现），
   `host/` 下是会话状态 `session.rs`、联想轮询定时器 `predict_monitor.rs`、配置文件监视与定时落盘 `config_watch.rs`、
-  短提示 `notice.rs`、翻译选中文字的任务 `translation_job.rs`、附加词库装配 `extra_dictionaries.rs` / `dictionary_info.rs`；
+  短提示 `notice.rs`、附加词库装配 `extra_dictionaries.rs` / `dictionary_info.rs`；
   `imk/`：`controller/`（`mod.rs` 是类定义与按键分发，`text` / `command` / `translate` / `display` / `commit` 各管一段）用 `define_class!` 继承 `IMKInputController`（类名 `LightBookInputInputController`，
   与 Info.plist 的 `InputMethodServerControllerClass` 一致），只做按键 → Engine、Engine → 窗口；
   `client.rs` 用 `msg_send!` 封装 IMKTextInput（`setMarkedText:` / `insertText:` /
@@ -416,11 +393,11 @@ CC-CEDICT 表（`dict-convert cedict`）保留为备用来源，覆盖面广但�
   各处对不上，改成全局后这些都不存在了。
   单击判定在**击键 sink** 里（`com/key/tap.rs`，喂 `OnTestKeyDown` / `OnTestKeyUp`：按下切换键到抬起之间没有别的键插进来就是一次单击；
   微软 SampleIME 的 `OnTestKeyDown` 同样处理 VK_SHIFT，sink 收得到独立修饰键）。之前用线程级 `WH_KEYBOARD` 钩子判定，但钩子**看不到被 TSF 吃掉的键**
-  （msctf 在队列层把它们改成 WM_NULL），Shift + 数字（删候选 / 第二译词）会被误判成单击而切换模式，2026-09-11 真机确认 sink 收得到 Shift 后钩子已删。
+  （msctf 在队列层把它们改成 WM_NULL），Shift + 数字（删候选）会被误判成单击而切换模式，2026-09-11 真机确认 sink 收得到 Shift 后钩子已删。
   切换键、英文模式开关与「Shift 字母进组句」由 **Server 读配置、经协议下发**（`protocol::InputSettings`：`OpenSession` 的回包
   `SessionOpened` 带一次，之后每拍 `SyncMode` 跟着走，值变了就地应用，**设置窗口改完约 320 ms 内生效**，不必切走再切回输入法）；
   DLL 不读配置文件——它跑在每个应用进程里，AppContainer 里的商店应用连 `%APPDATA%` 都读不到。
-  `ctrl+alt+space` 是组合键、属系统键不经击键 sink，与翻译快捷键一样登记成 TSF 保留键（`com/key/preserved.rs` 的 `GUID_SWITCH_MODE`）。
+  `ctrl+alt+space` 是组合键、属系统键不经击键 sink，登记成 TSF 保留键（`com/key/preserved.rs` 的 `GUID_SWITCH_MODE`）。
   勾选项里没有 Ctrl + Space：中文 Windows 把它绑成系统的「输入法/非输入法切换」（`IME_CHOTKEY_IME_NONIME_TOGGLE`），系统先截走、保留键收不到。
   但我们**适配**这条系统热键（与微软拼音一致，不进勾选项）：它翻的是「输入法开 / 关」compartment（`GUID_COMPARTMENT_KEYBOARD_OPENCLOSE`），
   `com/mode/sink.rs` 监听它（`sync_from_keyboard_open`）：关 = 英文、开 = 中文，照样报给 Server 成为全局模式。反向由 `refresh_mode_indicator`
@@ -429,9 +406,6 @@ CC-CEDICT 表（`dict-convert cedict`）保留为备用来源，覆盖面广但�
   装了别的键盘布局 / 输入法时 Windows 可能改用这条热键换输入法，那由系统决定。
   **四条切换入口**——单击切换键、语言栏按钮、悬浮状态条、任务栏转换模式 compartment——都汇到 `com/service/mode.rs::set_english_mode`，
   内置英文模式关着时在那里一并拦住（Server 侧状态条点击按同一项拦，免得两边显示不一致），此时连语言栏的「中 / 英」按钮都不登记。
-  「翻译选中文字」的快捷键（缺省 Ctrl+Alt+T）**登记成 TSF 保留键**（`com/key/preserved.rs`，`ITfKeystrokeMgr::PreserveKey` → `OnPreservedKey`）：
-  带 Alt 的组合是系统键、不经击键 sink（真机 `OnTestKeyDown` 里从没出现过），保留键由 TSF 在应用之前匹配，UWP 里也一样；组合激活时从
-  `config.toml` 读一次（AppContainer 读不到用户目录时用缺省），命中后当作那个组合键转发给 Server 走原有的 `RequestSelection` 流程。
   DLL 记 `english_mode` 持久状态；任务栏的中 / 英指示器靠 `GUID_LBI_INPUTMODE` 语言栏按钮渲染
   （`com/mode/button.rs`，图标是设计稿 SVG 预栅格化的四档 alpha 蒙版，`mode/icon.rs` 按系统 DPI 挑档、按任务栏 `SystemUsesLightTheme` 填黑或白，Caps Lock 亮着显示「A」；第三方 TIP 单写转换模式 compartment 不出这个指示器），另外顺带写一份转换模式 compartment
   （`GUID_COMPARTMENT_KEYBOARD_INPUTMODE_CONVERSION` 的 `TF_CONVERSIONMODE_NATIVE` 位，`com/mode/mod.rs`）。这条 compartment 还**反向同步**：激活时对它挂
@@ -452,27 +426,22 @@ CC-CEDICT 表（`dict-convert cedict`）保留为备用来源，覆盖面广但�
   `[apps] english_candidates_off` 按应用关闭：应用标识在 Windows 上是宿主进程的 exe 文件名（DLL 加载在应用进程里，`GetModuleFileNameW(NULL)`
   取到就随 `OpenSession { app }` 报一次，Server 每会话记下，收键时按当前会话查），缺省名单分平台（`AppsConfig` 的三份常量与配置模板的 `[apps]` 一节按目标平台三选一：Windows 是 exe 文件名、macOS 是 bundle identifier、Linux 是 Fcitx5 认到的应用名，X11 下是 WM_CLASS、Wayland 下是 app_id），
   经典控制台的窗口属于 `conhost.exe`、Windows Terminal 是 `WindowsTerminal.exe`；
-  `[shortcut]` 的修饰键 + 数字（译词上屏 / 删候选，`dispatch/key/shortcut.rs`）：配置里的 `Modifiers` 按 option→Alt、control→Ctrl、command→Win
+  `[shortcut]` 的修饰键 + 数字（删候选，`dispatch/key/shortcut.rs`）：配置里的 `Modifiers` 按 option→Alt、control→Ctrl、command→Win
   落到 `KeyModifiers`，Router 按键码认数字、去掉 Caps 位后与配置比；DLL 见 Ctrl / Alt / Win 仍一律放行，只有组句中的修饰键 + 数字送 Server 判，
   没配到的 Router 回 Passthrough。删候选的那句反馈（「已删除…」/「没什么可删」）随下一帧的 `Frame::notice` 下发，自绘候选窗画在拼音行下方、
   显示到下一次按键（`dispatch/key/shortcut.rs` 填、`handle_key` 开头清；对齐 macOS 画在拼音行右侧的短提示）。
-  **翻译选中文字**（`[shortcut] translate_selection`，缺省 Ctrl+Alt+T）：不在组句、云服务开着时按下它，Server 回 `RequestSelection`
-  （替代那次按键的常规结果），DLL 起一个**异步只读编辑会话**（`com/edit/selection.rs`，`GetSelection` + `GetText` 读选中文本、上限 500 字、`GetTextExt` 量屏幕矩形）
-  回 `Selection { text, rect }`；Server 走 Core 的 `request_translation`（`PredictionKind::Translate`，双向，译文走 `sentence`），
-  在**自绘候选窗**里以选区矩形为锚显示单条译文（先「翻译中…」，云端回来再换），评审态吃走所有键：回车 / 空格接受、Esc 保留原文、其余键放弃并交回应用。
-  替换选区不另加协议——接受时 Server 把译文当 `commit` 回给 DLL，DLL 无活动组句时 `InsertTextAtSelection` 正好替换当前选区。DLL 用 `Shared::translating` 标志让评审期吃键、轮询定时器照常拉云端译文、失焦收窗。
   一次要绘制的状态是 `Frame`（preedit 分段 + 候选页 + 可选的整句补全 `sentence` 与删候选提示 `notice`，后两者不参与 `Frame::is_empty`），preedit 用 `PreeditSegment`（Core `MarkedSegment` 的可序列化镜像，
   协议不耦合 Core 内部枚举），候选直接嵌 `lightbookinput_core::CandidateList`。同词干类型收进子目录：`key/{event,outcome}`、`frame/preedit/{kind,segment}`。
 - **Server 进程**：`apps/windows/server`（package `lightbookinput-windows-server`，bin `lightbookinput-server`）。`dispatch::Router` 按 `SessionId` 分派多会话（Windows 一个 Server 服务多个应用进程，
   每会话各持组句状态，不同于 macOS 的进程级单例）。会话开 / 关、按键与上屏、Engine 装配、命名管道传输（`\\.\pipe\lightbookinput`）都已跑通，Windows 上端到端测过。
-- **候选窗口（Server 进程自绘 + uiAccess）**：候选窗从前在**应用进程内的 DLL** 自绘，普通置顶窗被微软商店 / 任务栏搜索这些**更高 z-band** 的宿主盖住。现改由 **Server 进程**自绘（`server/src/ui/`：一条专用 UI 线程注册窗口类 + 建 GDI 分层窗 + 跑消息循环，HWND 只在该线程碰；工人线程经 `Sender<UiCommand>` + `PostThreadMessageW(WM_APP)` 把「显示(`Frame`+屏幕矩形) / 隐藏」marshal 过去；进程级 `SetProcessDpiAwarenessContext(PER_MONITOR_AWARE_V2)` 按物理像素对齐应用报来的矩形）。DLL 只量光标屏幕矩形（`GetTextExt`，退鼠标）发 `PositionCandidates{rect}`，并在组句于 DLL 侧结束（应用终止组句 / 断线，`OnCompositionTerminated` 这条 Server 无从知晓）时发 `HideCandidates`；Server 握着 `Frame` 直接自绘，云端异步更新也直接刷自己的窗、不回传 DLL（渲染代码——词性 + 译文 + 分页 + 柔和阴影，对齐 macOS——整块从 DLL 搬到 Server）。**盖过高 z-band 宿主**靠 Server exe 的 `uiAccess="true"` manifest（`server/build.rs` 用 embed-manifest 嵌）+ 代码签名 + 装 Program Files 三者齐备（`SetWindowPos(HWND_TOPMOST)` 才自动升进 UIAccess 高带）：开发自签 + 本机受信任根（`installer/sign-local.ps1`），发版换 Certum 开源代码签名证书；uiAccess exe 不能 CreateProcess 拉起（报 740），装完 / 登录都走 ShellExecute（安装器完成页 `ShellExecAsOriginalUser` + `{commonstartup}` 启动快捷方式由 Explorer 拉起才授 uiAccess，故不用计划任务）。候选窗每显示一页，Server 调 `Engine::note_displayed`（收窗传空）告知当前页——生词「看到轮次」据此推进、橙色标记满 `FRESH_UNTIL` 轮才毕业，对齐 macOS 壳的 `render`。
+- **候选窗口（Server 进程自绘 + uiAccess）**：候选窗从前在**应用进程内的 DLL** 自绘，普通置顶窗被微软商店 / 任务栏搜索这些**更高 z-band** 的宿主盖住。现改由 **Server 进程**自绘（`server/src/ui/`：一条专用 UI 线程注册窗口类 + 建 GDI 分层窗 + 跑消息循环，HWND 只在该线程碰；工人线程经 `Sender<UiCommand>` + `PostThreadMessageW(WM_APP)` 把「显示(`Frame`+屏幕矩形) / 隐藏」marshal 过去；进程级 `SetProcessDpiAwarenessContext(PER_MONITOR_AWARE_V2)` 按物理像素对齐应用报来的矩形）。DLL 只量光标屏幕矩形（`GetTextExt`，退鼠标）发 `PositionCandidates{rect}`，并在组句于 DLL 侧结束（应用终止组句 / 断线，`OnCompositionTerminated` 这条 Server 无从知晓）时发 `HideCandidates`；Server 握着 `Frame` 直接自绘，云端异步更新也直接刷自己的窗、不回传 DLL（渲染代码——英文 gloss + 分页 + 柔和阴影，对齐 macOS——整块从 DLL 搬到 Server）。**盖过高 z-band 宿主**靠 Server exe 的 `uiAccess="true"` manifest（`server/build.rs` 用 embed-manifest 嵌）+ 代码签名 + 装 Program Files 三者齐备（`SetWindowPos(HWND_TOPMOST)` 才自动升进 UIAccess 高带）：开发自签 + 本机受信任根（`installer/sign-local.ps1`），发版换 Certum 开源代码签名证书；uiAccess exe 不能 CreateProcess 拉起（报 740），装完 / 登录都走 ShellExecute（安装器完成页 `ShellExecAsOriginalUser` + `{commonstartup}` 启动快捷方式由 Explorer 拉起才授 uiAccess，故不用计划任务）。
 - **悬浮状态条（Server 进程自绘，可拖动 / 记位置）**：桌面上常驻的小浮窗，显示当前中 / 英（开着双拼时附方案名），与任务栏的中 / 英指示器（语言栏按钮）并存。跟候选窗**同一条 UI 线程**、复用同一套分层窗口合成器（`server/src/ui/layered/`：圆角背景 + 四周柔和阴影，从候选窗的 `surface.rs` 抽出来两边共用）与主题（字体 / 配色 / DPI / 深浅）；自己一个窗口类与窗口过程（`server/src/ui/status/`）：三格 `[中 / 英][，。/ ,.][⚙]`：按下鼠标先 `DragDetect`，挪出阈值就交给系统移动循环（`WM_NCLBUTTONDOWN` + `HTCAPTION`，结束时 `WM_EXITSIZEMOVE` 报新位置），没挪就是点击、按 x 落进哪格；`WM_MOUSEACTIVATE` 回 `MA_NOACTIVATE` 点它不抢应用焦点；窗口过程按 HWND 从 thread_local 表查到对象。点格 / 拖动结束经 `StatusEvent`（`dispatch/status/`）投回工人线程（工人循环收的是 `ipc::Work`：DLL 消息或状态条事件），Router 写回配置（`[status_bar] x/y`、`[general] full_width_punctuation`，热加载再读回）；齿轮由 UI 线程直接起设置程序。中英模式全局一份、存在 Server（见上文「中英模式」）：DLL 里用户切了用 `ModeChanged` 报来，状态条上点「中 / 英」直接改 Server 那份，各 DLL 激活、得到焦点时和轮询定时器（没组句、本线程前台时每几拍）用 `SyncMode` 取走跟上；有 DLL 来取模式就说明轻书是当前输入法，状态条据此显示。会话号用线程 id（`com::session_id`）——TSF 的 client id 各进程都是同样那几个值，拿它当会话号会撞。前台线程没连着 Server 时（登录后 Server 起得比第一个应用晚、Server 重启过）轮询那一拍顺带补连，连上报一次当前模式（重启过的 Server 不知道）。状态条**常驻桌面**，只跟「当前输入法是不是轻书」走：第一次 `ModeChanged` 显示，DLL 挂 `ITfActiveLanguageProfileNotifySink`（`com/profile.rs`）在别的 TIP 被激活时用一条临时连接发 `ImeSwitched` 收起（此时自己已被停用、会话连接已关），应用退出（`CloseSession`）不收。双拼方案 Server 从自己的 `[general] shuangpin` 配置知道，不必带。开关与记住的位置在 `[status_bar]`（`enabled` / `x` / `y`），热加载即时生效；uiAccess 高 z-band 与候选窗同进程天然继承。参考微软水杉的 FTB 形态（`~/Desktop/MSIME-Windows`，它用 D2D + DirectComposition 且不记位置），落地时选沿用本项目已有的 GDI 分层窗那套以保持视觉语言一致、并加了位置持久化。
 - **帧编解码**：长度前缀 JSON 帧的 `read_message` / `write_message` 与缺省管道名放在 `lightbookinput-platform::protocol`，Server 与 DLL 共用（DLL 不必依赖整个 Server 库）。
 - **TSF DLL**：`apps/windows/tsf`（package `lightbookinput-windows-tsf`，`cdylib`，产物 `lightbookinput_tsf.dll`，依赖官方 `windows` crate 的 COM `implement` 宏）。「引擎层」不是 Engine 而是连 Server 的**管道客户端** `EngineClient`（平台无关、可端到端测）；
   连不上 Server 时 DLL 自己把它拉起来（`com/service/launch.rs`）：Server 只在登录时由「启动」文件夹的快捷方式拉起，中途挂了以前只能等下次登录、期间静默吞键。
   用 `ShellExecuteW`（`uiAccess=true` 的 exe 用 `CreateProcess` 报 740），与 DLL 同目录的 `lightbookinput-server.exe`；
   进程内 5 秒冷却 + 跨进程命名互斥体（`Local\LightBookInputServerLaunch`）保证多个应用同时发现 Server 不在时只起一个。
-  COM 层：`DllGetClassObject` → `IClassFactory` → `#[implement(ITfTextInputProcessor, ITfKeyEventSink, ITfDisplayAttributeProvider)]` → `Activate` 挂击键 sink + 登记翻译保留键 + 语言栏中英按钮 + 连管道 → `OnKeyDown` 转发按键、经异步编辑会话（`TF_ES_READWRITE`，不带 SYNC）写组句 / 上屏；`DllRegisterServer` 写 InprocServer32 并经 `ITfInputProcessorProfiles` / `ITfCategoryMgr` 注册文本服务与各能力类别。
+  COM 层：`DllGetClassObject` → `IClassFactory` → `#[implement(ITfTextInputProcessor, ITfKeyEventSink, ITfDisplayAttributeProvider)]` → `Activate` 挂击键 sink + 登记中英切换保留键 + 语言栏中英按钮 + 连管道 → `OnKeyDown` 转发按键、经异步编辑会话（`TF_ES_READWRITE`，不带 SYNC）写组句 / 上屏；`DllRegisterServer` 写 InprocServer32 并经 `ITfInputProcessorProfiles` / `ITfCategoryMgr` 注册文本服务与各能力类别。
   组句拼音的**内联下划线**（对应 macOS marked text 下划线）走 TSF 显示属性协议（`com/display_attribute/`）：注册 `GUID_TFCAT_DISPLAYATTRIBUTEPROVIDER` 类别 + 一个自定义显示属性 GUID（细实线、`TF_ATTR_INPUT`），
   `ITfDisplayAttributeProvider`（实现在 TextService 上）把 GUID 对应的 `TF_DISPLAYATTRIBUTE` 交给系统；收键写组句时用 `ITfCategoryMgr::RegisterGUID` 把 GUID 换成 atom，`SetValue` 进组句范围的 `GUID_PROP_ATTRIBUTE` 属性，宿主据此在拼音底下画线。
   收键与运行细节记进 `%LOCALAPPDATA%\LightBookInput\logs\tsf.<日期>.log`（与 Server / 设置程序同目录，按天一个文件、留 7 天；多进程追加同一文件）；候选窗口不再由 DLL 自绘（已搬到 Server 进程，见上「候选窗口」），DLL 侧只做 preedit 内联 + 上报光标矩形；云联想已接。
@@ -485,7 +454,7 @@ CC-CEDICT 表（`dict-convert cedict`）保留为备用来源，覆盖面广但�
   TSF 规定键盘类 TIP 必须看上下文的 `GUID_COMPARTMENT_KEYBOARD_DISABLED`（微软文档明说密码框应禁用文本服务、`IS_PASSWORD` 只是标注不提供保护；Chromium 给密码框的上下文设的就是它），
   DLL 在 `OnTestKeyDown` / `OnKeyDown` / 保留键里没在组句时先查它（连同 `EMPTYCONTEXT`，`com/context.rs`），非零整键放行、不组句——与 macOS 的 Secure Input 同一语义；
   输入范围（`GUID_PROP_INPUTSCOPE`）只在起组句那次编辑会话里读一次（`com/edit/surrounding.rs::input_context`）：含 `IS_PRIVATE` / 密码 / PIN 之一算**私密**——Chromium 源码里密码框与不学习的输入框映射成 `IS_PRIVATE`（含义「别学」；2026-09-12 box 实测 Edge InPrivate 的网页文本框报的仍是 `IS_SEARCH`，`IS_PRIVATE` 只在密码框见过，这条是兜底）——私密时不读前文，并随 `ClientMessage::Privacy` 告诉 Server（客户端只在变了时发；记事本等不支持该属性的应用 `GetValue` 失败按不私密）。
-  Server 按会话记 `private`、焦点切换时重设，Core `Engine::set_private`：学习器与输入日志外面各套一层 `Muted*`（写吞掉、读照常，排序不变），联想 / 翻译 / 释义兜底不发。协议版本 4。
+  Server 按会话记 `private`、焦点切换时重设，Core `Engine::set_private`：学习器与输入日志外面各套一层 `Muted*`（写吞掉、读照常，排序不变），私密上下文里联想不发。协议版本 4。
 - **版本与发布**：各平台壳版本号独立（见 `docs/notes/release.md`）；`apps/windows/server/Cargo.toml` 写死自己的 `version`，
   发布标签见 `docs/notes/release.md`（0.1.4 起三个平台共用 `v<版本>`）。`lightbookinput-windows-tsf` 是同一 Windows 产品的另一半（各自 `Cargo.toml` 记版本；两个 package 同放 `apps/windows/` 下，是一个产品的两个产物——不合成一个 crate，因为 DLL 不能带 Engine 的依赖树）。
 
