@@ -7,12 +7,12 @@
 
 长版与理由见 [design/architecture.md](design/architecture.md)。
 
-- **Core 与平台层严格解耦。** `lightbookinput-core` 及其兄弟 crate 必须平台无关：词库、拼音解析、候选生成、排序、学习、翻译、文本变换全部属于 Core。
+- **Core 与平台层严格解耦。** `lightbookinput-core` 及其兄弟 crate 必须平台无关：词库、拼音解析、候选生成、排序、学习、文本变换全部属于 Core。
   平台层（IMK / TSF / IBus-Fcitx）只做两件事：把系统输入事件翻译成 Core 的输入，把 Core 返回的帧画到候选窗口。
-  **平台层里不允许出现排序逻辑、词库访问、翻译调用或文本变换。** 判断标准：把 IMK 换成 TSF，不应该需要改 Core 的任何一行。
-- **一个候选词只显示一种辅助语言。** 用户配置 Primary Language + 单个 Learning Language。不要设计成 `translations: Vec<Translation>` 或
-  `HashMap<Lang, String>` 这类多语言并列的数据结构，那会在 API 层面把「一次只学一种语言」这条产品原则给破坏掉。翻译是候选词的 annotation（可选、单条）。
-- **输入优先于学习。** 任何为学习功能增加的延迟、弹窗、UI 干扰都是设计错误。翻译查询不能阻塞候选生成，Core 必须能在翻译尚未就绪时先返回候选。
+  **平台层里不允许出现排序逻辑、词库访问或文本变换。** 判断标准：把 IMK 换成 TSF，不应该需要改 Core 的任何一行。
+- **一个候选词的英文释义只有一条。** 程序员模式（按住 `~`）下每个候选只从 `EnglishGlossary` 取一条中英释义（`Option<String>` 的 annotation）。
+  不要设计成 `translations: Vec<Translation>` 或 `HashMap<Lang, String>` 这类多语言并列的数据结构：候选窗那一小行只放得下一行英文，多语言并列纯属浪费。
+- **输入优先于学习。** 任何为学习功能增加的延迟、弹窗、UI 干扰都是设计错误。释义查询不能阻塞候选生成，Core 必须能在释义表尚未就绪时先返回候选。
 - **输入方案是配置项，不是模式。** 双拼、注音这类键盘方案放 `[general]` 里当设置，中 / 英切换始终是布尔；新方案不能改变别的方案的既定按键行为（[user/getting-started/keys.md](user/getting-started/keys.md)）。
 - **显示面自绘、控件面原生。** 候选窗、拼音行、状态条这类显示面由渲染器出位图各平台贴图（主题靠它）；偏好设置、菜单、安装器用各平台原生控件。见 [design/rendering.md](design/rendering.md)。
 
@@ -56,7 +56,7 @@
   `fix(core): 修自绘输入框吞数字`、`feat(windows): 三进程日志统一到 %LOCALAPPDATA%\LightBookInput\logs`、`docs(changelog): 补 0.1.3 条目`。
   - 类型：`feat` 新功能 / `fix` 修 bug / `docs` 只改文档 / `refactor` 不改行为的整理 / `perf` 性能 / `test` 只改测试 /
     `build` 打包与构建脚本 / `ci` 工作流 / `chore` 版本号、依赖、仓库杂务 / `style` 只改格式 / `revert` 还原。
-  - 范围：crate 或壳的名字——`core` `platform` `render` `dictionary` `translate` `learning` `predict` `lm` `neural` `format` `cli`
+  - 范围：crate 或壳的名字——`core` `platform` `render` `dictionary` `learning` `predict` `lm` `neural` `format` `cli`
     `macos` `windows`（Server / DLL / 设置程序细分时用 `server` `tsf` `settings`）`installer` `linux` `tools` `docs` `ci` `deps` `release`；
     跨好几处的可以省略。不兼容的改动在范围后加 `!`。
   - 正文写「为什么」与取舍，一行一条；不加 AI 署名。`.githooks/commit-msg` 会拦第一行不合格式的提交。

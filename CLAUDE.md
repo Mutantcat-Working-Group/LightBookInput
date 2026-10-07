@@ -11,11 +11,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 一行一个，只说它是什么、入口在哪；实现要点（数据文件、常数、生成命令）在 `docs/notes/crate-notes.md`，改了实现要同步那里。
 
-- `crates/lightbookinput-core`：引擎。`Engine` 是对外唯一门面，`Translator` / `Learner` 等 trait 在 `engine` 模块；拼音解析、纠错、候选、排序、整句、双拼、注音、英文模式都在这里。
-- `crates/lightbookinput-dictionary`：词库（TSV 或 `.qj` mmap），按音节位置二分查询。
-- `crates/lightbookinput-translate`：释义表 `Glossary`、词汇等级表 `LevelTable`。
-- `crates/lightbookinput-learning`：用户侧落盘：词频 / 用户词 / 个人 n-gram / 敲错表（`FrequencyLearner`）、输入日志（`InputLog`）、输入统计（`UsageStats`）、词汇记录（`VocabularyBook`）。
-- `crates/lightbookinput-predict`：云联想 `CloudPredictor`（OpenAI 兼容接口）与释义兜底 `CloudGlossFiller`；`PredictConfig` 是 `[predict]` 分节。
+- `crates/lightbookinput-core`：引擎。`Engine` 是对外唯一门面，`Learner` 等 trait 在 `engine` 模块；拼音解析、纠错、候选、排序、整句、双拼、注音、英文模式、程序员模式都在这里。
+- `crates/lightbookinput-dictionary`：词库（TSV 或 `.qj` mmap）、中英释义表 `EnglishGlossary`（程序员模式按 `~` 出英文，只读 TSV），按音节位置二分查询。
+- `crates/lightbookinput-learning`：用户侧落盘：词频 / 用户词 / 个人 n-gram / 敲错表（`FrequencyLearner`）、输入日志（`InputLog`）、输入统计（`UsageStats`）。
+- `crates/lightbookinput-predict`：云联想 `CloudPredictor`（OpenAI 兼容接口）；`PredictConfig` 是 `[predict]` 分节。
 - `crates/lightbookinput-lm`：整句转换的 bigram 语言模型 `BigramModel`。
 - `crates/lightbookinput-neural`：字级 Transformer 本地推理 `CharScorer`（candle），给整句前几条路径重打分。
 - `crates/lightbookinput-format`：`.qj` 数据容器（mmap 读、零拷贝视图、写入器、哈希索引）。
@@ -26,7 +25,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `apps/macos`：IMK 壳，按 `app / host / imk / candidates / menubar / preferences` 分目录；`scripts/bundle.sh --install` 装到本机，`--pkg` 出分发包。
 - `apps/windows`：`server`（Server 进程：Engine + IPC + 自绘候选窗与状态条）+ `tsf`（TSF DLL）+ `settings`（WinUI 3）+ `installer`（NSIS）。DLL 不能带 Engine 的依赖树，所以是两个 package。
 - `apps/linux`：`server`（Engine + Unix socket）+ `fcitx5`（框架事件、默认面板）+ `scripts`（用户级安装卸载、`package.sh` 打预编译包）；Server 手动启动，见 `docs/notes/linux-fcitx5.md`。
-- `tools/dict-convert`、`tools/gloss-gen`、`tools/corpus`：产品数据生成（词库 / 语言模型 / 释义表 / emoji / 英文词表），输出到 `data/generated/`（gitignore）。
+- `tools/dict-convert`、`tools/corpus`：产品数据生成（词库 / 语言模型 / 释义表 / emoji / 英文词表），输出到 `data/generated/`（gitignore）。
 - `assets/`：随包数据源与样例，各目录有 README 写来源与许可。雾凇拼音（GPL）已彻底移除，不要再引入。
 
 `docs/` 分四类（索引在 `docs/README.md`）：`design/` 设计与决定、`plan/` 路线与待办、`notes/` 工程记录（性能、复盘、踩坑、crate 实现要点）、
