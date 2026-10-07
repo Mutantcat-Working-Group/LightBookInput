@@ -4,7 +4,7 @@ use crate::support::*;
 
 #[test]
 fn english_mode_gives_candidates_and_space_picks_highlighted() {
-    let mut router = router();
+    let mut router = router_english();
     let (outcome, commit, frame) = type_english(&mut router, "hel");
     assert_eq!((outcome, commit), (KeyOutcome::Consumed, None));
     assert_eq!(preedit(&frame), "hel", "英文模式敲的字母原样显示");
@@ -31,7 +31,7 @@ fn english_mode_gives_candidates_and_space_picks_highlighted() {
 
 #[test]
 fn english_digits_pick_candidates_or_join_the_word() {
-    let mut router = router();
+    let mut router = router_english();
     // 有候选：数字选当前页第 N 个，与中文模式一样。
     let (_, _, frame) = type_english(&mut router, "hel");
     let second = frame.candidates.items[1].text.clone();
@@ -122,7 +122,7 @@ fn app_list_is_looked_up_per_session() {
 
 #[test]
 fn english_tab_and_arrow_keys_pick_candidates() {
-    let mut router = router();
+    let mut router = router_english();
     let (_, _, frame) = type_english(&mut router, "hel");
     let first = frame.candidates.items[0].text.clone();
     // Tab 选高亮的词。
@@ -168,7 +168,7 @@ fn english_without_candidates_is_passthrough_with_shift_case() {
 
 #[test]
 fn switching_to_chinese_mid_word_flushes_english_letters() {
-    let mut router = router();
+    let mut router = router_english();
     type_english(&mut router, "hel");
     // 切回中文模式再敲字母：之前的英文字母原样上屏，新字母从头当拼音。
     let (outcome, commit, frame) = press(&mut router, letter('l'));
@@ -181,7 +181,7 @@ fn switching_to_chinese_mid_word_flushes_english_letters() {
 
 #[test]
 fn english_digit_without_a_slot_joins_the_word() {
-    let mut router = router();
+    let mut router = router_english();
     let (_, _, frame) = type_english(&mut router, "hello");
     let shown = frame.candidates.items.len();
     assert!((1..9).contains(&shown), "hello 的候选应不满 9 个：{shown}");

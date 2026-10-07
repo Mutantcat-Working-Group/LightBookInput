@@ -288,6 +288,7 @@ fn shuangpin_enters_modes_with_shifted_letters() {
 fn punctuation_toggle_is_remembered_per_mode() {
     let mut router = router_with(RouterConfig {
         status_enabled: true,
+        english_candidates: true,
         ..RouterConfig::default()
     });
     let comma = KeyEvent::new(0xBC, Some(','), Default::default());

@@ -48,9 +48,19 @@ pub fn router_with(config: RouterConfig) -> Router {
     router_in(config, None)
 }
 
+/// 英文候选开着（**旧缺省**，`[general] english_candidates = true`）的 Router：
+/// 现在生产缺省已改成关闭（英文模式直插），只有验证候选/选词行为的用例才需要这份。
+pub fn router_english() -> Router {
+    router_with(RouterConfig {
+        english_candidates: true,
+        ..RouterConfig::default()
+    })
+}
+
 /// 在某个应用（宿主 exe 名）里开会话，名单用 Windows 缺省那份。
 pub fn router_in_app(app: &str) -> Router {
     let config = RouterConfig {
+        english_candidates: true,
         apps: AppsConfig::with_english_candidates_off(DEFAULT_ENGLISH_CANDIDATES_OFF_WINDOWS),
         ..RouterConfig::default()
     };
