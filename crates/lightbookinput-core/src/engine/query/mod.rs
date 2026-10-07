@@ -19,7 +19,8 @@ pub(super) use result::join_marked_typed;
 pub(super) use snapshot::QuerySnapshot;
 
 impl Engine {
-    /// 解析当前缓冲区并生成排好序的候选。**不带译文**，译文由 [`Self::annotate`] 补。
+    /// 解析当前缓冲区并生成排好序的候选。**不带英文释义**，程序员模式的释义由壳按住 `~` 时
+    /// 按需查表（`Engine::english_gloss`）补。
     ///
     /// 光标停在拼音中间时只按光标前的那段算候选（`ni|hao` 出 你），光标后的拼音留着，
     /// 上屏之后接着组句；见 [`Composition::scope`]。

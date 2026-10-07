@@ -14,7 +14,7 @@ pub struct CloudWord {
 }
 
 impl CloudWord {
-    /// 转成云端来源的候选（译文留给 `Engine::annotate` 补）。
+    /// 转成云端来源的候选（程序员模式的英文释义由壳按住 `~` 时按需查表补）。
     pub fn into_candidate(self) -> Candidate {
         Candidate {
             text: self.text,
