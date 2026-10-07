@@ -44,7 +44,7 @@ impl CandidatesPage {
             .map(|l| l.label().to_owned())
             .collect();
         let layout_mode = row_popup(layout, mtm, "排布", &layout_titles, Setting::Layout, target);
-        note(layout, mtm, "横排时只给高亮的候选显示译词。");
+        note(layout, mtm, "横排时只给高亮的候选显示英文释义。");
         let horizontal_grid = checkbox(
             mtm,
             "横排时 ↑ / ↓ 展开成多行",

@@ -19,7 +19,7 @@ pub struct Report {
     /// 快捷候选与 emoji。
     pub other: Tally,
 
-    /// 不评的来源（云端词、云端整句、原样上屏、译词）各自的条数。
+    /// 不评的来源（云端词、云端整句、原样上屏）各自的条数。
     pub skipped: Vec<(InputSource, usize)>,
 
     /// 撤销条数。

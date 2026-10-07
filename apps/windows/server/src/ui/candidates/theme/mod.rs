@@ -36,7 +36,7 @@ pub(crate) struct Theme {
 
     pub pos_color: COLORREF,
 
-    /// 生词译文，比普通译文醒目。
+    /// 程序员模式的英文释义，比普通释义醒目。
     pub fresh_color: COLORREF,
 
     pub index_color: COLORREF,

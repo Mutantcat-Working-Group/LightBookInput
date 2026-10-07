@@ -42,7 +42,7 @@ impl Modifiers {
         command: false,
     };
 
-    /// ⌃ / Ctrl。Windows 上译词键的缺省（Alt 会被系统菜单截走）。
+    /// ⌃ / Ctrl。Windows 上程序员模式 `~` 键的缺省（Alt 会被系统菜单截走）。
     pub const CONTROL: Self = Self {
         option: false,
         shift: false,

@@ -174,21 +174,21 @@ pub const WIN: KeyModifiers = KeyModifiers {
     ..ALT_OFF
 };
 
-/// 平台缺省的译词键：macOS 是 Alt，Windows 是 Ctrl（Alt 被系统菜单截走）。
+/// 平台缺省的程序员模式键：macOS 是 Alt，Windows 是 Ctrl（Alt 被系统菜单截走）。
 #[cfg(not(windows))]
-pub const TRANSLATE: KeyModifiers = KeyModifiers {
+pub const PROGRAMMER: KeyModifiers = KeyModifiers {
     alt: true,
     ..ALT_OFF
 };
 #[cfg(windows)]
-pub const TRANSLATE: KeyModifiers = KeyModifiers {
+pub const PROGRAMMER: KeyModifiers = KeyModifiers {
     ctrl: true,
     ..ALT_OFF
 };
 
-pub const TRANSLATE_SECOND: KeyModifiers = KeyModifiers {
+pub const PROGRAMMER_SECOND: KeyModifiers = KeyModifiers {
     shift: true,
-    ..TRANSLATE
+    ..PROGRAMMER
 };
 
 /// 当前页里 `text` 排第几（1 起）。

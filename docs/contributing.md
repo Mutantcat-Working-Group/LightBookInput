@@ -8,7 +8,7 @@
 长版与理由见 [design/architecture.md](design/architecture.md)。
 
 - **Core 与平台层严格解耦。** `lightbookinput-core` 及其兄弟 crate 必须平台无关：词库、拼音解析、候选生成、排序、学习、文本变换全部属于 Core。
-  平台层（IMK / TSF / IBus-Fcitx）只做两件事：把系统输入事件翻译成 Core 的输入，把 Core 返回的帧画到候选窗口。
+  平台层（IMK / TSF / IBus-Fcitx）只做两件事：把系统输入事件转换成 Core 的输入，把 Core 返回的帧画到候选窗口。
   **平台层里不允许出现排序逻辑、词库访问或文本变换。** 判断标准：把 IMK 换成 TSF，不应该需要改 Core 的任何一行。
 - **一个候选词的英文释义只有一条。** 程序员模式（按住 `~`）下每个候选只从 `EnglishGlossary` 取一条中英释义（`Option<String>` 的 annotation）。
   不要设计成 `translations: Vec<Translation>` 或 `HashMap<Lang, String>` 这类多语言并列的数据结构：候选窗那一小行只放得下一行英文，多语言并列纯属浪费。

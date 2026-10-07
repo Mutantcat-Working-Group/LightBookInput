@@ -1,4 +1,4 @@
-//! 候选正文与第一条译词；选词仍回 Server 调 Engine::commit。
+//! 候选正文与第一条英文释义；选词仍回 Server 调 Engine::commit。
 #pragma once
 #include <fcitx/candidatelist.h>
 #include <functional>

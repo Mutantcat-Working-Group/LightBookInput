@@ -107,7 +107,7 @@ impl Engine {
 
     /// 不经词图，让模型直接按整段按键生成整句，最好的在前。
     ///
-    /// 词图只会把按键读成拼音，中英混输（`yongdockerbushuhenfangbian`）与生词在它那里没有路径，
+    /// 词图只会把按键读成拼音，中英混输（`yongdockerbushuhenfangbian`）在它那里没有路径，
     /// 出来的只能是把英文段硬读成拼音的结果（用的哦乘客仍不熟很方便）。这条路不受读法限制。
     /// 同步打分器当场生成，异步的先记下、等壳在用户停顿后取（与重打分同一次请求）。
     pub(super) fn generated_sentences(&self, keys: &str) -> Vec<String> {

@@ -2,20 +2,14 @@
 
 ## 布局
 
-候选窗口缺省竖排（配置 `[general] layout`，可选横排）。竖排时每个候选项由两个主要部分组成：
+候选窗口缺省横排（配置 `[general] layout`，可选竖排）。横排时候选排成一行，只给高亮的那个在下面单独一行显示英文释义（程序员模式，按着 `~` 才出；每个都带会把窗口拉得很宽），页码在行尾：
 
 ```text
-候选词                     翻译
+1 计算机  2 电脑  3 计算  4 计算器          1/3
+computer
 ```
 
-例如：
-
-```text
-1  计算机                  computer
-2  电脑                    computer
-3  计算                    calculate
-4  计算器                  calculator
-```
+竖排（`layout = "vertical"`）时一行一个候选项：序号加候选词，程序员模式的英文释义跟在候选词后面。
 
 横排可以展开成矩阵（2026-09-20，macOS；Windows 未接；开关 `[general] horizontal_grid`，缺省关——它改了上 / 下、左 / 右、Esc 这几个已有按键的行为，
 不是每个人都要，关着时横排下所有按键与以前一样，改完立刻生效并收回单行）：单行时按上 / 下键立即展开并换行，矩阵是固定 6 行的视口（`GRID_ROWS`），
@@ -23,16 +17,9 @@
 数字键选高亮所在那一行，序号也只标在那一行；新一轮查询或 Esc 收回单行。视口与移动规则在 Core `candidate::layout::Grid`（展示规则，各壳共用），
 壳只转发方向键、把视口里的格子按行优先排进帧（`Frame::columns` 不为 0 即矩阵）。窗口尺寸在一轮查询里不变：
 各列宽度由 Core 按**整份**候选估（`Grid::column_ems`：汉字一个字宽、拉丁字母 0.62、云朵另加，单格封顶 `MAX_CELL_EMS` = 4 个字宽，
-四字词能完整显示），不按视口里可见的几行实测，所以滚动、移动高亮时列宽不变；超出的候选截尾加「…」，高亮到它时网格下方的信息行给出完整文本和译文，
+四字词能完整显示），不按视口里可见的几行实测，所以滚动、移动高亮时列宽不变；超出的候选截尾加「…」，高亮到它时网格下方的信息行给出完整文本和英文释义，
 页码在信息行末尾，信息行放不下的同样截断，不撑开窗口；信息行始终保留，在靠后的页展开时视口往上补齐 6 行。9 列时网格最宽约 756 pt。
 第一版按视口实测列宽、单格 6 个字宽，滚一行窗口就跳一下，最宽能到 1100 pt。两条绘制路径（`lightbookinput-render` 的 `renderer/matrix.rs`、系统绘制的 `view/matrix.rs`）同一套规则。
-
-横排时候选排成一行，只给高亮的那个在下面单独一行显示译文（每个都带译文会把窗口拉得很宽），页码在行尾：
-
-```text
-1 计算机  2 电脑  3 计算  4 计算器          1/3
-computer
-```
 
 顶部都有一行拼音（preedit），见下文「拼音行」。
 
@@ -81,7 +68,7 @@ collection behavior 是 CanJoinAllSpaces + FullScreenAuxiliary + Stationary。�
 
 ## 平台层的职责
 
-候选窗口由平台层绘制，但候选内容、顺序和译文全部来自 Core。
+候选窗口由平台层绘制，但候选内容、顺序和英文释义全部来自 Core。
 平台层拿到的是已经排好序、已经带好 annotation 的候选列表，只负责画。
 
 ## 按键约定（macOS 已实现，其他平台照此）
@@ -170,7 +157,6 @@ Alacritty / kitty / VS Code / Cursor / Zed / JetBrains 全家 / MacVim / Sublime
   每个词最多 2 个、一次最多 3 个，`CandidateKind::Emoji`，上屏按那个词的音节消耗拼音（英文词带出的对应整段输入）、不记学习。
   数据是 Unicode CLDR 中文与英文 annotations（`assets/emoji/emoji-zh.tsv`、`emoji-en.tsv`，Unicode License v3，可发布，加载时合成一张表），
   `dict-convert emoji --language zh|en` 生成：单字词只收名字里含这个字的 emoji，名字里含这个词的靠前、名字越短越靠前。
-  日文表要等有日语输入模式再说。
 
 ### 模糊音（默认全关，`config.toml` 的 `[fuzzy]`）
 
@@ -301,7 +287,7 @@ Core 按 `prediction::restates_question` 剔掉：与本地转出的问题相同
 
 「关于」页：版本与构建号（`bundle.sh` 打包时把 git 短哈希与日期塞进环境变量 `LIGHTBOOKINPUT_BUILD`，编译期 `option_env!` 读，直接 `cargo build` 的显示「本地构建」）、
 许可说明（与仓库 `LICENSE` 一致）、随包数据的来源与署名（第三方数据的许可证要求署名在分发物里可见，文案在 `preferences/about.rs`，改数据来源时与 `bundle.sh` 的 `pack` 署名一起改）、
-检查更新（开关、渠道、立即检查，见 [update.md](update.md)）、隐私说明（不上传任何数据；云联想 / 翻译发给用户自己在「云服务」页填的 AI 服务商，不经过作者）与反馈方式：「打开日志目录」「复制诊断信息」
+检查更新（开关、渠道、立即检查，见 [update.md](update.md)）、隐私说明（不上传任何数据；云联想的上下文发给你自己在「云服务」页填的 AI 服务商，不经过作者）与反馈方式：「打开日志目录」「复制诊断信息」
 （版本、系统、加载的数据、抹掉密钥的配置原文、日志目录，写进剪贴板）。
 日志缺省 info 级，不含用户敲的内容；`[general] log_level = "debug"`（「高级」页「详细日志」）才逐键记，`tracing_subscriber::reload` 热切换，`RUST_LOG` 环境变量在时以它为准。
 

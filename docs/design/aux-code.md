@@ -114,7 +114,7 @@ v1 只支持**全拼 + 辅码**、**双拼 + 辅码**。简拼 + 辅码、整句
 | `lightbookinput-platform` | 配置项、码表与方案的目录与开关 |
 | 平台壳 | macOS：`apps/macos`（IMK 偏好设置页、候选窗自绘）；Windows：`apps/windows/settings`（WinUI 3 设置页）与 `apps/windows/server`（自绘候选窗与状态条）。两边都只做两件事：把码段画出来、把设置界面画出来 |
 
-平台层不出现排序逻辑、词库访问或翻译调用（`docs/design/architecture.md` 的架构约束）。
+平台层不出现排序逻辑或词库访问（`docs/design/architecture.md` 的架构约束）。
 
 ## 测试与评测
 
@@ -156,7 +156,7 @@ v1 只支持**全拼 + 辅码**、**双拼 + 辅码**。简拼 + 辅码、整句
 ## 参考
 
 - `docs/design/candidate-ui.md`：候选窗口与按键约定（本文的码段与注记沿用它的视觉词汇）。
-- `docs/design/architecture.md`：Core 与平台层的划分、翻译是单条 annotation 的约束。
+- `docs/design/architecture.md`：Core 与平台层的划分、英文释义是单条 annotation 的约束。
 - 渲染器 spike（分支 `renderer-spike` 上的 `crates/lightbookinput-render` 与 `docs/design/rendering.md`）：候选窗一帧 + 主题 → 位图，各平台只贴图。
 - `docs/notes/crate-notes.md`：各 crate / app / tool 的实现要点（改了实现要同步那里）。
 - `docs/plan/todo.md`：排期与进度。

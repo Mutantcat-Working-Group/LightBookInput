@@ -126,7 +126,7 @@ impl LightBookInputInputController {
         let semicolon =
             composing && c == ';' && host::with(|h| h.engine.takes_semicolon()).unwrap_or(false);
         // 组句中敲半角标点：进缓冲区，整段成为英文直输段（`hello,` `dui'ma?`），中文模式下也能打带标点的英文；
-        // 翻页键除外；⇧+数字（! @ # …）在前面已被删候选 / 译词键截走
+        // 翻页键除外；⇧+数字（! @ # …）在前面已被删候选键截走
         let punctuation = composing
             && !question
             && !expression

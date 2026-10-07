@@ -1,4 +1,4 @@
-//! 组句中「修饰键 + 数字」：译词上屏与删候选。
+//! 组句中「修饰键 + 数字」：程序员模式上屏英文释义与删候选。
 
 use crate::support::*;
 
@@ -7,8 +7,8 @@ fn alt_digit_commits_first_translation() {
     let mut router = router();
     let (_, _, frame) = type_letters(&mut router, "nihao");
     let slot = slot_of(&frame, "你好");
-    // 缺省译词键（mac ⌥ / Windows Ctrl）+ 数字：上屏那个候选的第一个译词，组句结束。
-    let (outcome, commit, after) = press(&mut router, digit_with(slot, TRANSLATE));
+    // 缺省程序员模式键（mac ⌥ / Windows Ctrl）+ 数字：上屏那个候选的英文释义，组句结束。
+    let (outcome, commit, after) = press(&mut router, digit_with(slot, PROGRAMMER));
     assert_eq!(
         (outcome, commit.as_deref()),
         (KeyOutcome::Consumed, Some("hello"))
@@ -21,8 +21,8 @@ fn second_translation_key_without_second_sense_is_swallowed() {
     let mut router = router();
     let (_, _, frame) = type_letters(&mut router, "nihao");
     let slot = slot_of(&frame, "你好");
-    // 样例释义表里「你好」只有一条译文：第二个译词键（Shift+译词键）+ 数字吞掉不动，组句还在。
-    let (outcome, commit, after) = press(&mut router, digit_with(slot, TRANSLATE_SECOND));
+    // 样例释义表里「你好」只有一条释义：第二个模式键（Shift+模式键）+ 数字吞掉不动，组句还在。
+    let (outcome, commit, after) = press(&mut router, digit_with(slot, PROGRAMMER_SECOND));
     assert_eq!((outcome, commit), (KeyOutcome::Consumed, None));
     assert_eq!(preedit(&after), "ni'hao");
 }

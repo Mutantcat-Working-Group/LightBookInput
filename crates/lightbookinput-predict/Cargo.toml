@@ -1,6 +1,6 @@
 [package]
 name = "lightbookinput-predict"
-description = "云联想：OpenAI 兼容接口的候选词、整句补全、问字、翻译与释义兜底"
+description = "云联想：OpenAI 兼容接口的候选词、整句补全、问字"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

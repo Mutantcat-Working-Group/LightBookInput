@@ -60,7 +60,7 @@ impl Router {
             .map(|reload| reload.config_path.as_path())
     }
 
-    /// 开启热加载：记下路径与当前已应用的 predict / dictionaries / aux_code / 学习语言，
+    /// 开启热加载：记下路径与当前已应用的 predict / dictionaries / aux_code，
     /// 以及启动用的那批数据目录。目录必须与启动同款语义（`dicts/` / `codes/`），
     /// 热加载才找得到文件。
     pub fn watch_config(

@@ -9,7 +9,7 @@ pub trait SentenceScorer: Send {
 
     /// 不经词图，直接从按键生成整句，最好的在前。生成不了（字级模型没有这个能力、或模型出错）返回空 Vec。
     ///
-    /// 词图只会把整段按键读成拼音，中英混输（`yongdockerbushuhenfangbian`）与生词在它那里根本没有路径；
+    /// 词图只会把整段按键读成拼音，中英混输（`yongdockerbushuhenfangbian`）在它那里根本没有路径；
     /// P2C 训练时见过的就是「按键 → 汉字」，这条路不受词图的读法限制。
     fn generate(&self, _keys: &str, _beam: usize, _max_chars: usize) -> Vec<String> {
         Vec::new()

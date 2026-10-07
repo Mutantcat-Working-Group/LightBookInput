@@ -30,7 +30,7 @@ nlohmann::json mapKey(const fcitx::Key &key) {
         if (key.sym() >= FcitxKey_KP_0 && key.sym() <= FcitxKey_KP_9) code = 0x60 + key.sym() - FcitxKey_KP_0;
         break;
     }
-    // Shift+数字的译词/删除快捷键按物理数字行识别，字符仍保留 !@# 等。
+    // Shift+数字的程序员模式上屏/删除快捷键按物理数字行识别，字符仍保留 !@# 等。
     const std::string shiftedDigits = ")!@#$%^&*(";
     auto shifted = shiftedDigits.find(static_cast<char>(key.sym()));
     if (key.sym() < 128 && key.states().test(fcitx::KeyState::Shift) && shifted != std::string::npos) code = 0x30 + shifted;
