@@ -1891,7 +1891,7 @@ dependencies = [
 
 [[package]]
 name = "lightbookinput-linux-server"
-version = "0.1.5-dev"
+version = "1.0.20261008"
 dependencies = [
  "libc",
  "lightbookinput-core",
@@ -1921,7 +1921,7 @@ dependencies = [
 
 [[package]]
 name = "lightbookinput-macos"
-version = "0.1.5-dev"
+version = "1.0.20261008"
 dependencies = [
  "dotenvy",
  "jiff",
@@ -2033,7 +2033,7 @@ dependencies = [
 
 [[package]]
 name = "lightbookinput-windows-server"
-version = "0.1.5-dev"
+version = "1.0.20261008"
 dependencies = [
  "dotenvy",
  "embed-manifest",
@@ -2058,7 +2058,7 @@ dependencies = [
 
 [[package]]
 name = "lightbookinput-windows-settings"
-version = "0.1.5-dev"
+version = "1.0.20261008"
 dependencies = [
  "jiff",
  "lightbookinput-core",
@@ -2078,7 +2078,7 @@ dependencies = [
 
 [[package]]
 name = "lightbookinput-windows-tsf"
-version = "0.1.5-dev"
+version = "1.0.20261008"
 dependencies = [
  "lightbookinput-core",
  "lightbookinput-platform",
