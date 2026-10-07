@@ -107,7 +107,6 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             programmer_mode: false,
             status: None,
             input_log_enabled: None,
-            notice: None,
             preedit_mode: PreeditMode::default(),
             layout: LayoutMode::default(),
             horizontal_grid: false,

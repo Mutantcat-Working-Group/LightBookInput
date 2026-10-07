@@ -212,8 +212,6 @@ impl LightBookInputInputController {
             control,
             command,
         };
-        // 提示在显示：敲任何键先收掉，键照常处理
-        host::with(|h| h.clear_notice());
         // 程序员模式：按住 ~ 时数字键 / 空格上屏候选的英文
         if let Some(handled) = self.programmer_key(key, event.isARepeat(), pressed, client) {
             return handled;
@@ -228,10 +226,9 @@ impl LightBookInputInputController {
             && !expression
             && !pressed.is_empty()
             && let Some(digit) = digit_key(key)
+            && pressed == host::with(|h| h.delete_keys).unwrap_or_default()
         {
-            if pressed == host::with(|h| h.delete_keys).unwrap_or_default() {
-                return self.handle_delete_key(digit, client);
-            }
+            return self.handle_delete_key(digit, client);
         }
         let selector = match key {
             36 | 76 => Some(sel!(insertNewline:)),

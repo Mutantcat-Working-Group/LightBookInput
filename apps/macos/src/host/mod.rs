@@ -48,7 +48,6 @@ use config::{ConfigWatch, TextReplacement};
 pub use dictionaries::DictionaryInfo;
 pub use init::init;
 use model::RescoreMonitor;
-use presenting::Notice;
 pub use session::Session;
 
 pub struct Host {
@@ -111,9 +110,6 @@ pub struct Host {
 
     /// 输入日志是否在记（配置 `[general] input_log`），换了才重开文件。
     input_log_enabled: Option<bool>,
-
-    /// 正在显示的提示（候选窗口里一行字，几秒后自动收）。
-    pub notice: Option<Notice>,
 
     /// 组句中的拼音显示在行内、候选窗口还是两处。
     pub preedit_mode: PreeditMode,

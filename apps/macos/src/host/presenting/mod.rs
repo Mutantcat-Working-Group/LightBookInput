@@ -1,8 +1,4 @@
-//! 呈现：删候选、按应用关英文候选、提示气泡、会话重置与候选窗口绘制。
-
-mod notice;
-
-pub(super) use notice::Notice;
+//! 呈现：删候选、按应用关英文候选、会话重置与候选窗口绘制。
 
 use super::*;
 
@@ -25,23 +21,6 @@ impl Host {
     /// 这个应用里英文模式给不给候选：全局开关开着，且应用不在 `[apps] english_candidates_off` 里。
     pub fn english_candidates_in(&self, bundle: Option<&str>) -> bool {
         self.english_candidates && !bundle.is_some_and(|b| self.apps.english_candidates_off(b))
-    }
-
-    /// 在候选窗口里显示一行提示，几秒后自动收起（敲键也收）。
-    pub fn show_notice(&mut self, text: &str, anchor: NSRect) {
-        self.anchor = anchor;
-        self.reset_session(None, vec![notice_candidate(text.to_owned())]);
-        self.render();
-        let mtm = MainThreadMarker::new().expect("Host 只在主线程用");
-        self.notice = Some(Notice::schedule(mtm));
-    }
-
-    /// 收起提示；没在显示就什么都不做。
-    pub fn clear_notice(&mut self) {
-        if self.notice.take().is_some() {
-            self.reset_session(None, Vec::new());
-            self.window.hide();
-        }
     }
 
     /// 横排矩阵这套按键是否生效：开关开着（`[general] horizontal_grid`）而且排布是横排。
@@ -132,18 +111,6 @@ impl Host {
             status,
         };
         self.window.show(frame, self.anchor);
-    }
-}
-
-/// 提示气泡里的一行：当作云端来源的画，用户敲键就跟着收。
-fn notice_candidate(text: String) -> Candidate {
-    Candidate {
-        text,
-        kind: CandidateKind::Cloud,
-        syllables: Vec::new(),
-        reading: None,
-        aux_code: None,
-        gloss: None,
     }
 }
 
