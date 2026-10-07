@@ -13,7 +13,7 @@
 # 1. 第一遍：写初版 dict.tsv，并列出要交给 LLM 定读音的词：没有拼音的领域词里含多音字的，以及常用词表里含多音字的
 #    （常用词表自带的拼音对多音字有错，如 重庆 zhong4'qing4，所以也要标；标注与原表不同时标注为主读音，原表读音降权保留）
 cargo run --release -p lightbookinput-dict-convert -- lexicon --emit-ambiguous data/generated/lexicon-ambiguous.txt
-# 2. 多音字词交给 LLM 离线标读音（标音工具不在仓库里，随 gloss-gen 一起移除；结果 data/generated/pinyin-llm.jsonl，不进 git，发布时作为 Release 附件保存）
+# 2. 多音字词交给 LLM 离线标读音（离线产出，工具不进仓库；结果 data/generated/pinyin-llm.jsonl，不进 git，发布时作为 Release 附件保存）
 # 3. 用初版词库分词、统计语料词频（语料在 data/corpus/，见 docs/design/landscape.md）
 cargo run --release -p lightbookinput-dict-convert -- bigram data/corpus/*.txt
 # 4. 第二遍：带标注与词频写最终 dict.tsv；再统计一次语料让分词用上真实词频

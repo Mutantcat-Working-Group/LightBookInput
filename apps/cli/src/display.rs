@@ -8,7 +8,7 @@ use lightbookinput_core::{Candidate, Engine, Query};
 const PREDICTION_POLL: Duration = Duration::from_millis(20);
 const PREDICTION_WAIT: Duration = Duration::from_secs(8);
 
-/// 查询并打印一段拼音的候选、译文和耗时。返回查询结果供后续上屏用。
+/// 查询并打印一段拼音的候选和耗时。返回查询结果供后续上屏用。
 ///
 /// 输入里的 `|` 表示光标位置（`ni|hao`），用来验证光标停在中间时的候选。
 pub fn show(engine: &mut Engine, input: &str, limit: usize) -> Option<Query> {
@@ -97,7 +97,7 @@ pub fn feed(engine: &mut Engine, keys: &str) {
     }
 }
 
-/// 逐键模式：`kaifa` 当作 k、ka、kai…… 五次按键，每个前缀都查一次并标注译文，
+/// 逐键模式：`kaifa` 当作 k、ka、kai…… 五次按键，每个前缀都查一次，
 /// 一行一键打印各阶段耗时和首候选。这是输入法每键的真实工作量（联想不算，它在后台线程）。
 pub fn show_typing(engine: &mut Engine, input: &str) {
     println!(
@@ -179,7 +179,7 @@ pub fn show_prediction(engine: &mut Engine, candidates: &[Candidate]) {
     println!("  ☁ （联想超时）");
 }
 
-/// 候选词左对齐，右侧是「读音 / 辅码」，多条释义用 · 分隔。
+/// 候选词左对齐，右侧是「读音 / 辅码」。
 fn format_candidate(candidate: &Candidate, width: usize) -> String {
     let padding = " ".repeat(width.saturating_sub(display_width(&candidate.text)) + 2);
     let reading = candidate
