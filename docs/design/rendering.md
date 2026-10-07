@@ -45,7 +45,7 @@
 
 ## 方案
 
-一个 Rust crate 负责布局 + 绘制，输入是 Core 给的 `Frame`（候选、拼音行、译文、分页、提示）与主题数据，输出一张 BGRA 位图与命中区域表；
+一个 Rust crate 负责布局 + 绘制，输入是 Core 给的 `Frame`（候选、拼音行、英文释义、分页、提示）与主题数据，输出一张 BGRA 位图与命中区域表；
 各平台只做两件事：把位图贴上窗口、把点击 / 拖拽坐标传回来。
 
 | 平台 | 贴位图的方式 | 改动 |
@@ -96,7 +96,7 @@
 3. **笔画加深**：CoreText 对文字抗锯齿有一层 gamma，线性混合出来的字偏细，深色背景尤其明显。主题里加 `text_gamma`（浅色 0.85、深色 0.75），放大并排看笔画粗细一致。
 
 **剩下的已知差异**（每个字形 ≤ 1 pt，并排看不出，记着就行）：
-- 「·」（U+00B7）CoreText 在中文系统上用 `.CJKSymbolsFallbackSC` 的宽点（5.76 pt），我们用 SF 自己的（3.56 pt）；一行译文差 2 pt。
+- 「·」（U+00B7）CoreText 在中文系统上用 `.CJKSymbolsFallbackSC` 的宽点（5.76 pt），我们用 SF 自己的（3.56 pt）；一行释义差 2 pt。
 - 汉字 CoreText 用私有的 `.PingFang UI Text SC`（advance 0.993 em），我们用公开的 PingFang SC（1 em）。
 - 假名 CoreText 用 `.CJKSymbolsFallbackSC`，我们用 PingFang HK。
 - 云朵是矢量描边近似 SF Symbol `cloud`，比原生略粗。
