@@ -15,16 +15,9 @@ pub const PAGE_KEY_OPTIONS: [&str; 3] = ["[]", ",.", "-="];
 /// 缺省翻页键对，与 [`PAGE_KEY_OPTIONS`] 第一项一致。
 pub const DEFAULT_PAGE_KEYS: (char, char) = ('[', ']');
 
-/// `[general]` 分节：与具体功能无关的常规项。
-/// `learning_language` 写这个值表示不显示译文。
-pub const LEARNING_LANGUAGE_OFF: &str = "off";
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct GeneralConfig {
-    /// 学习语言（ISO 639-1，`en` / `ja` / `es`；`off` 不显示译文）：候选旁显示哪种语言的译文。要有对应的释义表文件才生效。
-    pub learning_language: String,
-
     /// 每页候选数，1–9。
     pub page_size: usize,
 
@@ -76,7 +69,7 @@ pub struct GeneralConfig {
     /// 非字母数字、非翻页键（见 [`lightbookinput_core::is_valid_aux_code_key`]）。
     pub aux_code_key: String,
 
-    /// 候选上是否显示码（与译文拼成一条注记）。缺省关：竖排会挤、横排更难放下。
+    /// 候选上是否显示码。缺省关：竖排会挤、横排更难放下。
     pub aux_code_show: bool,
 
     /// 码段删空后是否留在辅码态：开（缺省）时 `;` 仍在、候选全部回来，空码段再按一次退格才退出；
@@ -119,7 +112,6 @@ pub struct GeneralConfig {
 impl Default for GeneralConfig {
     fn default() -> Self {
         Self {
-            learning_language: "en".to_owned(),
             page_size: MAX_PAGE_SIZE,
             page_keys: PAGE_KEY_OPTIONS[0].to_owned(),
             theme: ThemeMode::default(),
@@ -189,13 +181,6 @@ impl GeneralConfig {
                 Scheme::Pinyin
             }
         }
-    }
-
-    /// 学习语言关着（`learning_language = "off"`）：候选旁不显示译文，生词标记与释义兜底也停。
-    pub fn learning_language_off(&self) -> bool {
-        self.learning_language
-            .trim()
-            .eq_ignore_ascii_case(LEARNING_LANGUAGE_OFF)
     }
 
     /// 当前方案是双拼时是哪一套；不是双拼时为 `None`。

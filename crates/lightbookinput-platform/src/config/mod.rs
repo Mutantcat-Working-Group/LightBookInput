@@ -3,7 +3,6 @@ mod aux_code;
 mod candidate_renderer;
 mod dictionaries;
 mod general;
-mod key_combo;
 mod layout_mode;
 mod log_level;
 mod model;
@@ -34,9 +33,8 @@ pub use aux_code::AuxCodeConfig;
 pub use candidate_renderer::CandidateRenderer;
 pub use dictionaries::{DEFAULT_DOMAINS, DictionariesConfig};
 pub use general::{
-    DEFAULT_PAGE_KEYS, GeneralConfig, LEARNING_LANGUAGE_OFF, MAX_PAGE_SIZE, PAGE_KEY_OPTIONS,
+    DEFAULT_PAGE_KEYS, GeneralConfig, MAX_PAGE_SIZE, PAGE_KEY_OPTIONS,
 };
-pub use key_combo::KeyCombo;
 pub use layout_mode::LayoutMode;
 pub use log_level::LogLevel;
 pub use model::LocalModelConfig;
@@ -56,14 +54,14 @@ pub use update::{UpdateChannel, UpdateConfig};
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Config {
-    /// 常规：学习语言、每页候选数、翻页键、外观。
+    /// 常规：每页候选数、翻页键、外观。
     pub general: GeneralConfig,
 
     /// 自定义短语；保存和读取均检查位置冲突。
     #[serde(deserialize_with = "deserialize_phrases")]
     pub custom_phrases: Vec<lightbookinput_core::CustomPhrase>,
 
-    /// 快捷键：前缀模式键（表达式 / 问字）与上屏译词的修饰键组合。
+    /// 快捷键：前缀模式键（表达式 / 问字）与壳层的修饰键组合。
     pub shortcut: ShortcutConfig,
 
     /// 模糊音开关。
@@ -159,13 +157,6 @@ macro_rules! template_shortcut_keys {
         r#"# 中 / 英模式切换键（Windows 用），可多选：shift 单击（缺省）/ control 单击 / ctrl+alt+space 组合键；[] 不用键切换。
 # macOS 的切换键是 Caps Lock（系统级），本项不生效
 switch_mode = ["shift"]
-# 数字键配这些修饰键上屏候选的译词：translation 第一个译词，translation_second 第二个（候选右侧有两个译词时）
-# 任意修饰键组合（option / shift / control / command 用 + 连），偏好设置里点按钮录制；别用 control+数字（系统切桌面）和 command+数字（应用切标签页）
-translation = "option"
-translation_second = "shift+option"
-# 把应用里选中的文字译成学习语言（要开着云服务）：译文先出现在候选窗口，回车替换选中的文字，Esc 保留原文
-# 修饰键 + 一个字母或数字，任意组合；避开 ⌘T 这类应用常用键
-translate_selection = "control+option+t"
 # 数字键配这些修饰键删掉候选：用户词（云端选过的、自动造的）整个删掉，词库里的词清掉对它的学习记录。组句中要打感叹号先把词上屏
 delete_candidate = "shift"
 "#
@@ -179,12 +170,6 @@ macro_rules! template_shortcut_keys {
         r#"# 中 / 英模式切换键，可多选：shift 单击（缺省，与微软拼音一致）/ control 单击 / ctrl+alt+space 组合键；[] 不用键切换，只剩按钮。
 # 不提供 Ctrl + Space：中文 Windows 把它绑成系统的「输入法/非输入法切换」，系统先截走
 switch_mode = ["shift"]
-# 数字键配这些修饰键上屏候选的译词：translation 第一个译词，translation_second 第二个（候选右侧有两个译词时）
-# 任意修饰键组合（alt / shift / ctrl / win 用 + 连）。Alt+数字会被 Windows 当菜单快捷键截走，缺省用 Ctrl；组句时才拦，不打字时照常放行给应用
-translation = "ctrl"
-translation_second = "shift+ctrl"
-# 把应用里选中的文字译成学习语言（要开着云服务）：译文先出现在候选窗口，回车替换选中的文字，Esc 保留原文
-translate_selection = "ctrl+alt+t"
 # 数字键配这些修饰键删掉候选：用户词（云端选过的、自动造的）整个删掉，词库里的词清掉对它的学习记录。组句中要打感叹号先把词上屏
 delete_candidate = "shift"
 "#
@@ -197,16 +182,14 @@ pub const TEMPLATE: &str = concat!(
     r#"# 轻书输入法配置。保存后自动生效；也可以在菜单栏的输入法菜单里改。
 
 [general]
-# 学习语言（en 英语 / ja 日语 / es 西班牙语 / off 不显示译文）：候选旁显示哪种语言的译文，要有对应的释义表才生效
-learning_language = "en"
 # 每页候选数（1–9）
 page_size = 9
 # 翻页键对：前一个上一页、后一个下一页。可选 "[]" 或 ",."；选 ",." 的话组句中敲逗号句号是翻页而不是上屏加标点
 page_keys = "[]"
 # 候选窗口外观：system 跟随系统 / light 浅色 / dark 深色
 theme = "system"
-# 候选窗口排布：vertical 竖排 / horizontal 横排（横排只给高亮候选显示译文）
-layout = "vertical"
+# 候选窗口排布：horizontal 横排（候选一行排开，空格或数字键选高亮那个）/ vertical 竖排
+layout = "horizontal"
 # 横排时 ↑ / ↓ 把单行展开成 6 行矩阵并换行（一行一页候选），← / → 改为在候选之间移动（拼音光标用 ⌥←/→、⌘←/→），
 # Esc 第一下先收回单行。缺省 false：横排下 ↑ / ↓ 逐个移动高亮、← / → 移动拼音光标，与以前一样。只有 macOS 用
 horizontal_grid = false
@@ -247,7 +230,7 @@ scheme = ""
 # 双拼方案下 preedit 显示原始按键（如 ljse）还是展开成全拼（lan'se）；缺省 false（展开成全拼）
 shuangpin_raw_preedit = false
 # 五笔（86 版形码）：留空为关，wubi86 为开。**与上面的拼音方案同时开着就是混输**——
-# 两边都出候选，编码打全的五笔词在前、其次拼音（打不出的字直接打拼音）；候选旁的译文、生词记录与学习照常。
+# 两边都出候选，编码打全的五笔词在前、其次拼音（打不出的字直接打拼音）；学习照常。
 # 只用五笔的话把 scheme 写成 none；第 5 个字母起五笔已经查不到东西，自动只剩拼音。
 wubi = ""
 # 日志级别：info 缺省 / debug 详细（会记录敲的拼音与上屏的文字，配合作者排查问题时再开）。日志在 ~/Library/Logs/LightBookInput/
@@ -584,18 +567,12 @@ mod tests {
         assert_eq!(config.general.theme, ThemeMode::Dark);
         assert_eq!(config.general.layout, LayoutMode::Horizontal);
         assert_eq!(config.general.preedit, PreeditMode::Window);
-        assert_eq!(config.general.learning_language, "en");
         assert!(config.general.english_candidates);
         assert!(!config.general.traditional);
         assert_eq!(config.general.shuangpin(), None);
         assert_eq!(config.general.log_level, LogLevel::Info);
         assert_eq!(config.shortcut.mode.expression, 'i');
         assert_eq!(config.shortcut.mode.question, 'u');
-        // 译词修饰键缺省分平台（Windows 是 Ctrl 系，其余 Option 系，见 shortcut.rs），断言跟着 Default 走
-        assert_eq!(
-            config.shortcut.translation,
-            Config::default().shortcut.translation
-        );
         assert_eq!(config.shortcut.switch_mode, SwitchKeys::default());
         assert!(config.general.english_mode);
     }

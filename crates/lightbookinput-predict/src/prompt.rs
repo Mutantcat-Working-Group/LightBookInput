@@ -45,20 +45,10 @@ question（输入法本地把拼音转成的汉字，可能有错字，只是帮
 answers：1 到 max_items 个，按可能性排序。text 是能直接上屏的字、词或短答案，不要解释；\
 pinyin 是 text 的带声调拼音（如 sēn），非中文答案给空字符串。不确定就少给，实在不懂就给空数组。";
 
-/// 翻译的系统提示：中文选区译成学习语言，外文选区译回中文，只要译文。方向由 Core 按文字判断，模型兜底。
-pub const TRANSLATE_SYSTEM_PROMPT: &str = "\
-你是一个输入法的翻译助手。用户在应用里选中了一段文字并按了翻译快捷键，你会收到 JSON：\
-text（选中的原文）、target_language（目标语言代码：zh 中文、en 英语、ja 日语）。\
-把 text 完整、自然地译成目标语言，保留原文的语气、换行与标点习惯；\
-原文已经是目标语言时：目标不是中文就改译成中文，目标是中文就原样返回。\
-不要解释、不要加引号、不要加「译文：」之类的前缀。\
-输出 JSON：{\"sentence\": \"译文\"}";
-
 pub fn system_prompt(request: &PredictionRequest) -> &'static str {
     match request.kind {
         PredictionKind::Compose => SYSTEM_PROMPT,
         PredictionKind::Question => QUESTION_SYSTEM_PROMPT,
-        PredictionKind::Translate => TRANSLATE_SYSTEM_PROMPT,
     }
 }
 
@@ -96,22 +86,7 @@ struct QuestionMessage<'a> {
     max_items: usize,
 }
 
-/// 翻译发给模型的用户消息。
-#[derive(Serialize)]
-struct TranslateMessage<'a> {
-    text: &'a str,
-
-    target_language: &'a str,
-}
-
 pub fn user_prompt(request: &PredictionRequest) -> String {
-    if request.kind == PredictionKind::Translate {
-        return serde_json::to_string(&TranslateMessage {
-            text: &request.text,
-            target_language: &request.target_language,
-        })
-        .unwrap_or_default();
-    }
     if request.kind == PredictionKind::Question {
         return serde_json::to_string(&QuestionMessage {
             letters: &request.letters,
@@ -180,16 +155,6 @@ pub fn parse_reply(content: &str, request: &PredictionRequest) -> Reply {
     };
     if request.kind == PredictionKind::Question {
         return parse_answers(raw.answers, request.max_items);
-    }
-    if request.kind == PredictionKind::Translate {
-        // 译文保留换行（原文可能是多段），只去首尾空白
-        return Reply {
-            words: Vec::new(),
-            sentence: raw
-                .sentence
-                .map(|s| s.trim().to_owned())
-                .filter(|s| !s.is_empty()),
-        };
     }
     let mut reply = Reply::default();
     let mut seen: Vec<String> = Vec::new();
@@ -290,8 +255,6 @@ mod tests {
             guess: String::new(),
             max_items: 2,
             want_sentence,
-            text: String::new(),
-            target_language: String::new(),
         }
     }
 
@@ -376,24 +339,6 @@ mod tests {
         assert_eq!(
             parse_reply(r#"{"foo": 1}"#, &request("zt", false)),
             Reply::default()
-        );
-    }
-
-    #[test]
-    fn translate_requests_use_their_own_prompt_and_keep_the_translation() {
-        let mut translate = request("", false);
-        translate.kind = PredictionKind::Translate;
-        translate.text = "我想去吃饭".to_owned();
-        translate.target_language = "en".to_owned();
-        assert_eq!(system_prompt(&translate), TRANSLATE_SYSTEM_PROMPT);
-        assert!(user_prompt(&translate).contains("\"target_language\":\"en\""));
-        let reply = parse_reply(r#"{"sentence": "  I want to go eat.\n"}"#, &translate);
-        assert_eq!(reply.sentence.as_deref(), Some("I want to go eat."));
-        assert!(reply.words.is_empty());
-        assert!(
-            parse_reply(r#"{"sentence": ""}"#, &translate)
-                .sentence
-                .is_none()
         );
     }
 }

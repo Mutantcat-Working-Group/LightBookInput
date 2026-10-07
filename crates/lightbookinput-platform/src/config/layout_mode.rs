@@ -4,17 +4,17 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum LayoutMode {
-    /// 竖排：一行一个候选，译文在同一行右侧。
+    /// 横排（缺省）：候选排成一行，空格或数字键选高亮那个。
     #[default]
-    Vertical,
-
-    /// 横排：候选排成一行，只给高亮那个在下面显示译文。
     Horizontal,
+
+    /// 竖排：一行一个候选，一页九个排成矩阵。
+    Vertical,
 }
 
 impl LayoutMode {
     /// 全部取值，设置界面按这个顺序列出。
-    pub const ALL: [Self; 2] = [Self::Vertical, Self::Horizontal];
+    pub const ALL: [Self; 2] = [Self::Horizontal, Self::Vertical];
 
     /// 配置文件里的写法。
     pub fn key(self) -> &'static str {
