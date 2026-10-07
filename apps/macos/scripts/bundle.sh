@@ -66,13 +66,11 @@ BUILD_NUMBER="$(git rev-list --count HEAD 2>/dev/null || echo 1)"
 cp apps/macos/scripts/uninstall.sh "$APP/Contents/Resources/uninstall.sh"
 # 输入源名字按系统语言本地化（中文系统显示「轻书」，其他显示 LightBookInput）
 cp -R apps/macos/resources/*.lproj "$APP/Contents/Resources/"
-# 词库与释义表打进 Resources。data/generated/ 里有生成好的产品数据（自建词库 + 语言模型 + LLM 释义表）就用它，
+# 词库与英文释义表打进 Resources。data/generated/ 里有生成好的产品数据（自建词库 + 语言模型 + 中→英释义表）就用它，
 # 否则用 assets/sample/ 的样例。没有数据管道的机器跑 tools/release/data-fetch.sh 按 tools/release/data.lock 下载。
 cp assets/sample/*.tsv "$APP/Contents/Resources/"
 # emoji 表（Unicode CLDR，可发布）
 cp assets/emoji/*.tsv "$APP/Contents/Resources/"
-# 词汇等级表（CEFR-J / Octanove / JLPT，见 assets/levels/README.md），「统计」页按级数词汇
-cp assets/levels/levels-*.tsv "$APP/Contents/Resources/"
 # 五笔码表（输入方案选五笔时用，见 assets/wubi/README.md；极点 86 码表，Apache-2.0）
 mkdir -p "$APP/Contents/Resources/wubi"
 cp assets/wubi/wubi86.tsv "$APP/Contents/Resources/wubi/"
@@ -116,24 +114,14 @@ if [[ -f data/generated/dict.tsv || -f data/generated/dict.qj ]]; then
     chmod 644 "$APP/Contents/Resources/models/hanzhang-tongbian/hanzhang-tongbian-small.qjm"
     echo "打包含章·通变：$p2c_dir/hanzhang-tongbian-small.qjm"
   fi
-  # 释义表打成 .qj（TSV 比 .qj 新时重打），英文词表仍是 TSV。各表来源不同，元数据按表写（见 assets/glossary/README.md）
-  for lang in en ja zh es; do
-    src="assets/glossary/glossary-$lang.tsv"
-    out="data/generated/glossary-$lang.qj"
-    [[ -f "$src" ]] || continue
-    if [[ "$lang" == es ]]; then
-      license="GPL-3.0-or-later"
-      attribution="Azure Translator 机器翻译（Tofuzhu，tools/corpus/glossary_es.py）"
-    else
-      license="MIT"
-      attribution="LLM 生成（DeepSeek），lightbookinput-gloss-gen"
-    fi
-    if [[ ! -f "$out" || "$src" -nt "$out" ]]; then
-      cargo run --release -q -p lightbookinput-dict-convert -- pack glossary --language "$lang" --input "$src" \
-        --name "轻书释义表（${lang}）" --license "$license" --attribution "$attribution"
-    fi
-    cp "$out" "$APP/Contents/Resources/"
-  done
+  # 程序员模式用的中→英释义表打成 .qj（TSV 比 .qj 新时重打），英文词表仍是 TSV。来源见 assets/glossary/README.md
+  src="assets/glossary/glossary-en.tsv"
+  out="data/generated/glossary-en.qj"
+  if [[ -f "$src" && ( ! -f "$out" || "$src" -nt "$out" ) ]]; then
+    cargo run --release -q -p lightbookinput-dict-convert -- pack glossary --language en --input "$src" \
+      --name "轻书中英释义表（程序员模式）" --license "MIT" --attribution "LLM 生成（DeepSeek）"
+  fi
+  [[ -f "$out" ]] && cp "$out" "$APP/Contents/Resources/"
   for f in assets/lexicon/english.tsv data/generated/english.tsv; do
     [[ -f "$f" ]] && cp "$f" "$APP/Contents/Resources/"
   done

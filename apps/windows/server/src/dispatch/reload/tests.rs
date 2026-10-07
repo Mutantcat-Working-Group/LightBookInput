@@ -36,7 +36,6 @@ fn import_replace_and_remove_without_config_changes() {
     router.watch_config(
         &config,
         config_path.clone(),
-        dir.clone(),
         DataDirs {
             user_root: Some(dir.clone()),
             user_dicts: Some(dir.join("dicts")),
@@ -119,7 +118,6 @@ fn dictionary_changes_do_not_retry_broken_config() {
     router.watch_config(
         &config,
         config_path.clone(),
-        dir.clone(),
         DataDirs {
             user_root: Some(dir.clone()),
             user_dicts: Some(dir.join("dicts")),

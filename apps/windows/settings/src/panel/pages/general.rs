@@ -1,18 +1,10 @@
-//! 「通用」页：学习语言、每页候选数、输入方案、英文模式候选。
+//! 「通用」页：每页候选数、输入方案、英文模式候选。
 
 use lightbookinput_platform::{MAX_PAGE_SIZE, Scheme, ShiftLetter, SwitchKey};
 use windows_reactor::*;
 
 use crate::panel::controls::{feedback, field, index_of, page};
 use crate::panel::{Message, Settings};
-
-/// 学习语言：界面名 + 配置写法。
-pub(crate) const LANGUAGES: [(&str, &str); 4] = [
-    ("英语", "en"),
-    ("日语", "ja"),
-    ("西班牙语", "es"),
-    ("不显示译文", "off"),
-];
 
 /// 输入方案：界面名 + 配置写法，直接照 [`Scheme::ALL`] 建，不另抄一份。
 /// 数组长度取自 `ALL`，以后加方案时这里数组对不上就编不过。
@@ -53,15 +45,6 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
     let english_off = !settings.config.apps.english_candidates_off.is_empty();
     let rows = [
         field(
-            "学习语言",
-            "候选词右侧显示哪种语言的译词，只列出装了释义表的语言；「不显示译文」同时关掉生词标记与释义兜底。",
-            string_combo(
-                &LANGUAGES,
-                &g.learning_language,
-                context.callback(Message::LearningLanguage),
-            ),
-        ),
-        field(
             "每页候选数",
             "",
             NumberBox::new()
@@ -93,7 +76,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
             "五笔（86 版）",
             "与拼音方案同时开着就是混输：编码打全的五笔词在前，打不出的字直接打拼音。\
              单用五笔请把拼音方案关掉；第 5 个字母起五笔查不到东西，自动只剩拼音。\
-             译词、生词记录与学习照常。",
+             程序员模式照常：按住 ~ 可以用数字或空格直接上屏候选的英文。",
             ToggleSwitch::new()
                 .is_on(g.wubi())
                 .on_toggled(context.callback(Message::Wubi)),

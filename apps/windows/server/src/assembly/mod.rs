@@ -3,14 +3,13 @@
 mod language_model;
 mod spec;
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::time::Instant;
 
-use lightbookinput_core::{EmojiTable, Engine, Language};
-use lightbookinput_dictionary::{Dictionary, WordList};
-use lightbookinput_learning::{FrequencyLearner, InputLog, UsageStats, VocabularyBook};
-use lightbookinput_platform::{Config, code_tables, extra_dictionaries};
-use lightbookinput_translate::{Glossary, LayeredTranslator, LevelTable, PersonalGlossary};
+use lightbookinput_core::{EmojiTable, Engine};
+use lightbookinput_dictionary::{Dictionary, EnglishGlossary, WordList};
+use lightbookinput_learning::{FrequencyLearner, InputLog, UsageStats};
+use lightbookinput_platform::{code_tables, extra_dictionaries};
 
 use crate::error::ServerError;
 
@@ -26,22 +25,13 @@ pub fn assemble(spec: &AssemblySpec) -> Result<Engine, ServerError> {
     };
     tracing::info!(
         entries = dictionary.len(),
-        learned = learner.len(),
         dictionary_ms = started.elapsed().as_millis(),
         "词库与学习数据已加载"
     );
     let mut engine = Engine::new(dictionary).with_learner(Box::new(learner));
-    if let Some((language, path)) = &spec.glossary {
-        engine = engine.with_translator(Box::new(load_glossary(
-            *language,
-            path,
-            spec.user_dir.as_deref(),
-        )?));
-    }
     if let Some(dir) = &spec.user_dir {
         engine = engine
-            .with_usage_meter(Box::new(UsageStats::open(dir.join("usage.tsv"))))
-            .with_vocabulary_tracker(Box::new(load_vocabulary(dir, spec.levels_dir.as_deref())));
+            .with_usage_meter(Box::new(UsageStats::open(dir.join("usage.tsv"))));
         if spec.input_log {
             let path = dir.join("input-log.jsonl");
             tracing::info!(path = %path.display(), "输入日志开着");
@@ -59,12 +49,12 @@ pub fn assemble(spec: &AssemblySpec) -> Result<Engine, ServerError> {
         &spec.aux_code,
     ));
     if let Some(path) = &spec.english_glossary {
-        match Glossary::from_path(Language::Chinese, path) {
+        match EnglishGlossary::from_path(path) {
             Ok(glossary) => {
-                tracing::info!(glosses = glossary.len(), "英→中释义表已加载");
-                engine = engine.with_english_translator(Box::new(glossary));
+                tracing::info!(words = glossary.len(), "中→英释义表已加载");
+                engine.set_english_glossary(glossary);
             }
-            Err(error) => tracing::warn!(%error, "英→中释义表加载失败"),
+            Err(error) => tracing::warn!(%error, "中→英释义表加载失败，程序员模式没英文可上"),
         }
     }
     if let Some(path) = &spec.english {
@@ -114,76 +104,6 @@ fn load_learner(dir: &Path) -> FrequencyLearner {
             FrequencyLearner::default()
         }
     }
-}
-
-/// 配置里的学习语言；`off` 为 `None`（不显示译文），写得不认识按英文。
-pub fn learning_language(config: &Config) -> Option<Language> {
-    if config.general.learning_language_off() {
-        return None;
-    }
-    let code = &config.general.learning_language;
-    Some(code.parse().unwrap_or_else(|_| {
-        tracing::warn!(code, "不认识的学习语言，按英文");
-        Language::English
-    }))
-}
-
-/// 某语言的释义表：`<root>/data/generated/` 打包过的 `.qj` 优先，否则随 git 的 `assets/glossary/` TSV；都没有为 `None`。
-pub fn glossary_file(root: &Path, language: Language) -> Option<PathBuf> {
-    let code = language.code();
-    [
-        root.join("data/generated")
-            .join(format!("glossary-{code}.qj")),
-        root.join("assets/glossary")
-            .join(format!("glossary-{code}.tsv")),
-    ]
-    .into_iter()
-    .find(|path| path.is_file())
-}
-
-/// 随包释义表叠上个人释义表（`user-glossary-<语言>.tsv`）。启动装配与热加载换语言共用。
-pub(crate) fn load_glossary(
-    language: Language,
-    path: &Path,
-    user_dir: Option<&Path>,
-) -> Result<LayeredTranslator, ServerError> {
-    let bundled = Glossary::from_path(language, path)?;
-    let personal = match user_dir {
-        Some(dir) => PersonalGlossary::open(
-            language,
-            dir.join(format!("user-glossary-{}.tsv", language.code())),
-        ),
-        None => PersonalGlossary::in_memory(language),
-    };
-    if !personal.is_empty() {
-        tracing::info!(
-            language = language.code(),
-            entries = personal.len(),
-            "个人释义表已加载"
-        );
-    }
-    Ok(LayeredTranslator::new(bundled, personal))
-}
-
-/// 词汇记录（`user-vocab.tsv`），有等级表就按级统计。
-fn load_vocabulary(user_dir: &Path, levels_dir: Option<&Path>) -> VocabularyBook {
-    let mut vocabulary = VocabularyBook::open(user_dir.join("user-vocab.tsv"));
-    let Some(levels_dir) = levels_dir else {
-        return vocabulary;
-    };
-    for language in [Language::English, Language::Japanese, Language::Spanish] {
-        let path = levels_dir.join(format!("levels-{}.tsv", language.code()));
-        if !path.is_file() {
-            continue;
-        }
-        match LevelTable::from_path(&path) {
-            Ok(table) => vocabulary = vocabulary.with_levels(language, table),
-            Err(error) => {
-                tracing::warn!(path = %path.display(), %error, "词汇等级表读不了，不分级");
-            }
-        }
-    }
-    vocabulary
 }
 
 /// 几张 emoji 表合成一张；坏的跳过。

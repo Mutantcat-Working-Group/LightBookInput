@@ -15,9 +15,9 @@ C:\Program Files\LightBookInput\
     lightbookinput-settings.exe     设置界面
     Microsoft.UI.Xaml.dll …   设置程序自带的 Windows App Runtime（自包含部署，见下节；约 56 MB / 185 个文件）
     lightbookinput.ico              开始菜单 / 启动项快捷方式的图标（exe 里也嵌了一份）
-    data\generated\           dict.qj / lm.qj / glossary-{en,ja,zh}.qj / english.tsv / dicts\*.qj
+    data\generated\           dict.qj / lm.qj / glossary-en.qj / english.tsv / dicts\*.qj
     data\generated\codes\     随包辅码码表 stroke.qj + LICENSE-CNS11643.txt（tools\dict-convert 的 pack codes 生成）
-    assets\                   emoji\ levels\ sample\
+    assets\                   emoji\ sample\
 ```
 
 Server 与设置程序按 **exe 相对**定位随包资源（`lightbookinput_platform::resources`）：装机时资源与 exe 同级，

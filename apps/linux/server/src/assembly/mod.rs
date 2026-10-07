@@ -1,4 +1,4 @@
-//! 装配 Engine：Server 里唯一知道具体 Translator / Learner 类型的地方，装的东西与 macOS 的 `host::init` 一致。
+//! 装配 Engine：Server 里唯一知道具体 Learner 类型的地方，装的东西与 macOS 的 `host::init` 一致。
 
 mod language_model;
 mod spec;
@@ -6,11 +6,10 @@ mod spec;
 use std::path::Path;
 use std::time::Instant;
 
-use lightbookinput_core::{EmojiTable, Engine, Language};
-use lightbookinput_dictionary::{Dictionary, WordList};
-use lightbookinput_learning::{FrequencyLearner, InputLog, UsageStats, VocabularyBook};
+use lightbookinput_core::{EmojiTable, Engine};
+use lightbookinput_dictionary::{Dictionary, EnglishGlossary, WordList};
+use lightbookinput_learning::{FrequencyLearner, InputLog, UsageStats};
 use lightbookinput_platform::extra_dictionaries;
-use lightbookinput_translate::{Glossary, LayeredTranslator, LevelTable, PersonalGlossary};
 
 use crate::error::ServerError;
 
@@ -26,21 +25,12 @@ pub fn assemble(spec: &AssemblySpec) -> Result<Engine, ServerError> {
     };
     tracing::info!(
         entries = dictionary.len(),
-        learned = learner.len(),
         dictionary_ms = started.elapsed().as_millis(),
         "词库与学习数据已加载"
     );
     let mut engine = Engine::new(dictionary).with_learner(Box::new(learner));
-    if let Some((language, path)) = &spec.glossary {
-        match load_glossary(*language, path, spec.user_dir.as_deref()) {
-            Ok(glossary) => engine = engine.with_translator(Box::new(glossary)),
-            Err(error) => tracing::warn!(%error, "释义表加载失败，继续中文输入"),
-        }
-    }
     if let Some(dir) = &spec.user_dir {
-        engine = engine
-            .with_usage_meter(Box::new(UsageStats::open(dir.join("usage.tsv"))))
-            .with_vocabulary_tracker(Box::new(load_vocabulary(dir, spec.levels_dir.as_deref())));
+        engine = engine.with_usage_meter(Box::new(UsageStats::open(dir.join("usage.tsv"))));
         if spec.input_log {
             let path = spec
                 .log_dir
@@ -57,12 +47,12 @@ pub fn assemble(spec: &AssemblySpec) -> Result<Engine, ServerError> {
         &spec.dictionaries,
     ));
     if let Some(path) = &spec.english_glossary {
-        match Glossary::from_path(Language::Chinese, path) {
+        match EnglishGlossary::from_path(path) {
             Ok(glossary) => {
-                tracing::info!(glosses = glossary.len(), "英→中释义表已加载");
-                engine = engine.with_english_translator(Box::new(glossary));
+                tracing::info!(words = glossary.len(), "中→英释义表已加载");
+                engine.set_english_glossary(glossary);
             }
-            Err(error) => tracing::warn!(%error, "英→中释义表加载失败"),
+            Err(error) => tracing::warn!(%error, "中→英释义表加载失败，程序员模式没英文可上"),
         }
     }
     if let Some(path) = &spec.english {
@@ -105,51 +95,6 @@ fn load_learner(dir: &Path) -> FrequencyLearner {
             FrequencyLearner::default()
         }
     }
-}
-
-/// 随包释义表叠上个人释义表（`user-glossary-<语言>.tsv`）。
-fn load_glossary(
-    language: Language,
-    path: &Path,
-    user_dir: Option<&Path>,
-) -> Result<LayeredTranslator, ServerError> {
-    let bundled = Glossary::from_path(language, path)?;
-    let personal = match user_dir {
-        Some(dir) => PersonalGlossary::open(
-            language,
-            dir.join(format!("user-glossary-{}.tsv", language.code())),
-        ),
-        None => PersonalGlossary::in_memory(language),
-    };
-    if !personal.is_empty() {
-        tracing::info!(
-            language = language.code(),
-            entries = personal.len(),
-            "个人释义表已加载"
-        );
-    }
-    Ok(LayeredTranslator::new(bundled, personal))
-}
-
-/// 词汇记录（`user-vocab.tsv`），有等级表就按级统计。
-fn load_vocabulary(user_dir: &Path, levels_dir: Option<&Path>) -> VocabularyBook {
-    let mut vocabulary = VocabularyBook::open(user_dir.join("user-vocab.tsv"));
-    let Some(levels_dir) = levels_dir else {
-        return vocabulary;
-    };
-    for language in [Language::English, Language::Japanese, Language::Spanish] {
-        let path = levels_dir.join(format!("levels-{}.tsv", language.code()));
-        if !path.is_file() {
-            continue;
-        }
-        match LevelTable::from_path(&path) {
-            Ok(table) => vocabulary = vocabulary.with_levels(language, table),
-            Err(error) => {
-                tracing::warn!(path = %path.display(), %error, "词汇等级表读不了，不分级");
-            }
-        }
-    }
-    vocabulary
 }
 
 /// 几张 emoji 表合成一张；坏的跳过。

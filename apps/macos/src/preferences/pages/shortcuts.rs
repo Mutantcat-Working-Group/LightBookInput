@@ -1,4 +1,4 @@
-//! 「快捷键」页：翻页键、模式键、译词上屏 / 删候选 / 翻译选中文字的组合键。
+//! 「快捷键」页：翻页键、模式键、删候选的组合键；程序员模式固定用 ~ 触发，不可改。
 
 use lightbookinput_core::ModeKeys;
 use lightbookinput_platform::{Config, PAGE_KEY_OPTIONS};
@@ -28,17 +28,8 @@ pub struct ShortcutsPage {
     /// 没在组句时敲 `?` 也进问字。
     question_mark: Retained<NSButton>,
 
-    /// 上屏第一个译词的修饰键。
-    translation: Retained<KeyRecorder>,
-
-    /// 上屏第二个译词的修饰键。
-    translation_second: Retained<KeyRecorder>,
-
     /// 删除候选的修饰键。
     delete_candidate: Retained<KeyRecorder>,
-
-    /// 翻译选中文字的组合键。
-    translate_selection: Retained<KeyRecorder>,
 }
 
 impl ShortcutsPage {
@@ -95,28 +86,6 @@ impl ShortcutsPage {
             "勾上后 ? 先进问字（中英文模式都行），后面跟字母才是问题，跟空格、回车等其他键时还原成问号；不勾问号就是问号。",
         );
         layout.space(GROUP_GAP);
-        let translation = row_recorder(
-            layout,
-            mtm,
-            "上屏第一个译词",
-            Setting::TranslationKeys,
-            true,
-            target,
-        );
-        let translation_second = row_recorder(
-            layout,
-            mtm,
-            "上屏第二个译词",
-            Setting::TranslationSecondKeys,
-            true,
-            target,
-        );
-        note(
-            layout,
-            mtm,
-            "按住修饰键再按候选序号，上屏的是候选右侧的译词而不是中文；候选有两个译词时第二组键上屏后一个。两组不能相同。",
-        );
-        layout.space(GROUP_GAP);
         let delete_candidate = row_recorder(
             layout,
             mtm,
@@ -130,19 +99,11 @@ impl ShortcutsPage {
             mtm,
             "按住修饰键再按候选序号：自己造的词、云端选过的词整个删掉；词库里的词清掉对它的学习记录，回到原来的排序。组句中要打感叹号先把词上屏。",
         );
-        layout.space(GROUP_GAP);
-        let translate_selection = row_recorder(
-            layout,
-            mtm,
-            "翻译选中的文字",
-            Setting::TranslateSelectionKeys,
-            false,
-            target,
-        );
         note(
             layout,
             mtm,
-            "在应用里选中一段文字再按这个键，译文（学习语言）出现在候选窗口：回车替换选中的文字，Esc 保留原文。需要开着云服务。",
+            "程序员模式固定用 ~（数字 1 左边的 · 键）触发，不可更改：按住期间候选右侧跟着显示英文，按数字键 1-9 或空格\
+             直接上屏候选的英文而不是中文。松开 ~、Esc 或敲别的键即退出。需要随包的中英释义表（glossary-en.tsv），没装时退化成普通中文输入。",
         );
         layout.space(GROUP_GAP);
         note_full(
@@ -166,10 +127,7 @@ impl ShortcutsPage {
             expression,
             question,
             question_mark,
-            translation,
-            translation_second,
             delete_candidate,
-            translate_selection,
         }
     }
 
@@ -194,13 +152,7 @@ impl ShortcutsPage {
                 .position(|k| *k == keys.question),
         );
         set_checked(&self.question_mark, keys.question_mark);
-        let (first, second) = config.shortcut.translation_keys();
-        self.translation.show(&first.key(), &first.label());
-        self.translation_second.show(&second.key(), &second.label());
         let delete = config.shortcut.delete_keys();
         self.delete_candidate.show(&delete.key(), &delete.label());
-        let translate = config.shortcut.translate_selection;
-        self.translate_selection
-            .show(&translate.key_string(), &translate.label());
     }
 }

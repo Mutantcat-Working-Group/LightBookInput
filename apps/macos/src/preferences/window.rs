@@ -1,6 +1,6 @@
 //! 偏好设置窗口本体：把各页（`pages/`）装进标签视图，底部一行状态；刷新时逐页同步。
 
-use lightbookinput_core::{Language, UsageSummary, VocabularySummary};
+use lightbookinput_core::UsageSummary;
 use lightbookinput_platform::Config;
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
@@ -9,7 +9,7 @@ use objc2_app_kit::{
 };
 use objc2_foundation::{NSPoint, NSRect, NSSize, NSString};
 
-use super::controls::{language_label, small_label};
+use super::controls::small_label;
 use super::layout::{Layout, PAGE_PADDING, PAGE_WIDTH};
 use super::pages::{
     AboutPage, AdvancedPage, CandidatesPage, CloudPage, DictionariesPage, FuzzyPage, GeneralPage,
@@ -76,8 +76,8 @@ pub struct PreferencesWindow {
 type Page = (&'static str, Layout, Retained<NSView>);
 
 impl PreferencesWindow {
-    /// `languages` 是打进包里的释义表语言，`version` / `build` 显示在「关于」页。
-    pub fn new(mtm: MainThreadMarker, languages: &[Language], version: &str, build: &str) -> Self {
+    /// `version` / `build` 显示在「关于」页。
+    pub fn new(mtm: MainThreadMarker, version: &str, build: &str) -> Self {
         let target = PreferencesTarget::new(mtm);
         let new_layout = || Layout::new(PAGE_WIDTH, PAGE_TOP);
         let page = |title: &'static str, layout: Layout| -> Page {
@@ -90,7 +90,7 @@ impl PreferencesWindow {
         let mut pages: Vec<Page> = Vec::new();
 
         let mut layout = new_layout();
-        let general = GeneralPage::build(&mut layout, mtm, &target, languages);
+        let general = GeneralPage::build(&mut layout, mtm, &target);
         pages.push(page("通用", layout));
 
         let mut layout = new_layout();
@@ -264,17 +264,8 @@ impl PreferencesWindow {
     }
 
     /// 刷新「统计」页。打开窗口时调（数字随时在变，不跟配置一起同步）。
-    pub fn sync_usage(
-        &self,
-        summary: &UsageSummary,
-        vocabulary: &VocabularySummary,
-        language: Option<Language>,
-    ) {
-        self.usage.show(
-            summary,
-            vocabulary,
-            language.map_or("学习语言已关", language_label),
-        );
+    pub fn sync_usage(&self, summary: &UsageSummary) {
+        self.usage.show(summary);
     }
 
     /// 底部状态行临时显示一句提示（不是错误，灰字）；下次 `sync` 会被配置状态覆盖。

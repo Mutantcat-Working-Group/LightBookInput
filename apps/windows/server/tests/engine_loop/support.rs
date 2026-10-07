@@ -4,7 +4,7 @@ pub use std::path::PathBuf;
 pub use std::sync::{Arc, Mutex};
 
 pub use lightbookinput_core::sentence::SentenceScorer;
-pub use lightbookinput_core::{Language, ModeKeys, ShuangpinScheme};
+pub use lightbookinput_core::{ModeKeys, ShuangpinScheme};
 pub use lightbookinput_platform::protocol::{
     ClientMessage, Frame, KeyEvent, KeyModifiers, KeyOutcome, PROTOCOL_VERSION, ScreenRect,
     ServerMessage, SessionId,
@@ -76,7 +76,7 @@ pub fn router_in(config: RouterConfig, app: Option<String>) -> Router {
     let dict = root.join("assets/sample/dict.tsv");
     let glossary = root.join("assets/sample/glossary-en.tsv");
     let mut engine = assembly::assemble(&AssemblySpec {
-        glossary: Some((Language::English, glossary)),
+        english_glossary: Some(glossary),
         english: Some(root.join("assets/sample/english.tsv")),
         ..AssemblySpec::new(dict)
     })

@@ -56,22 +56,16 @@ fn open_session_carries_protocol_and_close_is_replyless() {
 }
 
 #[test]
-fn linux_display_identity_round_trips_without_changing_shared_protocol() {
+fn display_identity_round_trips() {
     let identity = lightbookinput_linux_server::protocol::DisplayIdentity {
         generation: 7,
         context: "001122".into(),
         revision: 13,
     };
-    let ack = lightbookinput_linux_server::protocol::DisplayAcknowledged {
-        session: SessionId(2),
-        identity: identity.clone(),
-        senses: vec![(0, 1), (3, 0)],
-    };
-    let value = serde_json::to_value(&ack).unwrap();
-    let decoded: lightbookinput_linux_server::protocol::DisplayAcknowledged =
+    let value = serde_json::to_value(&identity).unwrap();
+    let decoded: lightbookinput_linux_server::protocol::DisplayIdentity =
         serde_json::from_value(value).unwrap();
-    assert_eq!(decoded.identity, identity);
-    assert_eq!(decoded.senses, vec![(0, 1), (3, 0)]);
+    assert_eq!(decoded, identity);
 }
 
 /// Fcitx5 插件的 OpenSession 把协议版本写死在 C++ 里；Server 要求完全一致，升版本时两边得一起改。

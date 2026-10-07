@@ -1,37 +1,16 @@
-//! 往文档写字：按键结果经异步编辑会话写上屏文本 + 组句拼音行；失焦 / 停用 / 切模式时让 Server 交出缓冲区原样落定；
-//! 翻译选中文字时起只读会话读选区。
+//! 往文档写字：按键结果经异步编辑会话写上屏文本 + 组句拼音行；失焦 / 停用 / 切模式时让 Server 交出缓冲区原样落定。
 
 use windows::Win32::UI::TextServices::ITfContext;
 use windows::core::Ref;
 
 use super::TextService_Impl;
-use crate::com::edit::{request_selection, request_update};
+use crate::com::edit::request_update;
 use crate::com::log::log;
 
 impl TextService_Impl {
-    pub(super) fn read_selection(&self, pic: Ref<ITfContext>, request: u64) {
-        let Ok(context) = pic.ok() else {
-            log("翻译选中文字：无上下文，取消读选区");
-            return;
-        };
-        if let Err(error) = request_selection(
-            context,
-            self.client_id.get(),
-            self.engine.clone(),
-            self.shared.clone(),
-            request,
-        ) {
-            log(&format!("请求读选区会话失败: {error}"));
-        }
-    }
-
     /// 失焦 / 停用 / 切模式：让 Server 交出缓冲区，原样落进最近收键的文档并收掉组句。
     /// 组句已被应用终止的（拼音已是普通文本）只清 Server 不再插。
     pub(super) fn commit_pending(&self) {
-        if self.shared.translating() {
-            self.shared.set_translating(false);
-            self.shared.hide_candidates();
-        }
         let stale = self.shared.take_server_stale();
         if !self.shared.composing() && !stale {
             return;

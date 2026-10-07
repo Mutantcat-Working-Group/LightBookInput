@@ -38,9 +38,6 @@ pub struct RouterConfig {
     /// 按应用的设置（`[apps]`），按宿主 exe 名认。
     pub apps: AppsConfig,
 
-    /// 上屏第一 / 第二个译词的修饰键（`[shortcut] translation` / `translation_second`）。
-    pub translation_keys: (KeyModifiers, KeyModifiers),
-
     /// 删候选的修饰键（`[shortcut] delete_candidate`）。
     pub delete_keys: KeyModifiers,
 }
@@ -66,10 +63,6 @@ impl From<&Config> for RouterConfig {
             full_width: config.general.full_width_punctuation,
             english_full_width: config.general.english_full_width_punctuation,
             apps: config.apps.clone(),
-            translation_keys: {
-                let (first, second) = config.shortcut.translation_keys();
-                (first.into(), second.into())
-            },
             delete_keys: config.shortcut.delete_keys().into(),
         }
     }

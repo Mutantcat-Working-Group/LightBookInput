@@ -1,7 +1,6 @@
 //! 偏好设置各页共用的控件搭建函数：标签、说明小字、成行的弹出菜单 / 文本框 / 录制按钮，
 //! 以及把控件接到 [`PreferencesTarget`] 的 `changed:` 上。页面文件只描述「放什么」，不重复这些细节。
 
-use lightbookinput_core::Language;
 use objc2::rc::Retained;
 use objc2::{MainThreadMarker, sel};
 use objc2_app_kit::{
@@ -23,15 +22,6 @@ const NOTE_CHAR_WIDTH: f64 = 11.5;
 
 /// 分组之间的留白。
 pub(super) const GROUP_GAP: f64 = 14.0;
-
-pub(super) fn language_label(language: Language) -> &'static str {
-    match language {
-        Language::Chinese => "中文",
-        Language::English => "英语",
-        Language::Japanese => "日语",
-        Language::Spanish => "西班牙语",
-    }
-}
 
 /// `,.` → `,  .`。
 pub(super) fn page_keys_label(pair: &str) -> String {

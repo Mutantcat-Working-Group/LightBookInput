@@ -19,6 +19,7 @@ impl Engine {
                 syllables: Vec::new(),
                 reading: None,
                 aux_code: None,
+                gloss: None,
             });
         }
         Query {
@@ -49,6 +50,7 @@ impl Engine {
             syllables: Vec::new(),
             reading: None,
             aux_code: None,
+            gloss: None,
         }];
         Query {
             segmentations: Vec::new(),
@@ -91,6 +93,7 @@ impl Engine {
             syllables: Vec::new(),
             reading: None,
             aux_code: None,
+            gloss: None,
         })
         .collect();
         self.insert_emoji(&mut items);
@@ -134,6 +137,7 @@ impl Engine {
                         syllables: Vec::new(),
                         reading: None,
                         aux_code: None,
+                        gloss: None,
                     }],
                 },
                 scope.to_owned(),

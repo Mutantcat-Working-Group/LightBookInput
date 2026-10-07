@@ -46,7 +46,6 @@ fn row(row: &Row) -> lightbookinput_render::Row {
             .map(|(text, tone)| {
                 let tone = match tone {
                     Tone::Gloss => lightbookinput_render::Tone::Gloss,
-                    Tone::Fresh => lightbookinput_render::Tone::Fresh,
                     Tone::Faint => lightbookinput_render::Tone::Faint,
                 };
                 (text.clone(), tone)

@@ -101,7 +101,6 @@ impl Host {
     /// 补查只为攒下整句路径、起防抖，不动画面；用户已翻页或动过高亮就不打扰。
     fn rescore_current_round(&mut self) {
         if self.engine.composition().is_empty()
-            || self.translation.is_some()
             || self.session.page != 0
             || self.session.navigated
         {
@@ -146,7 +145,7 @@ impl Host {
 
     /// 轮询到点：分回来了就重查一次、重画当前页；用户已翻页或动过高亮就只留着分不动画面。
     pub fn poll_rescoring(&mut self) {
-        if self.engine.composition().is_empty() || self.translation.is_some() {
+        if self.engine.composition().is_empty() {
             self.rescore.stop();
             return;
         }
@@ -165,7 +164,6 @@ impl Host {
         let Ok(mut query) = self.engine.query() else {
             return;
         };
-        self.engine.annotate(&mut query.candidates);
         let preedit = Preedit::from_marked(&query.marked_segments(), query.segments_cursor());
         let cloud = self.session.layout.cloud().to_vec();
         self.reset_session(preedit, query.candidates.items);

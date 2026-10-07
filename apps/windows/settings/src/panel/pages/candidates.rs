@@ -45,7 +45,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
         ),
         field(
             "排布",
-            "横排时只给高亮的候选显示译词。",
+            "横排时只给高亮的候选显示英文。",
             mode_combo(
                 &LayoutMode::ALL,
                 g.layout,

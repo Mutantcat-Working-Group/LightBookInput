@@ -4,11 +4,9 @@
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use lightbookinput_core::Language;
 use lightbookinput_dictionary::Dictionary;
 use lightbookinput_format::Metadata;
 use lightbookinput_lm::BigramModel;
-use lightbookinput_translate::Glossary;
 
 use crate::args::PackKind;
 use crate::error::ConvertError;
@@ -43,7 +41,6 @@ pub fn pack(
     kind: PackKind,
     inputs: &[PathBuf],
     paths: &CodePaths<'_>,
-    language: &str,
     metadata: Metadata,
     out_dir: &Path,
 ) -> Result<(), ConvertError> {
@@ -79,20 +76,6 @@ pub fn pack(
             let out = out_dir.join("lm.qj");
             model.write_qj(&out, &metadata)?;
             report(&out, model.bigram_count(), started);
-        }
-        PackKind::Glossary => {
-            let language: Language = language.parse().map_err(|_| ConvertError::Format {
-                path: PathBuf::from(language),
-                line: 0,
-                reason: "language must be en / ja / zh / es".to_owned(),
-            })?;
-            let input = inputs.first().cloned().unwrap_or_else(|| {
-                PathBuf::from("assets/glossary").join(format!("glossary-{}.tsv", language.code()))
-            });
-            let glossary = Glossary::from_path(language, &input)?;
-            let out = out_dir.join(format!("glossary-{}.qj", language.code()));
-            glossary.write_qj(&out, &metadata)?;
-            report(&out, glossary.len(), started);
         }
         PackKind::Model => {
             let input = inputs

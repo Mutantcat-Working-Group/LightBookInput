@@ -1,12 +1,9 @@
 //! 呈现：删候选、按应用关英文候选、翻译选区的起止、提示气泡、会话重置与候选窗口绘制。
 
 mod notice;
-mod translation_job;
 
 pub(super) use notice::Notice;
-pub use translation_job::TranslationJob;
 
-use super::cloud::cloud_candidate;
 use super::*;
 
 impl Host {
@@ -30,21 +27,10 @@ impl Host {
         self.english_candidates && !bundle.is_some_and(|b| self.apps.english_candidates_off(b))
     }
 
-    /// 开始一次翻译：记下选区，窗口先显示「翻译中…」。调用方已发出请求。
-    pub fn begin_translation(&mut self, range: objc2_foundation::NSRange) {
-        self.translation = Some(TranslationJob {
-            range,
-            result: None,
-        });
-        self.reset_session(None, vec![cloud_candidate("翻译中…".to_owned())]);
-        self.await_prediction();
-        self.render();
-    }
-
     /// 在候选窗口里显示一行提示，几秒后自动收起（敲键也收）。
     pub fn show_notice(&mut self, text: &str, anchor: NSRect) {
         self.anchor = anchor;
-        self.reset_session(None, vec![cloud_candidate(text.to_owned())]);
+        self.reset_session(None, vec![notice_candidate(text.to_owned())]);
         self.render();
         let mtm = MainThreadMarker::new().expect("Host 只在主线程用");
         self.notice = Some(Notice::schedule(mtm));
@@ -52,16 +38,7 @@ impl Host {
 
     /// 收起提示；没在显示就什么都不做。
     pub fn clear_notice(&mut self) {
-        if self.notice.take().is_some() && self.translation.is_none() {
-            self.reset_session(None, Vec::new());
-            self.window.hide();
-        }
-    }
-
-    /// 翻译结束（接受、放弃或失败）：收窗、停轮询。
-    pub fn end_translation(&mut self) {
-        if self.translation.take().is_some() {
-            self.cancel_prediction();
+        if self.notice.take().is_some() {
             self.reset_session(None, Vec::new());
             self.window.hide();
         }
@@ -114,12 +91,14 @@ impl Host {
                 let mut row = Row::from_candidate(offset, candidate);
                 row.index = index;
                 row.cloud = candidate.kind == CandidateKind::Cloud;
-                row
+                // 程序员模式（按住 ~）：右侧补一行英文释义，数字键 / 空格上屏的就是它
+                let gloss = self
+                    .programmer_mode
+                    .then(|| self.engine.english_gloss(&candidate.text))
+                    .flatten();
+                row.with_gloss(gloss)
             })
             .collect();
-        // 页上的译词告诉 Engine：用户上屏那一刻它们在屏幕上，算「见过」（词汇记录）；窗口收起时传空
-        self.engine
-            .note_displayed(cells.iter().copied().filter_map(Cell::candidate));
         // 配置成只在行内显示时，窗口顶部不画拼音行
         let preedit = self
             .preedit_mode
@@ -132,6 +111,12 @@ impl Host {
         }
         let pages = self.session.pages();
         let footer = (pages > 1).then(|| format!("{}/{pages}", page + 1));
+        // 程序员模式开着时常驻一行状态：用户得知道现在数字键选的是英文
+        let status = if self.programmer_mode {
+            Some(PROGRAMMER_STATUS.to_owned())
+        } else {
+            self.status.clone()
+        };
         let frame = Frame {
             preedit,
             rows,
@@ -144,8 +129,23 @@ impl Host {
             },
             footer,
             sentence: self.sentence.clone(),
-            status: self.status.clone(),
+            status,
         };
         self.window.show(frame, self.anchor);
     }
 }
+
+/// 提示气泡里的一行：当作云端来源的画，用户敲键就跟着收。
+fn notice_candidate(text: String) -> Candidate {
+    Candidate {
+        text,
+        kind: CandidateKind::Cloud,
+        syllables: Vec::new(),
+        reading: None,
+        aux_code: None,
+        gloss: None,
+    }
+}
+
+/// 程序员模式开着时候选窗口里常驻的一行字。
+const PROGRAMMER_STATUS: &str = "程序员模式：数字键上屏英文，Esc 退出";

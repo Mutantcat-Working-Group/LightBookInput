@@ -1,6 +1,6 @@
 //! 候选窗口主题：字体、颜色、间距。所有可视参数集中在这里，方便以后从配置文件读。
 //!
-//! 视觉层级（产品决定）：候选词最深，译文稍浅，词性最浅，序号弱化。
+//! 视觉层级（产品决定）：候选词最深，英文释义稍浅，分隔与序号弱化。
 
 use objc2::rc::Retained;
 use objc2_app_kit::{NSColor, NSFont};
@@ -23,9 +23,6 @@ pub struct Theme {
 
     /// 词性颜色，比译文更浅。
     pub pos_color: Retained<NSColor>,
-
-    /// 生词译文的颜色：比普通译文醒目，提醒「这个词你还没见过几次」，看熟了就回到译文色。
-    pub fresh_color: Retained<NSColor>,
 
     /// 序号颜色。
     pub index_color: Retained<NSColor>,
@@ -65,7 +62,6 @@ impl Theme {
             text_color: NSColor::labelColor(),
             gloss_color: NSColor::secondaryLabelColor(),
             pos_color: NSColor::tertiaryLabelColor(),
-            fresh_color: NSColor::systemOrangeColor(),
             index_color: NSColor::tertiaryLabelColor(),
             cloud_color: NSColor::systemTealColor(),
             background: NSColor::windowBackgroundColor(),

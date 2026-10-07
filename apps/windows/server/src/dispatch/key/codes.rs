@@ -6,6 +6,7 @@ pub(crate) const BACK: u32 = 0x08;
 pub(crate) const TAB: u32 = 0x09;
 pub(crate) const RETURN: u32 = 0x0D;
 pub(crate) const ESCAPE: u32 = 0x1B;
+pub(crate) const SPACE: u32 = 0x20;
 pub(crate) const PRIOR: u32 = 0x21;
 pub(crate) const NEXT: u32 = 0x22;
 pub(crate) const END: u32 = 0x23;
@@ -14,6 +15,9 @@ pub(crate) const LEFT: u32 = 0x25;
 pub(crate) const UP: u32 = 0x26;
 pub(crate) const RIGHT: u32 = 0x27;
 pub(crate) const DOWN: u32 = 0x28;
+
+/// `~` / `` ` `` 键（ANSI 布局 Esc 左边那个，Shift 出来是 `~`）。字符随布局变，按键码认。
+pub(crate) const TILDE: u32 = 0xC0;
 
 /// 翻页键对 `(上一页, 下一页)`：返回 -1 / +1。
 pub(crate) fn page_key(event: &KeyEvent, page_keys: (char, char)) -> Option<isize> {

@@ -14,12 +14,6 @@ pub(super) enum Next {
         consumed: bool,
     },
 
-    /// 「翻译选中文字」：起异步只读会话读当前选区。
-    ReadSelection {
-        /// 请求标识，回给 Server 对上是哪一次询问。
-        request: u64,
-    },
-
     /// 转发出错、已断连：放行本键。
     Abort,
 }

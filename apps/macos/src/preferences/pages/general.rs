@@ -1,22 +1,18 @@
-//! 「通用」页：学习语言、每页候选数、输入方案、英文模式候选。
+//! 「通用」页：每页候选数、输入方案、英文模式候选。
 
-use lightbookinput_core::Language;
 use lightbookinput_platform::{Config, MAX_PAGE_SIZE, Scheme};
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSButton, NSPopUpButton};
 
 use crate::preferences::controls::{
-    checkbox, language_label, note, row_checkbox, row_popup, select, set_checked,
+    checkbox, note, row_checkbox, row_popup, select, set_checked,
 };
 use crate::preferences::layout::Layout;
 use crate::preferences::setting::Setting;
 use crate::preferences::target::PreferencesTarget;
 
 pub struct GeneralPage {
-    /// 学习语言。
-    learning_language: Retained<NSPopUpButton>,
-
     /// 每页候选数。
     page_size: Retained<NSPopUpButton>,
 
@@ -42,41 +38,16 @@ pub struct GeneralPage {
 
     /// 中文模式下 Shift+字母进组句。
     shift_letter: Retained<NSButton>,
-
-    /// 学习语言弹出菜单里各项对应的语言。
-    languages: Vec<Language>,
-
     /// 默认中文标点模式。
     punctuation: Retained<NSPopUpButton>,
 }
 
 impl GeneralPage {
-    /// `languages` 是打进包里的释义表语言。
     pub fn build(
         layout: &mut Layout,
         mtm: MainThreadMarker,
         target: &PreferencesTarget,
-        languages: &[Language],
     ) -> Self {
-        // 最后一项是关
-        let language_titles: Vec<String> = languages
-            .iter()
-            .map(|l| language_label(*l).to_owned())
-            .chain(std::iter::once("不显示译文".to_owned()))
-            .collect();
-        let learning_language = row_popup(
-            layout,
-            mtm,
-            "学习语言",
-            &language_titles,
-            Setting::LearningLanguage,
-            target,
-        );
-        note(
-            layout,
-            mtm,
-            "候选词右侧显示哪种语言的译词，只列出安装了释义表的语言；「不显示译文」同时关掉生词标记与释义兜底。",
-        );
         let page_size_titles: Vec<String> = (1..=MAX_PAGE_SIZE).map(|n| n.to_string()).collect();
         let page_size = row_popup(
             layout,
@@ -118,6 +89,7 @@ impl GeneralPage {
             layout,
             mtm,
             "与拼音方案同时开着就是混输：编码打全的五笔词在前，打不出的字直接打拼音。单用五笔请把拼音方案关掉；第 5 个字母起五笔查不到东西，自动只剩拼音。",
+             " 程序员模式照常：按住 ~ 可以用数字或空格直接上屏候选的英文。",
         );
         let punctuation = row_popup(
             layout,
@@ -183,7 +155,6 @@ impl GeneralPage {
             "不勾（缺省）是临时打英文：拼音先上屏，这个大写字母原样交给应用。勾上后它进拼音缓冲区、按小写参与匹配，Cpan 与 cpan 一样能出「C盘」；回车原样上屏时保留大写。",
         );
         Self {
-            learning_language,
             page_size,
             scheme,
             wubi,
@@ -193,7 +164,6 @@ impl GeneralPage {
             english_off_in_apps,
             chinese_first,
             shift_letter,
-            languages: languages.to_vec(),
             punctuation,
         }
     }
@@ -203,16 +173,6 @@ impl GeneralPage {
         select(
             &self.punctuation,
             Some(usize::from(!general.full_width_punctuation)),
-        );
-        select(
-            &self.learning_language,
-            if general.learning_language_off() {
-                Some(self.languages.len())
-            } else {
-                self.languages
-                    .iter()
-                    .position(|l| l.code() == general.learning_language)
-            },
         );
         select(&self.page_size, Some(general.page_size() - 1));
         select(

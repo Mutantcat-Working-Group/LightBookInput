@@ -9,9 +9,6 @@ pub(crate) struct SessionInfo {
     /// 新 Linux 客户端已协商显示回报。
     pub(crate) display_identity: Option<crate::protocol::DisplayIdentity>,
 
-    /// 待确认的当前候选帧。
-    pub(crate) display_frame: Option<lightbookinput_platform::protocol::Frame>,
-
     /// 上次发给插件的帧；插件定时 Poll 时内容没变就沿用展示身份，不算新的展示。
     pub(crate) last_frame: Option<lightbookinput_platform::protocol::Frame>,
 
@@ -53,7 +50,6 @@ impl SessionInfo {
             disabled: false,
             active: true,
             display_identity: None,
-            display_frame: None,
             last_frame: None,
             private: true,
             engine: EngineSession::default(),

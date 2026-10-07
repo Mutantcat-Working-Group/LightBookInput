@@ -10,7 +10,6 @@ use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
 use std::thread;
 
-use lightbookinput_core::Language;
 use lightbookinput_platform::protocol::{KeyEvent, KeyModifiers, KeyOutcome, SessionId};
 use lightbookinput_tsf::client::{EngineClient, KeyReply, KeyResponse};
 use lightbookinput_windows_server::{AssemblySpec, Router, RouterConfig, assembly, ipc};
@@ -22,11 +21,9 @@ fn letter(c: char) -> KeyEvent {
     KeyEvent::new(c.to_ascii_uppercase() as u32, Some(c), Default::default())
 }
 
-/// 取常规按键结果；收到「读选区」请求（不该在这些用例里出现）就 panic。
 fn result(reply: KeyReply) -> KeyResponse {
     match reply {
         KeyReply::Result(response) => response,
-        KeyReply::NeedSelection { .. } => panic!("没料到 Server 要读选区"),
     }
 }
 
@@ -37,7 +34,7 @@ fn spawn_server(server_end: UnixStream) -> thread::JoinHandle<()> {
         let dict = root.join("assets/sample/dict.tsv");
         let glossary = root.join("assets/sample/glossary-en.tsv");
         let engine = assembly::assemble(&AssemblySpec {
-            glossary: Some((Language::English, glossary)),
+            english_glossary: Some(glossary),
             ..AssemblySpec::new(dict)
         })
         .expect("assemble engine from sample data");
@@ -128,37 +125,3 @@ fn commit_returns_raw_text() {
     server.join().unwrap();
 }
 
-/// 「翻译选中文字」快捷键在云服务关着时不劫持：样例词库没配 predictor，Ctrl+Alt+T 不该要求读选区，
-/// 而是走常规分派（带 Ctrl/Alt 的键 Router 一律 Passthrough 交回应用）。真正的翻译闭环靠真机测（要云服务）。
-#[test]
-fn translate_combo_is_dormant_without_cloud() {
-    let (client_end, server_end) = UnixStream::pair().unwrap();
-    let server = spawn_server(server_end);
-
-    let (mut client, _input) = EngineClient::open(client_end, SESSION, None).expect("open session");
-    // Ctrl+Alt+T（缺省 translate_selection）：character = 't'，修饰键 ctrl+alt。
-    let combo = KeyEvent::new(
-        b'T' as u32,
-        Some('t'),
-        KeyModifiers {
-            ctrl: true,
-            alt: true,
-            ..Default::default()
-        },
-    );
-    let reply = client.key(combo).expect("combo round-trips");
-    match reply {
-        KeyReply::Result(response) => {
-            assert_eq!(
-                response.outcome,
-                KeyOutcome::Passthrough,
-                "云服务关着，带 Ctrl/Alt 的键应放行给应用"
-            );
-            assert!(response.frame.is_empty(), "不该起组句 / 候选");
-        }
-        KeyReply::NeedSelection { .. } => panic!("云服务关着不该要求读选区"),
-    }
-
-    client.close().expect("close session");
-    server.join().unwrap();
-}

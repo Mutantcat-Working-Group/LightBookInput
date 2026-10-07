@@ -27,6 +27,7 @@ fn custom_positions_survive_normal_candidates_and_cloud() {
             syllables: vec![],
             reading: None,
             aux_code: None,
+            gloss: None,
         }]);
         assert_eq!(layout.candidate(1).unwrap().text, "；");
     }

@@ -20,6 +20,7 @@ mod code_table;
 mod dictionary;
 mod error;
 pub mod import;
+mod english_glossary;
 mod matching;
 mod pattern;
 mod word_list;
@@ -31,6 +32,7 @@ pub use aux_code_table::{
 pub use code_table::CodeTable;
 pub use dictionary::Dictionary;
 pub use error::DictionaryError;
+pub use english_glossary::EnglishGlossary;
 pub use matching::Match;
 pub use pattern::{SyllablePattern, canonical_syllable};
 pub use word_list::WordList;

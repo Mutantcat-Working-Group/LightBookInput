@@ -70,7 +70,7 @@ impl TextService_Impl {
         self.apply_mode_settings(input.english_mode, input.switch_mode);
     }
 
-    /// Ctrl + Alt + Space 是组合键、走 TSF 保留键（与「翻译选中文字」同一套）；没勾就撤掉登记，免得白占着。
+    /// Ctrl + Alt + Space 是组合键、走 TSF 保留键；没勾就撤掉登记，免得白占着。
     fn sync_switch_preserved_key(&self, want: bool) {
         if want == self.switch_preserved.get() {
             return;

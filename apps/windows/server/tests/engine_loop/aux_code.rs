@@ -17,7 +17,7 @@ fn router_with_aux(config: RouterConfig) -> Router {
     let dict = root.join("assets/sample/dict.tsv");
     let glossary = root.join("assets/sample/glossary-en.tsv");
     let mut engine = assembly::assemble(&AssemblySpec {
-        glossary: Some((Language::English, glossary)),
+        english_glossary: Some(glossary),
         english: Some(root.join("assets/sample/english.tsv")),
         ..AssemblySpec::new(dict)
     })
@@ -319,7 +319,6 @@ fn a_new_code_table_in_the_user_dir_hot_reloads() {
     router.watch_config(
         &Config::default(),
         dir.join("config.toml"),
-        dir.clone(),
         DataDirs {
             user_codes: Some(codes.clone()),
             ..DataDirs::default()
@@ -365,7 +364,6 @@ fn a_rewritten_code_table_hot_reloads() {
     router.watch_config(
         &Config::default(),
         dir.join("config.toml"),
-        dir.clone(),
         DataDirs {
             user_codes: Some(codes.clone()),
             ..DataDirs::default()

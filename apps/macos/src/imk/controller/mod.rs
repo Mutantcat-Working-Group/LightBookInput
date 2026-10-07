@@ -3,7 +3,7 @@
 //! 只做两件事：把按键翻译成 Engine 的调用，把 Engine 返回的候选交给候选窗口。
 //! **这里不允许出现排序、词库或翻译逻辑。** 会话状态（候选、高亮、页码）在 [`crate::host::Session`]。
 
-use lightbookinput_core::{Candidate, QUESTION_PREFIX};
+use lightbookinput_core::{Candidate, CandidateKind, QUESTION_PREFIX};
 use lightbookinput_platform::Modifiers;
 use objc2::rc::{Allocated, Retained};
 use objc2::runtime::{AnyObject, Sel};
@@ -21,7 +21,7 @@ mod command;
 mod commit;
 mod display;
 mod text;
-mod translate;
+mod programmer;
 
 define_class!(
     // SAFETY:
@@ -49,8 +49,9 @@ define_class!(
 
         /// 所有按键事件都到这里（IMK 第一层协议）。IMK 按控制器实现了哪一层决定路线，实现了这个方法就不会再分发成
         /// `inputText:client:` / `didCommandBySelector:client:`（父类缺省实现也不分发），所以自己分：
-        /// Option+数字上屏候选的译文（Option 会把数字键变成 ¡™£ 这类字符，只能按键码认）；命令键按键码映射成原来的选择器；
-        /// 其余按事件带的字符走文本路径。返回 true 表示已处理，系统不再把按键交给应用。
+        /// 按住 `~` 进程序员模式，数字键上屏候选的英文（`~` 与数字都要按键码认：Shift 出来的 `~` 与
+        /// 修饰键组合出来的字符都对不上）；命令键按键码映射成原来的选择器；其余按事件带的字符走文本路径。
+        /// 返回 true 表示已处理，系统不再把按键交给应用。
         // define_class! 会把返回类型转成 ObjC BOOL，方法体里不能用 `return`，逻辑放在下面的 inherent impl
         #[unsafe(method(handleEvent:client:))]
         fn handle_event(&self, event: Option<&NSEvent>, client: Option<&AnyObject>) -> bool {
@@ -156,9 +157,6 @@ define_class!(
     unsafe impl NSObjectProtocol for LightBookInputInputController {}
 );
 
-/// 翻译选中文字最多接受多少个字符：再长既慢又贵，也不是输入法该干的事。
-const MAX_TRANSLATE_CHARS: usize = 500;
-
 /// 给本地整句模型看的光标前文最多读多少字符（Engine 自己再按它的前文长度截）。
 const RESCORE_LOOKBACK: usize = lightbookinput_core::RESCORE_CONTEXT_CHARS;
 
@@ -193,6 +191,10 @@ impl LightBookInputInputController {
 
     /// 一个按键事件的分发：只管按下；Cmd / Ctrl 组合除 Cmd+左右外一律交给应用；命令键映射成选择器；其余按字符当文本。
     fn dispatch_event(&self, event: &NSEvent, client: TextClient<'_>) -> bool {
+        // 松键：应用送得来 KeyUp 时，松开 ~ 就是退出程序员模式
+        if event.r#type() == NSEventType::KeyUp {
+            return self.programmer_release(event.keyCode(), client);
+        }
         if event.r#type() != NSEventType::KeyDown || self.in_login_window() {
             return false;
         }
@@ -212,22 +214,11 @@ impl LightBookInputInputController {
         };
         // 提示在显示：敲任何键先收掉，键照常处理
         host::with(|h| h.clear_notice());
-        // 翻译选中文字进行中：回车 / 空格 / 1 接受，Esc 放弃，其他键放弃后照常交给应用
-        if host::with(|h| h.translation.is_some()).unwrap_or(false) {
-            return self.handle_translation_review(key, client);
+        // 程序员模式：按住 ~ 时数字键 / 空格上屏候选的英文
+        if let Some(handled) = self.programmer_key(key, event.isARepeat(), pressed, client) {
+            return handled;
         }
-        // 翻译快捷键（不在组句中）：读应用里的选区，交给云端
-        let typed = event
-            .charactersIgnoringModifiers()
-            .map(|c| c.to_string().to_ascii_lowercase());
-        let combo = host::with(|h| h.translate_keys).unwrap_or_default();
-        if pressed == combo.modifiers
-            && typed.as_deref().and_then(|t| t.chars().next()) == Some(combo.key)
-            && !host::with(|h| !h.engine.composition().is_empty()).unwrap_or(false)
-        {
-            return self.translate_selection(client);
-        }
-        // 修饰键 + 数字：按配置的两组组合上屏第一 / 第二个译词（缺省 ⌥ 与 ⇧⌥）、删候选（缺省 ⇧）。
+        // 修饰键 + 数字：删候选（缺省 ⇧）。
         // 只在组句中认：不在组句时 ⇧4 就是 `$`，得走下面的标点转换（中文模式出 ￥、⇧6 出 ……、⇧1 出 ！），
         // 以前在这里被截走后原样还给应用，全角转换就没机会做了。
         // 表达式模式（`v2^3`）里 ⇧+数字打的是 `^ * ( )`，不当快捷键
@@ -238,13 +229,6 @@ impl LightBookInputInputController {
             && !pressed.is_empty()
             && let Some(digit) = digit_key(key)
         {
-            let (first, second) = host::with(|h| h.translation_keys).unwrap_or_default();
-            if pressed == first {
-                return self.handle_translation_key(digit, 0, client);
-            }
-            if pressed == second {
-                return self.handle_translation_key(digit, 1, client);
-            }
             if pressed == host::with(|h| h.delete_keys).unwrap_or_default() {
                 return self.handle_delete_key(digit, client);
             }

@@ -191,14 +191,14 @@ fn linux_ui_negotiates_after_legacy_open_and_binds_ack_to_connection() {
     assert_eq!(response["KeyResult"]["session"], 1);
     write_message(
         &mut stream,
-        &json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": []}}),
+        &json!({"DisplayAcknowledged": {"session": 1, "identity": identity}}),
     )
     .unwrap();
     assert_eq!(commit(&mut stream).as_deref(), Some("n"));
     identity["generation"] = json!(8);
     write_message(
         &mut stream,
-        &json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": []}}),
+        &json!({"DisplayAcknowledged": {"session": 1, "identity": identity}}),
     )
     .unwrap();
     assert_eq!(commit(&mut stream), None); // 旧回执不破坏此连接上的会话。

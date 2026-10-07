@@ -126,6 +126,7 @@ pub(super) fn chinese_candidate(item: &Scored<'_>, aux_code: Option<&str>) -> Ca
         syllables: item.hit.syllables().map(str::to_owned).collect(),
         reading: None,
         aux_code: aux_code.map(str::to_owned),
+        gloss: None,
     }
 }
 

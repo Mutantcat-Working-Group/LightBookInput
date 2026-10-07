@@ -27,8 +27,6 @@ impl Host {
             };
             let _ = writeln!(out, "{kind}：{} · {} 条 · {state}", info.name, info.entries);
         }
-        let languages: Vec<&str> = self.languages.iter().map(|l| l.code()).collect();
-        let _ = writeln!(out, "释义表：{}", languages.join(" "));
         let _ = writeln!(
             out,
             "输入日志：{}",
@@ -43,16 +41,6 @@ impl Host {
             out,
             "输入统计：累计 {} 字 · {} 天",
             usage.total.hanzi, usage.days
-        );
-        let vocabulary = self.engine.vocabulary_summary();
-        let _ = writeln!(
-            out,
-            "词汇（{}）：见过 {} · 看熟 {} · 上屏过 {}",
-            self.learning_language
-                .map_or("off", |language| language.code()),
-            vocabulary.seen,
-            vocabulary.familiar,
-            vocabulary.committed
         );
         let _ = writeln!(
             out,

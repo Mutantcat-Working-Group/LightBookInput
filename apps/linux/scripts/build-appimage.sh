@@ -43,7 +43,7 @@ install -m 644 LICENSE "$appdir/usr/share/licenses/lightbookinput/LICENSE"
 install -m 644 assets/stroke/LICENSE-CNS11643.txt "$appdir/usr/share/licenses/lightbookinput/LICENSE-CNS11643.txt"
 
 # 资源文件
-for kind in sample glossary levels emoji; do
+for kind in sample glossary emoji; do
   cp -r assets/$kind "$appdir/usr/share/lightbookinput/resources/"
 done
 

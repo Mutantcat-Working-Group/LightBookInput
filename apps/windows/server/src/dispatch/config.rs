@@ -1,7 +1,6 @@
 use lightbookinput_platform::protocol::KeyModifiers;
 use lightbookinput_platform::{
-    AppsConfig, CandidateRenderer, Config, KeyCombo, LayoutMode, PreeditMode, Scheme, SwitchKeys,
-    ThemeMode,
+    AppsConfig, CandidateRenderer, Config, LayoutMode, PreeditMode, Scheme, SwitchKeys, ThemeMode,
 };
 
 use super::RenderSettings;
@@ -60,13 +59,8 @@ pub struct RouterConfig {
     pub apps: AppsConfig,
 
     /// 上屏第一 / 第二个译词的修饰键（`[shortcut] translation` / `translation_second`）。
-    pub translation_keys: (KeyModifiers, KeyModifiers),
-
     /// 删候选的修饰键（`[shortcut] delete_candidate`）。
     pub delete_keys: KeyModifiers,
-
-    /// 「翻译选中文字」快捷键（`[shortcut] translate_selection`）。
-    pub translate_selection: KeyCombo,
 
     /// 悬浮状态条开关（`[status_bar] enabled`）。
     pub status_enabled: bool,
@@ -121,12 +115,7 @@ impl From<&Config> for RouterConfig {
             english_full_width: config.general.english_full_width_punctuation,
             zhuyin: config.general.is_zhuyin(),
             apps: config.apps.clone(),
-            translation_keys: {
-                let (first, second) = config.shortcut.translation_keys();
-                (first.into(), second.into())
-            },
             delete_keys: config.shortcut.delete_keys().into(),
-            translate_selection: config.shortcut.translate_selection,
             status_enabled: config.status_bar.enabled,
             status_pos: config.status_bar.x.zip(config.status_bar.y),
             scheme: config.general.scheme(),

@@ -51,6 +51,7 @@ impl Engine {
                 syllables: Vec::new(),
                 reading: None,
                 aux_code: None,
+                gloss: None,
             });
         }
         out

@@ -155,6 +155,7 @@ impl Engine {
                 syllables: conversion.syllables,
                 reading: None,
                 aux_code: None,
+                gloss: None,
             });
         }
         out

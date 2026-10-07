@@ -1,10 +1,10 @@
-//! 错误鼠标身份不改变其他会话曝光，重开上下文不会复用旧帧。
+//! 错误鼠标身份不改变其他会话的上屏结果，重开上下文不会复用旧帧。
 use super::{compose, key, router};
 use lightbookinput_platform::protocol::{ClientMessage, PROTOCOL_VERSION, SessionId};
 use serde_json::json;
 
 #[test]
-fn rejected_other_session_action_keeps_current_exposure_eligible() {
+fn rejected_other_session_action_keeps_current_commit_eligible() {
     for action in ["Candidate", "Page"] {
         let (mut router, book) = router();
         router.handle(ClientMessage::OpenSession {
@@ -13,7 +13,7 @@ fn rejected_other_session_action_keeps_current_exposure_eligible() {
             protocol: PROTOCOL_VERSION,
         });
         router.handle_linux(json!({"DisplayReporting": {"session": 2, "identity": {"generation": 2, "context": "second", "revision": 0}}}));
-        let identity = compose(&mut router);
+        let identity = compose(&mut router, &book);
         let event = if action == "Candidate" {
             json!({"Candidate": {"identity": identity, "index": 0}})
         } else {
@@ -23,15 +23,15 @@ fn rejected_other_session_action_keeps_current_exposure_eligible() {
             .handle_linux(json!({"LinuxEvent": {"session": 2, "event": event}}))
             .unwrap();
         assert_eq!(ignored["Ignored"]["session"], 2);
-        router.handle_linux(json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": [[0, 0]]}}));
-        assert_eq!(key(&mut router, ' ')["KeyResult"]["commit"], "你好");
-        assert_eq!(*book.lock().unwrap(), ["hello"], "{action}");
+        router.handle_linux(json!({"DisplayAcknowledged": {"session": 1, "identity": identity}}));
+        assert_eq!(key(&mut router, &book, ' ')["KeyResult"]["commit"], "你好");
+        assert_eq!(*book.lock().unwrap(), ["你好"], "{action}");
     }
 }
 #[test]
 fn reopened_context_rejects_old_revision_even_with_same_local_id() {
     let (mut router, book) = router();
-    let old = compose(&mut router);
+    let old = compose(&mut router, &book);
     router.handle(ClientMessage::CloseSession {
         session: SessionId(1),
     });
@@ -45,13 +45,13 @@ fn reopened_context_rejects_old_revision_even_with_same_local_id() {
         private: false,
     });
     router.handle_linux(json!({"DisplayReporting": {"session": 1, "identity": {"generation": 2, "context": "first", "revision": 0}}}));
-    let new = compose(&mut router);
+    let new = compose(&mut router, &book);
     assert_ne!(old, new);
     let ignored = router.handle_linux(json!({"LinuxEvent": {"session": 1, "event": {"Candidate": {"identity": old, "index": 0}}}})).unwrap();
     assert_eq!(ignored["Ignored"]["session"], 1);
     router.handle_linux(
-        json!({"DisplayAcknowledged": {"session": 1, "identity": old, "senses": [[0, 0]]}}),
+        json!({"DisplayAcknowledged": {"session": 1, "identity": old}}),
     );
-    key(&mut router, ' ');
-    assert!(book.lock().unwrap().is_empty());
+    key(&mut router, &book, ' ');
+    assert_eq!(*book.lock().unwrap(), ["你好"]);
 }

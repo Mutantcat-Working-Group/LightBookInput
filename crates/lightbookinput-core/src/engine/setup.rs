@@ -372,6 +372,24 @@ impl Engine {
         self
     }
 
+    /// 装上中→英释义表（程序员模式用）；文件读不了就不要这张表，其余功能照常。
+    pub fn set_english_glossary(&mut self, glossary: EnglishGlossary) {
+        self.english_glossary = Some(glossary);
+    }
+
+    /// 中→英释义表里有多少条（启动日志与诊断信息用）。
+    pub fn english_glossary_len(&self) -> usize {
+        self.english_glossary.as_ref().map_or(0, EnglishGlossary::len)
+    }
+
+    /// 一个中文词的英文释义：表里没有、或没装表时返回 `None`（壳照常上屏中文）。
+    pub fn english_gloss(&self, text: &str) -> Option<String> {
+        self.english_glossary
+            .as_ref()?
+            .gloss_of(text)
+            .map(str::to_owned)
+    }
+
     pub fn with_mode_keys(mut self, keys: ModeKeys) -> Self {
         self.modes = keys.sanitized();
         self

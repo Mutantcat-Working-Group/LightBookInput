@@ -22,12 +22,10 @@ impl Router {
         }
         self.stop_rescoring();
         if let Some(previous) = self.focused.and_then(|id| self.sessions.get_mut(&id)) {
-            self.engine.note_displayed(std::iter::empty());
             self.engine.swap_session(&mut previous.engine);
             previous.composed = self.composed.take();
             previous.highlight = self.highlight;
             previous.navigated = self.navigated;
-            previous.display_frame = None;
             previous.last_frame = None;
             previous.shift_pending = false;
         }
@@ -52,7 +50,6 @@ impl Router {
             return;
         }
         info.private = private;
-        info.display_frame = None;
         info.last_frame = None;
         if let Some(identity) = &mut info.display_identity {
             self.display_revision += 1;

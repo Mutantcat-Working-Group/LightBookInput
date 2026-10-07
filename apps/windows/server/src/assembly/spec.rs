@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use lightbookinput_core::Language;
 use lightbookinput_platform::{AuxCodeConfig, DictionariesConfig};
 
 use super::LanguageModelFiles;
@@ -10,10 +9,7 @@ pub struct AssemblySpec {
     /// 主词库（`.qj` 或 TSV）。
     pub dict: PathBuf,
 
-    /// 学习语言的释义表。
-    pub glossary: Option<(Language, PathBuf)>,
-
-    /// 英→中释义表（英文候选的中文释义）。
+    /// 中→英释义表，程序员模式用（按数字 / 空格上屏候选的英文）。
     pub english_glossary: Option<PathBuf>,
 
     /// 英文词表。
@@ -37,9 +33,6 @@ pub struct AssemblySpec {
     /// `[aux_code]` 配置。
     pub aux_code: AuxCodeConfig,
 
-    /// 词汇等级表目录（`levels-<语言>.tsv`）。
-    pub levels_dir: Option<PathBuf>,
-
     /// 用户数据目录（`%APPDATA%\LightBookInput`）；没有就都只在内存。
     pub user_dir: Option<PathBuf>,
 
@@ -51,7 +44,6 @@ impl AssemblySpec {
     pub fn new(dict: impl Into<PathBuf>) -> Self {
         Self {
             dict: dict.into(),
-            glossary: None,
             english_glossary: None,
             english: None,
             emoji: Vec::new(),
@@ -60,7 +52,6 @@ impl AssemblySpec {
             dictionaries: DictionariesConfig::default(),
             bundled_codes_dir: None,
             aux_code: AuxCodeConfig::default(),
-            levels_dir: None,
             user_dir: None,
             input_log: false,
         }

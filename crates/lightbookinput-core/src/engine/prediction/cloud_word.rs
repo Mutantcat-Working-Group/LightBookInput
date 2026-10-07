@@ -22,6 +22,7 @@ impl CloudWord {
             syllables: self.syllables,
             reading: self.reading,
             aux_code: None,
+            gloss: None,
         }
     }
 }

@@ -161,11 +161,11 @@ impl Router {
                             syllables: Vec::new(),
                             reading: None,
                             aux_code: None,
+                            gloss: None,
                         })
                     })
                     .collect();
-                let mut candidates = CandidateList { items };
-                self.engine.annotate(&mut candidates);
+                let candidates = CandidateList { items };
                 Frame {
                     preedit: preedit.clone(),
                     cursor: *cursor,

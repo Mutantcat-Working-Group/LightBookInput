@@ -7,7 +7,6 @@ pub(crate) enum Message {
     Navigate(Option<String>),
 
     // 通用页
-    LearningLanguage(Option<usize>),
     PageSize(Option<f64>),
     Scheme(Option<usize>),
     ShuangpinRawPreedit(bool),
@@ -53,11 +52,7 @@ pub(crate) enum Message {
     ModeExpression(Option<usize>),
     ModeQuestion(Option<usize>),
     QuestionMark(bool),
-    Translation(Option<usize>),
-    TranslationSecond(Option<usize>),
     DeleteCandidate(Option<usize>),
-    /// 只换修饰键，字母键固定用当前的。
-    TranslateSelection(Option<usize>),
 
     // 模糊音页
     /// 配置键 + 新值。

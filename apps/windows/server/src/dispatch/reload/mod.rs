@@ -9,9 +9,9 @@ mod tests;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant, SystemTime};
 
-use lightbookinput_core::{Engine, Language, NoGlossFiller, NoPredictor, NoTranslator};
+use lightbookinput_core::{Engine, NoPredictor};
 use lightbookinput_platform::{Config, code_tables};
-use lightbookinput_predict::{CloudGlossFiller, CloudPredictor, PredictConfig};
+use lightbookinput_predict::{CloudPredictor, PredictConfig};
 
 pub(super) use self::state::ConfigReload;
 pub use self::state::DataDirs;
@@ -22,20 +22,12 @@ pub(super) const CONFIG_POLL_INTERVAL: Duration = Duration::from_secs(1);
 /// 检查更新的结果文件名，在用户数据目录下（见 `lightbookinput-update::UpdateState`）。
 const UPDATE_STATE_FILE: &str = "update.json";
 use super::{Router, RouterConfig};
-use crate::assembly;
-
-fn mtime(path: &Path) -> Option<SystemTime> {
-    std::fs::metadata(path)
-        .and_then(|meta| meta.modified())
-        .ok()
-}
 
 /// 按 `[predict]` 接云联想与释义兜底；关着或缺密钥就退回本地实现。启动与热加载共用。
 pub fn attach_cloud(engine: &mut Engine, predict: &PredictConfig) {
     if !predict.enabled {
         tracing::info!("云联想未开启（[predict] enabled = false）");
         engine.set_predictor(Box::new(NoPredictor));
-        engine.set_gloss_filler(Box::new(NoGlossFiller));
         return;
     }
     match CloudPredictor::new(predict) {
@@ -46,46 +38,6 @@ pub fn attach_cloud(engine: &mut Engine, predict: &PredictConfig) {
         Err(error) => {
             tracing::warn!(%error, "云联想接入失败（缺 API key？），退回本地候选");
             engine.set_predictor(Box::new(NoPredictor));
-        }
-    }
-    match CloudGlossFiller::new(predict) {
-        Ok(filler) => engine.set_gloss_filler(Box::new(filler)),
-        Err(error) => {
-            tracing::warn!(%error, "释义兜底未启用");
-            engine.set_gloss_filler(Box::new(NoGlossFiller));
-        }
-    }
-}
-
-/// 学习语言变了就换释义表：关是不翻译；换语言重装随包 + 个人释义表，没有这门语言的表或装不上就保持原样。
-/// 换成功（或关掉）返回 true。
-fn swap_translator(
-    engine: &mut Engine,
-    language: Option<Language>,
-    root: &Path,
-    user_dir: Option<&Path>,
-) -> bool {
-    let Some(language) = language else {
-        engine.set_translator(Box::new(NoTranslator));
-        tracing::info!("学习语言已关，不显示译文");
-        return true;
-    };
-    let Some(path) = assembly::glossary_file(root, language) else {
-        tracing::warn!(
-            language = language.code(),
-            "没有这门语言的释义表，学习语言不变"
-        );
-        return false;
-    };
-    match assembly::load_glossary(language, &path, user_dir) {
-        Ok(glossary) => {
-            tracing::info!(language = language.code(), "释义表已切换");
-            engine.set_translator(Box::new(glossary));
-            true
-        }
-        Err(error) => {
-            tracing::warn!(%error, "释义表加载失败，学习语言不变");
-            false
         }
     }
 }
@@ -115,7 +67,6 @@ impl Router {
         &mut self,
         config: &Config,
         config_path: PathBuf,
-        root: PathBuf,
         dirs: DataDirs,
     ) {
         let last_mtime = mtime(&config_path);
@@ -130,7 +81,6 @@ impl Router {
         self.reload = Some(ConfigReload {
             config_path,
             last_check: Instant::now(),
-            root,
             dirs,
             code_files,
             last_mtime,
@@ -138,7 +88,6 @@ impl Router {
             applied_dictionaries: config.dictionaries.clone(),
             applied_aux_code: config.aux_code.clone(),
             dictionary_files,
-            applied_language: assembly::learning_language(config),
             update: config.update.clone(),
             updates,
         });
@@ -194,7 +143,7 @@ impl Router {
         }
     }
 
-    /// 应用新配置。学习语言变了换释义表（词汇等级表启动时已全装，不用换）。
+    /// 应用新配置。
     fn apply_config(&mut self, config: &Config) {
         self.engine.set_fuzzy(config.fuzzy);
         // 拼音侧与形码侧一起装配（双拼 / 注音 / 混输都在里面）
@@ -230,17 +179,6 @@ impl Router {
             attach_cloud(&mut self.engine, &config.predict);
             reload.applied_predict = config.predict.clone();
         }
-        let language = assembly::learning_language(config);
-        if language != reload.applied_language
-            && swap_translator(
-                &mut self.engine,
-                language,
-                &reload.root,
-                reload.dirs.user_root.as_deref(),
-            )
-        {
-            reload.applied_language = language;
-        }
         if config.dictionaries != reload.applied_dictionaries {
             reload.applied_dictionaries = config.dictionaries.clone();
             self.engine
@@ -268,4 +206,9 @@ impl Router {
         tracing::info!(count = tables.len(), "辅码码表已重装");
         self.engine.set_aux_codes(tables);
     }
+}
+
+/// 配置文件 mtime；读不到当没变（首次看到时记下当前值，之后比对）。
+fn mtime(path: &Path) -> Option<SystemTime> {
+    std::fs::metadata(path).and_then(|meta| meta.modified()).ok()
 }

@@ -31,4 +31,17 @@ pub struct Candidate {
     /// 壳按 `[general] aux_code_show` 决定要不要显示。
     #[serde(default)]
     pub aux_code: Option<String>,
+
+    /// 展示用英文释义（程序员模式：按住 `~` 时数字键 / 空格上屏的就是它）。由壳在出帧时按
+    /// 释义表补上，不参与匹配与上屏语义；没开程序员模式或释义表里没有这个词时为 `None`。
+    #[serde(default)]
+    pub gloss: Option<String>,
+}
+
+impl Candidate {
+    /// 补上展示用英文释义（程序员模式出帧时用）。
+    pub fn with_gloss(mut self, gloss: Option<String>) -> Self {
+        self.gloss = gloss;
+        self
+    }
 }

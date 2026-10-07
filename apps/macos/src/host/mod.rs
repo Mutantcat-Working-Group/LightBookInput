@@ -19,22 +19,21 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 
 use lightbookinput_core::{
-    Candidate, CandidateKind, Cell, CloudWord, EmojiTable, Engine, FuzzyRules, Language, ModeKeys,
-    NoGlossFiller, NoInputLogger, NoPredictor, NoTranslator, Prediction,
+    Candidate, CandidateKind, Cell, CloudWord, EmojiTable, Engine, FuzzyRules, ModeKeys,
+    NoInputLogger, NoPredictor, Prediction,
 };
-use lightbookinput_dictionary::{Dictionary, WordList};
-use lightbookinput_learning::{FrequencyLearner, InputLog, UsageStats, VocabularyBook};
+use lightbookinput_dictionary::{Dictionary, EnglishGlossary, WordList};
+use lightbookinput_learning::{FrequencyLearner, InputLog, UsageStats};
 use lightbookinput_lm::BigramModel;
 use lightbookinput_platform::extra_dictionaries;
 use lightbookinput_platform::{
     AppsConfig, CandidateRenderer, DEFAULT_ENGLISH_CANDIDATES_OFF, DictionariesConfig,
-    GeneralConfig, KeyCombo, LEARNING_LANGUAGE_OFF, LayoutMode, LocalModelConfig, LogLevel,
+    GeneralConfig, LayoutMode, LocalModelConfig, LogLevel,
     Modifiers, PAGE_KEY_OPTIONS, PreeditMode, Scheme, ShortcutConfig, ThemeMode, UpdateChannel,
 };
 use lightbookinput_predict::{
-    CloudGlossFiller, CloudPredictor, ConnectionTest, PredictConfig, PredictError,
+    CloudPredictor, ConnectionTest, PredictConfig, PredictError,
 };
-use lightbookinput_translate::{Glossary, LayeredTranslator, LevelTable, PersonalGlossary};
 use objc2::MainThreadMarker;
 use objc2_app_kit::{NSPasteboard, NSPasteboardTypeString};
 use objc2_foundation::{NSProcessInfo, NSRect, NSString};
@@ -52,7 +51,6 @@ pub use dictionaries::DictionaryInfo;
 pub use init::init;
 use model::RescoreMonitor;
 use presenting::Notice;
-pub use presenting::TranslationJob;
 pub use session::Session;
 
 pub struct Host {
@@ -89,12 +87,6 @@ pub struct Host {
     /// 偏好设置「词库」页显示的列表，勾选框 / 移除按钮的下标对着它。
     dictionary_list: Vec<DictionaryInfo>,
 
-    /// 当前学习语言；`None` 为关（不显示译文）。
-    learning_language: Option<Language>,
-
-    /// 打进包里的释义表语言，设置窗口按这个顺序列。
-    languages: Vec<Language>,
-
     /// 版本号与构建标识，诊断信息里用。
     version: String,
 
@@ -110,23 +102,17 @@ pub struct Host {
     /// 翻页键对（上一页、下一页）。
     pub page_keys: (char, char),
 
-    /// 配数字键上屏第一 / 第二个译词的修饰键组合（配置 `[shortcut] translation` / `translation_second`）。
-    pub translation_keys: (Modifiers, Modifiers),
-
     /// 配数字键删候选的修饰键（配置 `[shortcut] delete_candidate`）。
     pub delete_keys: Modifiers,
+
+    /// 程序员模式：用户按住 `~` 时开着，松键（或敲 Esc）退出。开着时数字键 / 空格上屏候选的英文释义。
+    pub programmer_mode: bool,
 
     /// 候选窗口顶行显示的一句临时状态（删了什么词），下一次查询就没了。
     pub status: Option<String>,
 
     /// 输入日志是否在记（配置 `[general] input_log`），换了才重开文件。
     input_log_enabled: Option<bool>,
-
-    /// 翻译选中文字的快捷键（配置 `[shortcut] translate_selection`）。
-    pub translate_keys: KeyCombo,
-
-    /// 进行中的「翻译选中文字」；有它时候选窗口显示的是译文（或「翻译中…」），按键先归它处理。
-    pub translation: Option<TranslationJob>,
 
     /// 正在显示的提示（候选窗口里一行字，几秒后自动收）。
     pub notice: Option<Notice>,
@@ -202,13 +188,6 @@ const USAGE_FILE: &str = "usage.tsv";
 
 /// 检查更新的结果文件名，与学习数据同目录（见 `lightbookinput-update::UpdateState`）。
 const UPDATE_STATE_FILE: &str = "update.json";
-
-/// 词汇记录文件名，与学习数据同目录（一个译词一行，见 `lightbookinput-learning::VocabularyBook`）。
-const VOCABULARY_FILE: &str = "user-vocab.tsv";
-
-/// 可能打进包里的释义表语言，按这个顺序在设置里列出；文件不存在的不列。
-const GLOSSARY_LANGUAGES: [Language; 3] =
-    [Language::English, Language::Japanese, Language::Spanish];
 
 /// 在单例上执行操作。未初始化、不在主线程、或正处在另一次 `with` 之内（重入）时返回 `None`。
 ///

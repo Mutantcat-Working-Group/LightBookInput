@@ -16,26 +16,12 @@ pub(crate) fn from_candidate(position: usize, candidate: &Candidate, show_code: 
     if let Some(reading) = &candidate.reading {
         annotation.push((reading.clone(), Tone::Gloss));
     }
-    if let Some(translation) = &candidate.translation {
-        for (i, sense) in translation.senses().iter().enumerate() {
-            if i > 0 || !annotation.is_empty() {
-                annotation.push((" · ".to_owned(), Tone::Faint));
-            }
-            if let Some(pos) = sense.part_of_speech {
-                annotation.push((format!("{pos} "), Tone::Faint));
-            }
-            let tone = if sense.fresh {
-                Tone::Fresh
-            } else {
-                Tone::Gloss
-            };
-            for segment in sense.furigana() {
-                annotation.push((segment.text, tone));
-                if let Some(reading) = segment.reading {
-                    annotation.push((format!("({reading})"), Tone::Faint));
-                }
-            }
+    // 程序员模式（按住 `~`）时候选右侧补一行英文释义，数字 / 空格上屏的就是它
+    if let Some(gloss) = &candidate.gloss {
+        if !annotation.is_empty() {
+            annotation.push((" · ".to_owned(), Tone::Faint));
         }
+        annotation.push((gloss.clone(), Tone::Gloss));
     }
     Row {
         index: (position + 1).to_string(),

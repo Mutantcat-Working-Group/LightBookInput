@@ -17,7 +17,6 @@ lightbookinput-learning.workspace = true
 lightbookinput-lm.workspace = true
 lightbookinput-neural.workspace = true
 lightbookinput-platform.workspace = true
-lightbookinput-translate.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

@@ -4,7 +4,6 @@ use lightbookinput_lm::LmError;
 use lightbookinput_neural::NeuralError;
 use lightbookinput_platform::ConfigError;
 use lightbookinput_predict::PredictError;
-use lightbookinput_translate::GlossaryError;
 #[derive(Debug, thiserror::Error)]
 pub enum CliError {
     #[error(transparent)]
@@ -17,14 +16,7 @@ pub enum CliError {
     Neural(#[from] NeuralError),
 
     #[error(transparent)]
-    Glossary(#[from] GlossaryError),
-
-    #[error(transparent)]
     Learning(#[from] LearningError),
-
-    /// 学习语言不是 en / ja / es。
-    #[error("learning language must be en, ja or es, got {0:?}")]
-    Language(String),
 
     #[error(transparent)]
     Config(#[from] ConfigError),

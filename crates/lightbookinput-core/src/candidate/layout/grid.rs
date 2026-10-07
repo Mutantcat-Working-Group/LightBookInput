@@ -148,6 +148,7 @@ mod tests {
                 syllables: vec!["a".into()],
                 reading: None,
                 aux_code: None,
+                gloss: None,
             })
             .collect();
         CandidateLayout::new(candidates, page_size, 0)
@@ -214,6 +215,7 @@ mod tests {
                 syllables: vec!["a".into()],
                 reading: None,
                 aux_code: None,
+                gloss: None,
             })
             .collect();
         // 第二行第一列有个三字词：哪怕不在视口里，第一列也按它留宽

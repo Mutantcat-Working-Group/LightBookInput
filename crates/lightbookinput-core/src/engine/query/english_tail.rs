@@ -168,6 +168,7 @@ impl Engine {
             syllables,
             reading: None,
             aux_code: None,
+            gloss: None,
         })
     }
 }

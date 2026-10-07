@@ -1,25 +1,15 @@
-//! 「统计」页：输入量（今天 / 7 天 / 累计）、折成几本书、学习语言的词汇与等级分布。
-//! 直读 `%APPDATA%\LightBookInput` 下的 `usage.tsv` / `user-vocab.tsv`，不经 Server；打开这页时读一次。
+//! 「统计」页：输入量（今天 / 7 天 / 累计）、折成几本书。
+//! 直读 `%APPDATA%\LightBookInput` 下的 `usage.tsv`，不经 Server；打开这页时读一次。
 
 use jiff::Zoned;
-use lightbookinput_core::{Language, Usage, UsageSummary, VocabularySummary, book_scale};
-use lightbookinput_learning::{UsageStats, VocabularyBook};
-use lightbookinput_translate::LevelTable;
+use lightbookinput_core::{Usage, UsageSummary, book_scale};
+use lightbookinput_learning::UsageStats;
 use windows_reactor::*;
 
 use crate::panel::Settings;
-use crate::panel::controls::{note, page, repo_resource};
+use crate::panel::controls::{note, page};
 
 const COLUMNS: [&str; 4] = ["汉字", "中文词", "英文词", "上屏次数"];
-
-fn language_name(language: Language) -> &'static str {
-    match language {
-        Language::English => "英语",
-        Language::Japanese => "日语",
-        Language::Spanish => "西班牙语",
-        Language::Chinese => "中文",
-    }
-}
 
 fn cell(text: impl Into<String>, width: f64) -> View {
     TextBlock::new().text(text).width(width).into()
@@ -59,26 +49,9 @@ fn columns(usage: &Usage) -> [String; 4] {
 
 pub(crate) fn view(settings: &Settings, _context: &mut ViewContext<Settings>) -> View {
     let today = Zoned::now().date();
-    let general = &settings.config.general;
-    // 学习语言关着就没有词汇可统计
-    let language = (!general.learning_language_off()).then(|| {
-        general
-            .learning_language
-            .parse::<Language>()
-            .unwrap_or(Language::English)
-    });
     let dir = settings.data_dir();
 
     let usage = UsageStats::open(dir.join("usage.tsv")).summary_on(today);
-    let vocabulary = language.map(|language| {
-        let mut book = VocabularyBook::open(dir.join("user-vocab.tsv"));
-        if let Some(path) = repo_resource(&format!("assets/levels/levels-{}.tsv", language.code()))
-            && let Ok(table) = LevelTable::from_path(path)
-        {
-            book = book.with_levels(language, table);
-        }
-        book.summary_on(language, today)
-    });
 
     let header = table_row("", COLUMNS.map(str::to_owned), true);
     let rows = [
@@ -95,66 +68,9 @@ pub(crate) fn view(settings: &Settings, _context: &mut ViewContext<Settings>) ->
             .font_weight(FontWeight::SEMI_BOLD)
             .into(),
         note(&since_line(&usage)),
-        note("数的是上屏的文字：选一个词算一个中文词，整句按词切开数；英文候选、回车原样上屏的英文词与英文译词算英文词。只在这台电脑上数，与输入日志无关。"),
-        TextBlock::new()
-            .text(format!(
-                "词汇（{}）",
-                language.map_or("学习语言已关", language_name)
-            ))
-            .font_weight(FontWeight::SEMI_BOLD)
-            .into(),
-        match &vocabulary {
-            Some(vocabulary) => StackPanel::new()
-                .spacing(12.0)
-                .children([note(&vocabulary_line(vocabulary)), level_block(vocabulary)]),
-            None => note("学习语言已关，不统计词汇。"),
-        },
+        note("数的是上屏的文字：选一个词算一个中文词，整句按词切开数；英文候选与回车原样上屏的英文词算英文词。只在这台电脑上数，与输入日志无关。"),
     ]);
     page("统计", body)
-}
-
-/// 有等级表才显示，一级一行。
-fn level_block(vocabulary: &VocabularySummary) -> View {
-    if vocabulary.levels.is_empty() {
-        return note("装了词汇等级表后，这里按 CEFR / JLPT 等级列词汇分布。");
-    }
-    let mut rows: Vec<View> = Vec::with_capacity(vocabulary.levels.len() + 1);
-    rows.push(table_row(
-        "等级",
-        ["词表", "见过", "看熟", "上屏过"].map(str::to_owned),
-        true,
-    ));
-    for level in &vocabulary.levels {
-        rows.push(table_row(
-            &level.name,
-            [
-                group_digits(level.total),
-                group_digits(level.seen),
-                group_digits(level.familiar),
-                group_digits(level.committed),
-            ],
-            false,
-        ));
-    }
-    StackPanel::new().spacing(6.0).keyed_children(
-        rows.into_iter()
-            .enumerate()
-            .map(|(index, row)| KeyedView::new(index.to_string(), row)),
-    )
-}
-
-fn vocabulary_line(summary: &VocabularySummary) -> String {
-    if summary.seen == 0 {
-        return "还没见过译词：打中文时候选右侧的译词就是词汇的来源。".to_owned();
-    }
-    format!(
-        "见过 {} 个词，看熟 {} 个；上屏过 {} 个，直接打出过 {} 个；本周新见 {} 个。",
-        group_digits(summary.seen),
-        group_digits(summary.familiar),
-        group_digits(summary.committed),
-        group_digits(summary.used),
-        group_digits(summary.new_this_week),
-    )
 }
 
 fn since_line(summary: &UsageSummary) -> String {

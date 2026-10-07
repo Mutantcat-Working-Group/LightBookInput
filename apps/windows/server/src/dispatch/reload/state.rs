@@ -3,7 +3,6 @@
 use std::path::PathBuf;
 use std::time::{Instant, SystemTime};
 
-use lightbookinput_core::Language;
 use lightbookinput_dictionary::Dictionary;
 use lightbookinput_platform::{
     AuxCodeConfig, DictionariesConfig, UpdateConfig, code_tables, extra_dictionaries,
@@ -56,9 +55,6 @@ pub(crate) struct ConfigReload {
     /// 上次看文件的时间（节流用）。
     pub(super) last_check: Instant,
 
-    /// 随包数据根目录（释义表在 `data/generated` 下）。
-    pub(super) root: PathBuf,
-
     /// 随包与用户数据目录。
     pub(super) dirs: DataDirs,
 
@@ -77,9 +73,6 @@ pub(crate) struct ConfigReload {
 
     /// 已应用的 `[aux_code]`。
     pub(super) applied_aux_code: AuxCodeConfig,
-
-    /// 已应用的学习语言（`None` 为关）。
-    pub(super) applied_language: Option<Language>,
 
     /// 最近加载的用户词库文件快照（路径、修改时间、长度）。
     pub(super) dictionary_files: Vec<(PathBuf, Option<SystemTime>, u64)>,

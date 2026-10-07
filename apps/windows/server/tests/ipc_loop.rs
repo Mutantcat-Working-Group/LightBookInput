@@ -3,7 +3,6 @@
 use std::io::{Cursor, Read, Write};
 use std::path::PathBuf;
 
-use lightbookinput_core::Language;
 use lightbookinput_platform::protocol::{
     ClientMessage, KeyEvent, PROTOCOL_VERSION, ServerMessage, SessionId,
 };
@@ -15,10 +14,7 @@ const SESSION: SessionId = SessionId(1);
 fn router() -> Router {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../..");
     let engine = assembly::assemble(&AssemblySpec {
-        glossary: Some((
-            Language::English,
-            root.join("assets/sample/glossary-en.tsv"),
-        )),
+        english_glossary: Some(root.join("assets/sample/glossary-en.tsv")),
         ..AssemblySpec::new(root.join("assets/sample/dict.tsv"))
     })
     .expect("assemble engine from sample data");

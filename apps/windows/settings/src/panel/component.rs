@@ -50,9 +50,6 @@ impl Component for Settings {
             Message::Navigate(None) => {}
 
             // 通用页
-            Message::LearningLanguage(Some(i)) if i < general::LANGUAGES.len() => {
-                self.save("general", "learning_language", general::LANGUAGES[i].1);
-            }
             Message::PageSize(Some(value)) => {
                 let size = (value.round() as i64).clamp(1, 9);
                 self.save("general", "page_size", size);
@@ -170,19 +167,8 @@ impl Component for Settings {
                 self.save("shortcut", "question", shortcut::MODE_KEYS[i]);
             }
             Message::QuestionMark(on) => self.save("shortcut", "question_mark", on),
-            Message::Translation(Some(i)) if i < shortcut::MODIFIERS.len() => {
-                self.save("shortcut", "translation", shortcut::MODIFIERS[i].1);
-            }
-            Message::TranslationSecond(Some(i)) if i < shortcut::MODIFIERS.len() => {
-                self.save("shortcut", "translation_second", shortcut::MODIFIERS[i].1);
-            }
             Message::DeleteCandidate(Some(i)) if i < shortcut::MODIFIERS.len() => {
                 self.save("shortcut", "delete_candidate", shortcut::MODIFIERS[i].1);
-            }
-            Message::TranslateSelection(Some(i)) if i < shortcut::MODIFIERS.len() => {
-                let key = self.config.shortcut.translate_selection.key;
-                let combo = format!("{}+{key}", shortcut::MODIFIERS[i].1);
-                self.save("shortcut", "translate_selection", combo);
             }
 
             // 模糊音页

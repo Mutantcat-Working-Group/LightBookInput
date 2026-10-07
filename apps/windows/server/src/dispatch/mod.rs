@@ -1,6 +1,6 @@
 //! 协议分派：把 DLL 发来的 [`ClientMessage`] 交给 Engine，产出回给 DLL 的 [`ServerMessage`]。
 //! 消息分派在 [`message`]，会话在 [`session`]，组句展示状态在 [`composed`]，按键在 [`key`]，
-//! 候选窗口输出在 [`candidates`]，状态条在 [`status`]，翻译选中文字在 [`translate`]，配置热加载在 [`reload`]，
+//! 候选窗口输出在 [`candidates`]，状态条在 [`status`]，配置热加载在 [`reload`]，
 //! 本地整句模型在 [`rescore`]，形码码表在 [`code`]。
 
 mod candidates;
@@ -13,7 +13,6 @@ mod reload;
 mod rescore;
 mod session;
 mod status;
-mod translate;
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -35,10 +34,12 @@ pub use self::rescore::find_model;
 use self::rescore::{ModelLoader, RescoreState};
 use self::session::SessionInfo;
 pub use self::status::{NoopStatusSink, StatusEvent, StatusSink, StatusView};
-use self::translate::Translation;
 
 /// 学习数据落盘间隔（与 macOS 壳一致）；Server 没有定时器，借消息节拍看时间。
 const LEARNING_FLUSH_INTERVAL: Duration = Duration::from_secs(60);
+
+/// 程序员模式开着时候选窗口里常驻的一行字。
+pub(super) const PROGRAMMER_STATUS: &str = "程序员模式：数字键上屏英文，Esc 退出";
 
 /// 同一时刻只有一个应用有键盘焦点，所以一个 Engine 持当前组句；焦点切到别的会话时先清掉上一个的残留。
 pub struct Router {
@@ -56,15 +57,6 @@ pub struct Router {
 
     /// 当前组句的展示状态；没在组句时为 `None`。
     composed: Option<Composed>,
-
-    /// 「翻译选中文字」进行态；与 `composed` 互斥。
-    translation: Option<Translation>,
-
-    /// 已发出、等 DLL 回选区的请求号；对不上的 `Selection` 丢弃。
-    pending_selection: Option<u64>,
-
-    /// 「翻译选中文字」请求号计数器。
-    selection_seq: u64,
 
     /// 整句补全（preedit 右侧、Tab 上屏）；缓冲变化时清空。
     sentence: Option<String>,
@@ -117,6 +109,9 @@ pub struct Router {
 
     /// 重排的防抖 / 轮询进行态。
     rescore: RescoreState,
+
+    /// 程序员模式开着：数字 / 空格上屏候选的英文（按住 `~` 触发，`~` / Esc / 别的键退出）。
+    programmer: bool,
 }
 
 impl Router {
@@ -130,8 +125,6 @@ impl Router {
             sessions: HashMap::new(),
             focused: None,
             composed: None,
-            pending_selection: None,
-            selection_seq: 0,
             sentence: None,
             notice: None,
             highlight: 0,
@@ -149,6 +142,7 @@ impl Router {
             model_loader: None,
             applied_model: LocalModelConfig::default(),
             rescore: RescoreState::default(),
+            programmer: false,
         }
     }
 

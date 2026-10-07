@@ -28,7 +28,9 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use lightbookinput_dictionary::{AuxCodeLookup, CodeTable, Dictionary, Match, WordList};
+use lightbookinput_dictionary::{
+    AuxCodeLookup, CodeTable, Dictionary, EnglishGlossary, Match, WordList,
+};
 
 pub use alignment::Alignment;
 pub use aux_code::is_valid_aux_code_key;
@@ -88,6 +90,9 @@ pub struct Engine {
 
     /// 英文词表，中英混输用；没有就不出英文候选。
     english: Option<WordList>,
+
+    /// 中→英释义表，程序员模式用（按住 `~` 时数字 / 空格上屏候选的英文）；没有这张表就没有英文可上。
+    english_glossary: Option<EnglishGlossary>,
 
     /// 英文模式（壳里 Caps Lock 亮着）：缓冲区里的字母不当拼音，候选来自英文词表的补全与纠正。
     english_mode: bool,
@@ -364,6 +369,7 @@ impl Engine {
             learner: learning::MutedLearner::new(Box::new(NoLearner)),
             composition: Composition::default(),
             english: None,
+            english_glossary: None,
             english_mode: false,
             punctuation: Punctuation::default(),
             full_width_punctuation: true,

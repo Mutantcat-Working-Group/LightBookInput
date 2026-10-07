@@ -1,7 +1,7 @@
-//! 真正上屏触发曝光；Linux 回报按连接代次/上下文/帧验证，不能越过隐私边界。
+//! 真正上屏才算定论；Linux 回报只按连接代次/上下文/帧验证，不能越过会话与隐私边界。
 mod events;
-use lightbookinput_core::{Engine, Language, Sense, Translation, Translator, VocabularyTracker};
-use lightbookinput_dictionary::Dictionary;
+use lightbookinput_core::Engine;
+use lightbookinput_dictionary::{Dictionary, EnglishGlossary};
 use lightbookinput_linux_server::{Router, RouterConfig};
 use lightbookinput_platform::protocol::{
     ClientMessage, KeyEvent, KeyModifiers, PROTOCOL_VERSION, SessionId,
@@ -9,43 +9,11 @@ use lightbookinput_platform::protocol::{
 use serde_json::{Value, json};
 use std::sync::{Arc, Mutex};
 
-struct Glosses;
-impl Translator for Glosses {
-    fn language(&self) -> Language {
-        Language::English
-    }
-    fn translate(&self, text: &str) -> Option<Translation> {
-        (text == "你好").then(|| {
-            Translation::new(
-                Language::English,
-                ["hello", "greetings"]
-                    .into_iter()
-                    .map(|text| Sense {
-                        part_of_speech: None,
-                        text: text.into(),
-                        reading: None,
-                        fresh: false,
-                    })
-                    .collect(),
-            )
-        })
-    }
-}
-struct Book(Arc<Mutex<Vec<String>>>);
-impl VocabularyTracker for Book {
-    fn exposures(&self, _: Language, _: &str) -> u32 {
-        0
-    }
-    fn record_exposure(&mut self, _: Language, word: &str) {
-        self.0.lock().unwrap().push(word.into());
-    }
-    fn record_commit(&mut self, _: Language, _: &str, _: bool) {}
-}
+/// 组句只是候选展示，按空格或选字才是上屏，两者不能混为一谈。
 fn router() -> (Router, Arc<Mutex<Vec<String>>>) {
-    let book = Arc::new(Mutex::new(Vec::new()));
-    let engine = Engine::new(Dictionary::parse("你好\tni hao\t100\n").unwrap())
-        .with_translator(Box::new(Glosses))
-        .with_vocabulary_tracker(Box::new(Book(book.clone())));
+    let commits = Arc::new(Mutex::new(Vec::new()));
+    let mut engine = Engine::new(Dictionary::parse("你好\tni hao\t100\n").unwrap());
+    engine.set_english_glossary(EnglishGlossary::parse("你好\thello\tgreetings\n").unwrap());
     let mut router = Router::new(engine, RouterConfig::default());
     router.handle(ClientMessage::OpenSession {
         session: SessionId(1),
@@ -57,10 +25,12 @@ fn router() -> (Router, Arc<Mutex<Vec<String>>>) {
         private: false,
     });
     router.handle_linux(json!({"DisplayReporting": {"session": 1, "identity": {"generation": 2, "context": "first", "revision": 0}}}));
-    (router, book)
+    (router, commits)
 }
-fn key(router: &mut Router, c: char) -> Value {
-    router
+
+/// KeyResult 上的 commit 是这个会话真正上屏的文字。
+fn key(router: &mut Router, commits: &Arc<Mutex<Vec<String>>>, c: char) -> Value {
+    let result = router
         .handle_linux(
             serde_json::to_value(ClientMessage::Key {
                 session: SessionId(1),
@@ -68,12 +38,17 @@ fn key(router: &mut Router, c: char) -> Value {
             })
             .unwrap(),
         )
-        .unwrap()
+        .unwrap();
+    if let Some(text) = result["KeyResult"]["commit"].as_str() {
+        commits.lock().unwrap().push(text.into());
+    }
+    result
 }
-fn compose(router: &mut Router) -> Value {
+
+fn compose(router: &mut Router, commits: &Arc<Mutex<Vec<String>>>) -> Value {
     let mut last = Value::Null;
     for c in "nihao".chars() {
-        last = key(router, c);
+        last = key(router, commits, c);
     }
     assert_eq!(
         last["KeyResult"]["frame"]["candidates"]["items"][0]["text"],
@@ -81,111 +56,59 @@ fn compose(router: &mut Router) -> Value {
     );
     last["KeyResult"]["identity"].clone()
 }
-#[test]
-fn display_ack_replaces_page_and_deduplicates_senses() {
-    let (mut router, book) = router();
-    let identity = compose(&mut router);
-    router.handle_linux(json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": [[0, 1], [0, 1]]}}));
-    key(&mut router, ' ');
-    assert_eq!(*book.lock().unwrap(), ["greetings"]);
-}
-#[test]
-fn wrong_identity_or_indices_cannot_create_exposures() {
-    for defect in ["generation", "context", "revision", "sense", "row"] {
-        let (mut router, book) = router();
-        let mut identity = compose(&mut router);
-        let mut senses = json!([[0, 0]]);
-        match defect {
-            "context" => identity[defect] = json!("other"),
-            "sense" => senses = json!([[0, 0], [0, 99]]),
-            "row" => senses = json!([[99, 0]]),
-            _ => identity[defect] = json!(999),
-        }
-        router.handle_linux(
-            json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": senses}}),
-        );
-        key(&mut router, ' ');
-        assert!(book.lock().unwrap().is_empty(), "{defect}");
-    }
-}
-#[test]
-fn private_and_old_frame_reports_cannot_be_replayed() {
-    let (mut router, book) = router();
-    let old = compose(&mut router);
-    router.handle(ClientMessage::Privacy {
-        session: SessionId(1),
-        private: true,
-    });
-    let private = compose(&mut router);
-    for identity in [old, private] {
-        router.handle_linux(json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": [[0, 0]]}}));
-    }
-    key(&mut router, ' ');
-    router.handle(ClientMessage::Privacy {
-        session: SessionId(1),
-        private: false,
-    });
-    compose(&mut router);
-    key(&mut router, ' ');
-    assert!(book.lock().unwrap().is_empty());
-}
 
 #[test]
-fn same_frame_fallback_replaces_exposure_without_double_counting() {
-    let (mut router, book) = router();
-    let identity = compose(&mut router);
-    for senses in [
-        json!([[0, 0], [0, 1]]),
-        json!([]),
-        json!([[0, 0]]),
-        json!([[0, 0]]),
-    ] {
-        router.handle_linux(
-            json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": senses}}),
-        );
+fn composing_never_commits_until_a_key_lands_the_candidate() {
+    let (mut router, commits) = router();
+    let identity = compose(&mut router, &commits);
+    assert!(commits.lock().unwrap().is_empty(), "组句不算上屏");
+    key(&mut router, &commits, ' ');
+    assert_eq!(*commits.lock().unwrap(), ["你好"]);
+    assert!(identity["revision"].as_u64().unwrap() >= 1);
+}
+
+/// 插件把帧 identity 回传回来只做校验；代次/上下文对不上的旧回执不能影响本次上屏。
+#[test]
+fn stale_panel_reports_are_ignored_without_touching_the_commit() {
+    for defect in ["generation", "context", "revision"] {
+        let (mut router, commits) = router();
+        let mut identity = compose(&mut router, &commits);
+        identity[defect] = json!(999);
+        router.handle_linux(json!({"DisplayAcknowledged": {"session": 1, "identity": identity}}));
+        key(&mut router, &commits, ' ');
+        assert_eq!(*commits.lock().unwrap(), ["你好"], "{defect}");
     }
-    key(&mut router, ' ');
-    assert_eq!(*book.lock().unwrap(), ["hello"]);
 }
 
 #[test]
 fn poll_with_an_unchanged_frame_keeps_the_acknowledged_display() {
-    // 插件组句期间定时 Poll 取重排结果；帧没变就不是新的展示，已回报的曝光照算
-    let (mut router, book) = router();
-    let identity = compose(&mut router);
-    router.handle_linux(
-        json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": [[0, 0]]}}),
-    );
+    // 插件组句期间定时 Poll 取重排结果；帧没变就不是新的展示，身份沿用
+    let (mut router, commits) = router();
+    let identity = compose(&mut router, &commits);
     let update = router
         .handle_linux(json!({"Poll": {"session": 1}}))
         .unwrap();
     assert_eq!(identity, update["Update"]["identity"]);
-    key(&mut router, ' ');
-    assert_eq!(*book.lock().unwrap(), ["hello"]);
+    key(&mut router, &commits, ' ');
+    assert_eq!(*commits.lock().unwrap(), ["你好"]);
 }
 
+/// 失焦再回来、或开新会话，都不会顺手把别处的显示记录算到本会话头上。
 #[test]
 fn unfocused_or_resumed_session_requires_a_new_display_report() {
-    let (mut router, book) = router();
-    let identity = compose(&mut router);
-    router.handle_linux(
-        json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": [[0, 0]]}}),
-    );
+    let (mut router, commits) = router();
+    let identity = compose(&mut router, &commits);
     router.handle_linux(
         json!({"LinuxEvent": {"session": 1, "event": {"Focus": {"focused": false}}}}),
     );
-    router.handle_linux(
-        json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": [[0, 0]]}}),
-    );
-    key(&mut router, ' ');
-    assert!(book.lock().unwrap().is_empty());
+    router.handle_linux(json!({"DisplayAcknowledged": {"session": 1, "identity": identity}}));
+    key(&mut router, &commits, ' ');
+    assert_eq!(*commits.lock().unwrap(), ["你好"]);
 
     router
         .handle_linux(json!({"LinuxEvent": {"session": 1, "event": {"Focus": {"focused": true}}}}));
-    let identity = compose(&mut router);
-    router.handle_linux(
-        json!({"DisplayAcknowledged": {"session": 1, "identity": identity, "senses": [[0, 0]]}}),
-    );
+    let identity = compose(&mut router, &commits);
+    router.handle_linux(json!({"DisplayAcknowledged": {"session": 1, "identity": identity}}));
     router.handle(ClientMessage::OpenSession {
         session: SessionId(2),
         app: None,
@@ -194,7 +117,6 @@ fn unfocused_or_resumed_session_requires_a_new_display_report() {
     router.handle(ClientMessage::Poll {
         session: SessionId(2),
     });
-    // 会话恢复不能把失焦前的显示记录带回来。
-    key(&mut router, ' ');
-    assert!(book.lock().unwrap().is_empty());
+    key(&mut router, &commits, ' ');
+    assert_eq!(*commits.lock().unwrap(), ["你好", "你好"]);
 }

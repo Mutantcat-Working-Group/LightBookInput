@@ -8,9 +8,6 @@ pub enum Tone {
     /// 译文。
     Gloss,
 
-    /// 生词的译文（用户还没在候选里见过几轮，`Sense::fresh`），用强调色。
-    Fresh,
-
     /// 词性与分隔符，最浅。
     Faint,
 }
@@ -37,28 +34,6 @@ impl Row {
         if let Some(reading) = &candidate.reading {
             annotation.push((reading.clone(), Tone::Gloss));
         }
-        if let Some(translation) = &candidate.translation {
-            for (i, sense) in translation.senses().iter().enumerate() {
-                if i > 0 || !annotation.is_empty() {
-                    annotation.push((" · ".to_owned(), Tone::Faint));
-                }
-                if let Some(pos) = sense.part_of_speech {
-                    annotation.push((format!("{pos} "), Tone::Faint));
-                }
-                // 日文译词按汉字段注平假名（開発(かいはつ)する），假名淡色
-                let tone = if sense.fresh {
-                    Tone::Fresh
-                } else {
-                    Tone::Gloss
-                };
-                for segment in sense.furigana() {
-                    annotation.push((segment.text, tone));
-                    if let Some(reading) = segment.reading {
-                        annotation.push((format!("({reading})"), Tone::Faint));
-                    }
-                }
-            }
-        }
         Self {
             index: (position + 1).to_string(),
             text: if matches!(
@@ -72,5 +47,16 @@ impl Row {
             annotation,
             cloud: false,
         }
+    }
+
+    /// 程序员模式（按住 `~`）时在候选右侧补一行英文释义，数字 / 空格上屏的就是它。
+    pub fn with_gloss(mut self, gloss: Option<String>) -> Self {
+        if let Some(gloss) = gloss {
+            if !self.annotation.is_empty() {
+                self.annotation.push((" · ".to_owned(), Tone::Faint));
+            }
+            self.annotation.push((gloss, Tone::Gloss));
+        }
+        self
     }
 }

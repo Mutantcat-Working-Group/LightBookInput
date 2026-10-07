@@ -29,11 +29,7 @@ impl Router {
                 let info = self.sessions.get_mut(&session)?;
                 info.active = focused;
                 info.shift_pending = false;
-                info.display_frame = None;
                 info.last_frame = None;
-                if !focused && self.focused == Some(session) {
-                    self.engine.note_displayed(std::iter::empty());
-                }
                 if focused {
                     self.ensure_focus(session);
                 }
@@ -57,7 +53,6 @@ impl Router {
                 let info = self.sessions.get_mut(&session)?;
                 info.active = false;
                 info.shift_pending = false;
-                info.display_frame = None;
                 info.last_frame = None;
                 self.flush_learning();
             }
@@ -147,7 +142,6 @@ impl Router {
     fn discard_session(&mut self, session: SessionId) {
         let info = self.sessions.get_mut(&session).expect("known session");
         info.shift_pending = false;
-        info.display_frame = None;
         info.last_frame = None;
         info.composed = None;
         info.highlight = 0;

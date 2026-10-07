@@ -32,6 +32,7 @@ impl Engine {
                     syllables: Vec::new(),
                     reading: None,
                     aux_code: None,
+                    gloss: None,
                 },
             );
         }
@@ -74,6 +75,7 @@ impl Engine {
             syllables: Vec::new(),
             reading: None,
             aux_code: None,
+            gloss: None,
         };
         let word = lists.iter().find_map(|words| words.get(text));
         // 这段字母下用户选中文词（`key` → 可以）比选英文词的次数多：中文词留在第一，英文让到后面；
@@ -192,6 +194,7 @@ impl Engine {
                         syllables: syllables.clone(),
                         reading: Some(word.clone()),
                         aux_code: None,
+                        gloss: None,
                     },
                 );
                 index += 1;

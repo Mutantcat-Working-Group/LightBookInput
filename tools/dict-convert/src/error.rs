@@ -15,9 +15,6 @@ pub enum ConvertError {
     LanguageModel(#[from] lightbookinput_lm::LmError),
 
     #[error(transparent)]
-    Glossary(#[from] lightbookinput_translate::GlossaryError),
-
-    #[error(transparent)]
     Neural(#[from] lightbookinput_neural::NeuralError),
 
     /// `pack` 少了必填的元数据（只有 `codes` 有缺省值）。

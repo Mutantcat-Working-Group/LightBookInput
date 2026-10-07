@@ -6,7 +6,7 @@ use lightbookinput_core::{Candidate, CandidateLayout, CandidateList, CloudWord, 
 use lightbookinput_platform::protocol::{Frame, PROTOCOL_VERSION, PreeditKind, PreeditSegment};
 
 pub(super) use self::state::{Composed, TypedKeys};
-use super::Router;
+use super::{PROGRAMMER_STATUS, Router};
 
 impl Router {
     /// 缓冲变化后：按 Engine 状态重建 [`Composed`]，发一次云联想请求，归零高亮与整句补全。
@@ -50,7 +50,7 @@ impl Router {
         self.schedule_rescoring();
     }
 
-    /// 拉一次云联想结果：云端词并进候选布局，整句补全记下；翻译评审时结果是译文。
+    /// 拉一次云联想结果：云端词并进候选布局，整句补全记下。
     pub(super) fn poll_prediction(&mut self) {
         if !self.engine.prediction_enabled() {
             return;
@@ -58,20 +58,6 @@ impl Router {
         let Some(prediction) = self.engine.poll_prediction() else {
             return;
         };
-        if self.translation.is_some() {
-            match prediction.sentence {
-                Some(text) => {
-                    if let Some(translation) = self.translation.as_mut() {
-                        translation.result = Some(text);
-                    }
-                }
-                None => {
-                    tracing::info!("翻译选中文字：云端没有给出译文");
-                    self.translation = None;
-                }
-            }
-            return;
-        }
         if let Some(Composed::Candidates { layout, .. }) = self.composed.as_mut() {
             let words: Vec<Candidate> = prediction
                 .words
@@ -139,7 +125,7 @@ impl Router {
         Some(self.engine.commit(&candidate))
     }
 
-    /// 按当前状态生成一帧：翻译评审优先；没在组句给空帧；否则给高亮所在的那一页。
+    /// 按当前状态生成一帧：没在组句给空帧；否则给高亮所在的那一页。
     /// 焦点会话的 DLL 比 Server 老时按老协议降级（见 [`Self::downgrade_for_old_dll`]）。
     pub(super) fn current_frame(&self) -> Frame {
         let mut frame = self.raw_frame();
@@ -150,9 +136,6 @@ impl Router {
 
     /// 给 DLL 的帧只管应用输入框：双拼「输入框显示原始按键」开着时换成敲的键，拼音行由 Server 自绘照旧全拼。
     fn show_typed_keys(&self, frame: &mut Frame) {
-        if self.translation.is_some() {
-            return;
-        }
         let Some(Composed::Candidates {
             typed_keys: Some(keys),
             ..
@@ -191,10 +174,16 @@ impl Router {
             .map_or(PROTOCOL_VERSION, |info| info.protocol)
     }
 
-    fn raw_frame(&self) -> Frame {
-        if let Some(translation) = &self.translation {
-            return self.translation_frame(translation);
+    /// 候选窗口里常驻的一行字：程序员模式开着时是模式提示，否则是删候选后的提示。
+    fn status_line(&self) -> Option<String> {
+        if self.programmer {
+            Some(PROGRAMMER_STATUS.to_owned())
+        } else {
+            self.notice.clone()
         }
+    }
+
+    fn raw_frame(&self) -> Frame {
         match &self.composed {
             None => Frame::default(),
             Some(Composed::Raw { text, cursor }) => Frame {
@@ -212,7 +201,7 @@ impl Router {
                 theme: self.config.theme,
                 aux_code_show: self.config.aux_code_show,
                 sentence: None,
-                notice: self.notice.clone(),
+                notice: self.status_line(),
             },
             Some(Composed::Candidates {
                 preedit,
@@ -227,9 +216,17 @@ impl Router {
                     .page(page)
                     .into_iter()
                     .filter_map(|cell| cell.candidate().cloned())
+                    // 程序员模式开着时候选右侧补一行英文释义，数字 / 空格上屏的就是它
+                    .map(|candidate| {
+                        if self.programmer {
+                            let gloss = self.engine.english_gloss(&candidate.text);
+                            candidate.with_gloss(gloss)
+                        } else {
+                            candidate
+                        }
+                    })
                     .collect();
-                let mut candidates = CandidateList { items };
-                self.engine.annotate(&mut candidates);
+                let candidates = CandidateList { items };
                 Frame {
                     preedit: preedit.clone(),
                     preedit_mode: self.config.preedit,
@@ -242,7 +239,7 @@ impl Router {
                     theme: self.config.theme,
                     aux_code_show: self.config.aux_code_show,
                     sentence: self.sentence.clone(),
-                    notice: self.notice.clone(),
+                    notice: self.status_line(),
                 }
             }
         }

@@ -1,8 +1,8 @@
 //! 「统计」页：用轻书打了多少字。今天 / 最近 7 天 / 累计 三行，汉字 / 中文词 / 英文词 / 上屏次数 四列，
-//! 再把累计汉字数折成「几本《某书》」给个直观参照；下面一块是学习语言的词汇（见过 / 看熟 / 上屏过 / 打出过的译词数）。
-//! 数据来自 `Engine::usage_summary` / `Engine::vocabulary_summary`，打开窗口时更新。
+//! 再把累计汉字数折成「几本《某书》」给个直观参照。
+//! 数据来自 `Engine::usage_summary`，打开窗口时更新。
 
-use lightbookinput_core::{FRESH_UNTIL, Usage, UsageSummary, VocabularySummary, book_scale};
+use lightbookinput_core::{Usage, UsageSummary, book_scale};
 use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSFont, NSTextAlignment, NSTextField};
@@ -17,15 +17,6 @@ const ROWS: [&str; 3] = ["今天", "最近 7 天", "累计"];
 /// 四列的标题。
 const COLUMNS: [&str; 4] = ["汉字", "中文词", "英文词", "上屏次数"];
 
-/// 等级块的四列。
-const LEVEL_COLUMNS: [&str; 4] = ["词表", "见过", "看熟", "上屏过"];
-
-/// 等级块最多几行（CEFR 六级、JLPT 五级）。
-const MAX_LEVEL_ROWS: usize = 6;
-
-/// 词汇总览那一行的高度：两行字，数字多的时候折行而不是截断。
-const VOCABULARY_LINE_HEIGHT: f64 = ROW_HEIGHT * 1.8;
-
 /// 「统计」页里要按数据刷新的控件。
 pub struct UsagePage {
     /// 数字格子，按行优先排：`cells[row * 4 + column]`。
@@ -36,21 +27,6 @@ pub struct UsagePage {
 
     /// 「自 某日 起，记了 n 天」。
     since: Retained<NSTextField>,
-
-    /// 词汇块标题：「词汇（英语）」。
-    vocabulary_title: Retained<NSTextField>,
-
-    /// 词汇块正文：见过 / 看熟 / 上屏过 / 打出过 / 本周新见。
-    vocabulary_line: Retained<NSTextField>,
-
-    /// 等级块的表头（没有等级表时整块隐藏）。
-    level_headers: Vec<Retained<NSTextField>>,
-
-    /// 等级块每行的等级名。
-    level_names: Vec<Retained<NSTextField>>,
-
-    /// 等级块的数字格子，按行优先排：`level_cells[row * 4 + column]`。
-    level_cells: Vec<Retained<NSTextField>>,
 }
 
 impl UsagePage {
@@ -93,77 +69,18 @@ impl UsagePage {
         note_full(
             layout,
             mtm,
-            "数的是上屏的文字：选一个词算一个中文词，整句按词切开数；英文候选、回车原样上屏的英文词与英文译词算英文词。只在这台电脑上数，与输入日志无关，关掉或清空日志不影响这里。",
-        );
-        layout.space(GROUP_GAP);
-        let vocabulary_title = NSTextField::labelWithString(&NSString::from_str(""), mtm);
-        vocabulary_title.setFont(Some(&NSFont::boldSystemFontOfSize(13.0)));
-        layout.place(
-            &vocabulary_title,
-            PAGE_PADDING,
-            layout.inner_width(),
-            ROW_HEIGHT,
-        );
-        layout.next_row(ROW_HEIGHT);
-        // 数字大了一行放不下（「本周新见 4,63…」被截断过），允许折成两行
-        let vocabulary_line = NSTextField::labelWithString(&NSString::from_str(""), mtm);
-        vocabulary_line.setUsesSingleLineMode(false);
-        if let Some(cell) = vocabulary_line.cell() {
-            cell.setWraps(true);
-        }
-        layout.place(
-            &vocabulary_line,
-            PAGE_PADDING,
-            layout.inner_width(),
-            VOCABULARY_LINE_HEIGHT,
-        );
-        layout.next_row(VOCABULARY_LINE_HEIGHT);
-        let mut level_headers = Vec::with_capacity(LEVEL_COLUMNS.len());
-        for (column, title) in LEVEL_COLUMNS.iter().enumerate() {
-            let header = small_label(mtm, title);
-            header.setAlignment(NSTextAlignment::Right);
-            layout.place(&header, column_x(column), column_width, ROW_HEIGHT * 0.7);
-            level_headers.push(header);
-        }
-        layout.next_row(ROW_HEIGHT * 0.7);
-        let mut level_names = Vec::with_capacity(MAX_LEVEL_ROWS);
-        let mut level_cells = Vec::with_capacity(MAX_LEVEL_ROWS * LEVEL_COLUMNS.len());
-        for _ in 0..MAX_LEVEL_ROWS {
-            let name = caption(mtm, "");
-            layout.place(&name, PAGE_PADDING, LABEL_WIDTH, ROW_HEIGHT * 0.8);
-            level_names.push(name);
-            for column in 0..LEVEL_COLUMNS.len() {
-                let cell = NSTextField::labelWithString(&NSString::from_str(""), mtm);
-                cell.setAlignment(NSTextAlignment::Right);
-                cell.setFont(Some(&NSFont::monospacedDigitSystemFontOfSize_weight(
-                    12.0, weight,
-                )));
-                layout.place(&cell, column_x(column), column_width, ROW_HEIGHT * 0.8);
-                level_cells.push(cell);
-            }
-            layout.next_row(ROW_HEIGHT * 0.8);
-        }
-        note_full(
-            layout,
-            mtm,
-            &format!(
-                "候选右侧橙色的译词是生词：你上屏时它在候选窗口里出现还不到 {FRESH_UNTIL} 次。看熟了就变回灰色。只记译词本身和次数，不记你打了什么。"
-            ),
+            "数的是上屏的文字：选一个词算一个中文词，整句按词切开数；英文候选与回车原样上屏的英文词算英文词。\
+             只在这台电脑上数，与输入日志无关，关掉或清空日志不影响这里。",
         );
         Self {
             cells,
             scale,
             since,
-            vocabulary_title,
-            vocabulary_line,
-            level_headers,
-            level_names,
-            level_cells,
         }
     }
 
-    /// 按汇总刷新。`language` 是学习语言的显示名（「英语」）。
-    pub fn show(&self, summary: &UsageSummary, vocabulary: &VocabularySummary, language: &str) {
+    /// 按汇总刷新。
+    pub fn show(&self, summary: &UsageSummary) {
         let rows = [summary.today, summary.week, summary.total];
         for (row, usage) in rows.iter().enumerate() {
             for (column, value) in columns(usage).into_iter().enumerate() {
@@ -178,45 +95,7 @@ impl UsagePage {
             None => "还没有记录，打几个字再来看。".to_owned(),
         };
         self.since.setStringValue(&NSString::from_str(&since));
-        self.vocabulary_title
-            .setStringValue(&NSString::from_str(&format!("词汇（{language}）")));
-        self.vocabulary_line
-            .setStringValue(&NSString::from_str(&vocabulary_line(vocabulary)));
-        let levels = &vocabulary.levels;
-        for header in &self.level_headers {
-            header.setHidden(levels.is_empty());
-        }
-        for (row, name) in self.level_names.iter().enumerate() {
-            let level = levels.get(row);
-            name.setHidden(level.is_none());
-            name.setStringValue(&NSString::from_str(
-                level.map_or("", |level| level.name.as_str()),
-            ));
-            let values = level.map_or([0; 4], |level| {
-                [level.total, level.seen, level.familiar, level.committed]
-            });
-            for (column, value) in values.into_iter().enumerate() {
-                let cell = &self.level_cells[row * LEVEL_COLUMNS.len() + column];
-                cell.setHidden(level.is_none());
-                cell.setStringValue(&NSString::from_str(&group_digits(value)));
-            }
-        }
     }
-}
-
-/// 「见过 120 个词，看熟 80 个；上屏过 60 个，直接打出过 3 个；本周新见 12 个。」
-fn vocabulary_line(summary: &VocabularySummary) -> String {
-    if summary.seen == 0 {
-        return "还没见过译词：打中文时候选右侧的译词就是词汇的来源。".to_owned();
-    }
-    format!(
-        "见过 {} 个词，看熟 {} 个；上屏过 {} 个，直接打出过 {} 个；本周新见 {} 个。",
-        group_digits(summary.seen),
-        group_digits(summary.familiar),
-        group_digits(summary.committed),
-        group_digits(summary.used),
-        group_digits(summary.new_this_week)
-    )
 }
 
 /// 一行四列的值，顺序同 [`COLUMNS`]。

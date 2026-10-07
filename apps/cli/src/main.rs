@@ -18,13 +18,12 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use clap::Parser;
-use lightbookinput_core::{EmojiTable, Engine, FuzzyRules, Language};
+use lightbookinput_core::{EmojiTable, Engine, FuzzyRules};
 use lightbookinput_dictionary::{AuxCodeLookup, AuxCodeTable, CodeTable, Dictionary, WordList};
 use lightbookinput_learning::FrequencyLearner;
 use lightbookinput_lm::BigramModel;
 use lightbookinput_platform::{Config, Scheme};
 use lightbookinput_predict::CloudPredictor;
-use lightbookinput_translate::Glossary;
 
 use crate::args::Args;
 use crate::error::CliError;
@@ -117,30 +116,16 @@ fn run() -> Result<(), CliError> {
     Ok(())
 }
 
-/// 组装 Engine：这是 Core 之外唯一知道具体 Translator / Learner 类型的地方。
+/// 组装 Engine：这是 Core 之外唯一知道具体 Learner / 词表类型的地方。
 fn build_engine(args: &Args) -> Result<Engine, CliError> {
-    let language: Language = args
-        .language
-        .parse()
-        .map_err(|_| CliError::Language(args.language.clone()))?;
-    if language == Language::Chinese {
-        return Err(CliError::Language(args.language.clone()));
-    }
     let dict_path = args
         .dict
         .clone()
         .unwrap_or_else(|| args::default_data_file("dict.tsv"));
-    let glossary_path = args
-        .glossary
-        .clone()
-        .unwrap_or_else(|| args::default_data_file(&format!("glossary-{}.tsv", language.code())));
 
     let started = Instant::now();
     let dictionary = Dictionary::from_path(&dict_path)?;
     let dict_load = started.elapsed();
-    let started = Instant::now();
-    let glossary = Glossary::from_path(language, &glossary_path)?;
-    let glossary_load = started.elapsed();
     let english_path = args.english.clone().or_else(|| {
         let path = args::default_data_file("english.tsv");
         path.is_file().then_some(path)
@@ -155,18 +140,13 @@ fn build_engine(args: &Args) -> Result<Engine, CliError> {
     tracing::info!(
         dict = %dict_path.display(),
         entries = dictionary.len(),
-        glossary = %glossary_path.display(),
-        glosses = glossary.len(),
         english = english.as_ref().map_or(0, WordList::len),
         learned = learner.len(),
         dict_ms = dict_load.as_millis(),
-        glossary_ms = glossary_load.as_millis(),
         english_ms = english_load.as_millis(),
         "加载完成"
     );
-    let mut engine = Engine::new(dictionary)
-        .with_translator(Box::new(glossary))
-        .with_learner(Box::new(learner));
+    let mut engine = Engine::new(dictionary).with_learner(Box::new(learner));
     if !args.extra_dict.is_empty() {
         let mut extras = Vec::new();
         for path in &args.extra_dict {
@@ -175,13 +155,6 @@ fn build_engine(args: &Args) -> Result<Engine, CliError> {
             extras.push(dictionary);
         }
         engine.set_extra_dictionaries(extras);
-    }
-    // 英文候选的中文释义可选
-    let zh_glossary = args::default_data_file("glossary-zh.tsv");
-    if zh_glossary.is_file() {
-        let glossary = Glossary::from_path(Language::Chinese, &zh_glossary)?;
-        tracing::info!(glosses = glossary.len(), "英→中释义表已加载");
-        engine = engine.with_english_translator(Box::new(glossary));
     }
     if let Some(words) = english {
         engine = engine.with_english(words);

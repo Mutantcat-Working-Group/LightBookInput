@@ -4,7 +4,6 @@ use lightbookinput_dictionary::DictionaryError;
 use lightbookinput_learning::LearningError;
 use lightbookinput_lm::LmError;
 use lightbookinput_platform::ConfigError;
-use lightbookinput_translate::GlossaryError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum HostError {
@@ -18,9 +17,6 @@ pub enum HostError {
 
     #[error(transparent)]
     Dictionary(#[from] DictionaryError),
-
-    #[error(transparent)]
-    Glossary(#[from] GlossaryError),
 
     #[error(transparent)]
     Learning(#[from] LearningError),

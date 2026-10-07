@@ -4,7 +4,6 @@ mod paths;
 
 #[cfg(target_os = "linux")]
 fn run() -> Result<(), Box<dyn std::error::Error>> {
-    use lightbookinput_core::Language;
     use lightbookinput_linux_server::{
         AssemblySpec, LanguageModelFiles, Router, RouterConfig, assembly, find_model,
     };
@@ -39,21 +38,12 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .map(PathBuf::from)
         .or_else(|| paths::generated(&root, "dict.qj"))
         .unwrap_or_else(|| root.join("assets/sample/dict.tsv"));
-    let language = config
-        .general
-        .learning_language
-        .parse()
-        .unwrap_or(Language::English);
-    let glossary = |lang: Language| {
-        paths::generated(&root, &format!("glossary-{}.qj", lang.code()))
-            .or_else(|| paths::asset(&root, &format!("glossary/glossary-{}.tsv", lang.code())))
-    };
+    // 程序员模式的中→英释义表：优先生成目录的 `.qj`，退回随包 TSV。
+    let english_glossary = paths::generated(&root, "glossary-en.qj")
+        .or_else(|| paths::asset(&root, "glossary/glossary-en.tsv"));
     let user_dir = paths::user_dir();
     let mut spec = AssemblySpec {
-        glossary: (!config.general.learning_language_off())
-            .then(|| glossary(language).map(|p| (language, p)))
-            .flatten(),
-        english_glossary: glossary(Language::Chinese),
+        english_glossary,
         english: paths::generated(&root, "english.tsv")
             .or_else(|| paths::asset(&root, "sample/english.tsv")),
         emoji: ["emoji/emoji-zh.tsv", "emoji/emoji-en.tsv"]
@@ -63,7 +53,6 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         language_model: LanguageModelFiles::find(&root.join("data/generated")),
         bundled_dicts_dir: Some(root.join("data/generated/dicts")),
         dictionaries: config.dictionaries.clone(),
-        levels_dir: Some(root.join("assets/levels")),
         user_dir: Some(user_dir.clone()),
         input_log: config.general.input_log,
         log_dir: Some(paths::log_dir()),

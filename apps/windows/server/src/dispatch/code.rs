@@ -15,7 +15,7 @@ use super::Router;
 const USER_TABLE: &str = "wubi/wubi86.tsv";
 
 /// 随包数据里的码表。走 `assets/` 而不是 `data/`：这张表随 git 跟踪（`data/` 是给生成物的，
-/// 装机时从数据包解出来），与 emoji / levels 一样在仓库与安装目录里是同一个相对路径，
+/// 装机时从数据包解出来），与 emoji / glossary 一样在仓库与安装目录里是同一个相对路径，
 /// 所以 `cargo run` 的开发布局也找得到。
 const BUNDLED_TABLE: &str = "assets/wubi/wubi86.tsv";
 

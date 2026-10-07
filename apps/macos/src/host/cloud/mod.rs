@@ -9,7 +9,6 @@ pub(super) use test_monitor::CloudTestMonitor;
 use super::*;
 
 impl Host {
-    /// 清空输入日志文件；开着的话重新打开继续记。
     /// 「测试连接」：用当前配置发一条最小请求，结果回到偏好设置窗口底部的状态行。
     pub(super) fn start_cloud_test(&mut self) {
         let config = self.settings.config().predict.clone();
@@ -87,21 +86,6 @@ impl Host {
     }
 
     pub(super) fn apply_prediction(&mut self, prediction: Prediction) {
-        // 翻译选中文字：译文作为唯一候选摆进窗口，等用户回车替换或 Esc 放弃
-        if let Some(job) = self.translation.as_mut() {
-            match prediction.sentence {
-                Some(text) => {
-                    job.result = Some(text.clone());
-                    self.reset_session(None, vec![cloud_candidate(text)]);
-                    self.render();
-                }
-                None => {
-                    tracing::info!("云端没有给出译文");
-                    self.end_translation();
-                }
-            }
-            return;
-        }
         if self.engine.composition().is_empty() {
             return;
         }
@@ -123,7 +107,6 @@ impl Host {
                     .map(CloudWord::into_candidate)
                     .collect(),
             };
-            self.engine.annotate(&mut words);
             let filled = self.session.layout.set_cloud(words.items);
             tracing::debug!(filled, "云端词已补进候选");
         }
@@ -162,17 +145,6 @@ pub(super) fn describe_predict_error(error: &PredictError) -> String {
         PredictError::Encode(error) => format!("请求编码失败：{error}"),
         PredictError::Runtime(error) => format!("起不了后台线程：{error}"),
         PredictError::Api(error) => format!("请求失败：{error}"),
-    }
-}
-
-/// 翻译窗口里的一行：译文（或占位文字）当作云端来源的候选画出来。
-pub(super) fn cloud_candidate(text: String) -> Candidate {
-    Candidate {
-        text,
-        kind: CandidateKind::Cloud,
-        syllables: Vec::new(),
-        reading: None,
-        aux_code: None,
     }
 }
 

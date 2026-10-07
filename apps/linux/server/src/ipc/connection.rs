@@ -1,6 +1,6 @@
 //! 同用户连接内复用独立会话，拒绝未协商输入，关闭通知不产生回包。
 use super::{NEXT_SESSION, Request, dispatch, dispatch_json, session::Session};
-use crate::protocol::{DisplayAcknowledged, DisplayIdentity, LINUX_UI_PROTOCOL, LinuxEvent};
+use crate::protocol::{DisplayIdentity, LINUX_UI_PROTOCOL, LinuxEvent};
 use lightbookinput_platform::protocol::{
     ClientMessage, Frame, PROTOCOL_VERSION, SessionId, read_message, write_message,
 };
@@ -86,23 +86,6 @@ pub(super) fn serve_connection(
             let mut reply = settings.clone();
             reply["session"] = json!(local);
             Some(json!({"LinuxHello": reply}))
-        } else if let Some(request) = value.get("DisplayAcknowledged") {
-            let Ok(mut ack) = serde_json::from_value::<DisplayAcknowledged>(request.clone()) else {
-                break;
-            };
-            if ack.senses.len() > 128 {
-                break;
-            }
-            // 已关闭或过期的展示回执是正常延迟通知，不破坏其他会话。
-            if let Some(session) = sessions.get(&ack.session)
-                && session.identity.as_ref().is_some_and(|i| {
-                    i.context == ack.identity.context && i.generation == ack.identity.generation
-                })
-            {
-                ack.session = session.global;
-                dispatch_json(&sender, json!({"DisplayAcknowledged": ack}));
-            }
-            None
         } else if let Some(request) = value.get("LinuxEvent") {
             let Some(local) = request
                 .get("session")

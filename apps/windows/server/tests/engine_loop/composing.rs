@@ -257,10 +257,7 @@ fn learning_data_persists_to_user_dir() {
     let _ = std::fs::remove_dir_all(&user_dir);
     std::fs::create_dir_all(&user_dir).unwrap();
     let engine = assembly::assemble(&AssemblySpec {
-        glossary: Some((
-            Language::English,
-            root.join("assets/sample/glossary-en.tsv"),
-        )),
+        english_glossary: Some(root.join("assets/sample/glossary-en.tsv")),
         user_dir: Some(user_dir.clone()),
         ..AssemblySpec::new(root.join("assets/sample/dict.tsv"))
     })

@@ -71,15 +71,20 @@ impl Router {
                 request,
                 text,
                 rect,
-            } => Some(self.handle_selection(session, request, text, rect)),
+            } => {
+                // 老的 DLL 还会回这条（以前「翻译选中文字」用它带选区回来）；现在没有人请求选区，
+                // 直接忽略，只是记一条。协议类型留着，免得老 DLL 整条消息解析失败。
+                tracing::trace!(?session, request, chars = text.chars().count(), ?rect, "收到选区回执");
+                None
+            }
             ClientMessage::PositionCandidates { session, rect } => {
                 self.position_candidates(session, rect);
                 None
             }
             ClientMessage::HideCandidates { session } => {
-                // 组句在 DLL 侧结束（应用终止组句 / 翻译评审失焦）：只收窗口；缓冲留给下一键的 Commit 清。
+                // 组句在 DLL 侧结束（应用终止组句）：只收窗口；缓冲留给下一键的 Commit 清。
                 if self.focused == Some(session) {
-                    self.end_translation();
+                    self.programmer = false;
                     self.hide_candidate_window();
                 }
                 None
@@ -124,25 +129,6 @@ impl Router {
     fn handle_key(&mut self, session: SessionId, event: KeyEvent) -> ServerMessage {
         self.ensure_focus(session);
         self.notice = None;
-        if self.translation.is_some() {
-            return self.handle_translation_review(session, &event);
-        }
-        if self.engine.composition().is_empty()
-            && self.engine.prediction_enabled()
-            && self.matches_translate_combo(&event)
-        {
-            self.selection_seq += 1;
-            self.pending_selection = Some(self.selection_seq);
-            tracing::debug!(
-                ?session,
-                request = self.selection_seq,
-                "翻译选中文字：请 DLL 读选区"
-            );
-            return ServerMessage::RequestSelection {
-                session,
-                request: self.selection_seq,
-            };
-        }
         let (commit, outcome) = match self.apply_key(&event) {
             Effect::Changed(commit) => {
                 self.recompose();
@@ -163,13 +149,9 @@ impl Router {
         }
     }
 
-    /// 云联想轮询：聚焦会话拉一次异步结果回最新一帧，否则回空帧。释义兜底与本地整句模型也借这个节拍收。
+    /// 云联想轮询：聚焦会话拉一次异步结果回最新一帧，否则回空帧。本地整句模型也借这个节拍收。
     fn handle_poll(&mut self, session: SessionId) -> ServerMessage {
         self.tick();
-        let learned = self.engine.poll_glosses();
-        if learned > 0 {
-            tracing::info!(learned, "释义兜底写入个人释义表");
-        }
         let frame = if self.focused == Some(session) {
             self.poll_prediction();
             let shown = self.self_drawn_frame();
