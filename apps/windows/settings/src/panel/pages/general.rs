@@ -76,7 +76,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
             "五笔（86 版）",
             "与拼音方案同时开着就是混输：编码打全的五笔词在前，打不出的字直接打拼音。\
              单用五笔请把拼音方案关掉；第 5 个字母起五笔查不到东西，自动只剩拼音。\
-             程序员模式照常：按住 ~ 可以用数字或空格直接上屏候选的英文。",
+             程序员模式照常：点按 ~ 可以用数字或空格直接上屏候选的英文。",
             ToggleSwitch::new()
                 .is_on(g.wubi())
                 .on_toggled(context.callback(Message::Wubi)),

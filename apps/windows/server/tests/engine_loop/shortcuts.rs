@@ -1,4 +1,4 @@
-//! 组句中的快捷键：程序员模式（按住 ~）上屏英文释义，与删候选的修饰键 + 数字。
+//! 组句中的快捷键：程序员模式（点按 ~ 切换）上屏英文释义，与删候选的修饰键 + 数字。
 
 use crate::support::*;
 
@@ -7,7 +7,7 @@ fn tilde_digit_commits_the_candidate_gloss() {
     let mut router = router();
     let (_, _, frame) = type_letters(&mut router, "nihao");
     let slot = slot_of(&frame, "你好");
-    // 按住 ~ 进程序员模式，再按候选序号：上屏那个候选的英文释义，组句结束。
+    // 点按 ~ 进程序员模式，再按候选序号：上屏那个候选的英文释义，组句结束。
     let (entered, _, held) = press(&mut router, tilde());
     assert_eq!(entered, KeyOutcome::Consumed);
     assert!(

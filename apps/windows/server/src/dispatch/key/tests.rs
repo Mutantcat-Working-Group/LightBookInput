@@ -153,7 +153,7 @@ fn tab_with_raw_input_and_no_candidates_is_consumed_without_commit() {
 #[test]
 fn programmer_arrow_keys_move_the_gloss_cursor_and_commit_the_selected_sense() {
     let normal = KeyModifiers::default();
-    let mut engine = Engine::new(Dictionary::parse("你好\tni'hao\t100\n").unwrap());
+    let mut engine = Engine::new(Dictionary::parse("你\tni\t100\n好\thao\t90\n").unwrap());
     engine.set_english_glossary(EnglishGlossary::parse("你好\thello; hi\n").unwrap());
     let mut router = Router::new(
         engine,

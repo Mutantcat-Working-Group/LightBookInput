@@ -102,7 +102,7 @@ pub struct Host {
     /// 配数字键删候选的修饰键（配置 `[shortcut] delete_candidate`）。
     pub delete_keys: Modifiers,
 
-    /// 程序员模式：用户按住 `~` 时开着，松键（或敲 Esc）退出。开着时数字键 / 空格上屏候选的英文释义。
+    /// 程序员模式：用户点按 `~` 时开着，再按一次 / Esc / 敲别的键退出。开着时数字键 / 空格上屏候选的英文释义。
     pub programmer_mode: bool,
 
     /// 程序员模式下当前选中的英文释义索引（按 `; ` 分割后的第几个）。

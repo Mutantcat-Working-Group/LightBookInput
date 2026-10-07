@@ -22,7 +22,7 @@ pub(crate) fn from_candidate(
     if let Some(reading) = &candidate.reading {
         annotation.push((reading.clone(), Tone::Gloss));
     }
-    // 程序员模式（按住 `~`）时候选旁单独一行英文释义：按 `; ` 拆成多条，方向键切换选中的那条。
+    // 程序员模式（点按 `~` 后）候选旁单独一行英文释义：按 `; ` 拆成多条，方向键切换选中的那条。
     // 即使只有一条也拆成一行，这样第二行照样有选择光标，用户一眼看出数字键上屏哪条。
     let gloss: Vec<String> = candidate
         .gloss

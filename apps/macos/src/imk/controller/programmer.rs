@@ -1,4 +1,4 @@
-//! 程序员模式：按住 `~`（·）时数字键 / 空格上屏候选的英文释义。
+//! 程序员模式：点按 `~`（·）切换，模式里数字键 / 空格上屏候选的英文释义。
 
 use super::*;
 
@@ -18,24 +18,10 @@ const LEFT_KEY: u16 = 123;
 const RIGHT_KEY: u16 = 124;
 
 impl LightBookInputInputController {
-    /// 松开 `~`：应用送得来 KeyUp 时就地退出程序员模式（送不来的靠 Esc 或再按一次退出）。
-    pub(super) fn programmer_release(&self, key: u16, client: TextClient<'_>) -> bool {
-        if key != TILDE_KEY {
-            return false;
-        }
-        if !host::with(|h| h.programmer_mode).unwrap_or(false) {
-            return false;
-        }
-        tracing::debug!("松开 ~，退出程序员模式");
-        host::with(|h| h.programmer_mode = false);
-        self.refresh(client);
-        true
-    }
-
     /// 程序员模式的按键分流。返回 `Some(true)` 表示这个键已经在这里处理掉，应用不该再收到；
     /// 返回 `None` 表示这儿不管，按普通按键继续走。
     ///
-    /// 按下 `~` 进模式（只在组句中进：没有候选时它还是原来的标点键），再按一次、Esc、或按了别的键退出；
+    /// 点按 `~` 进模式（只在组句中进：没有候选时它还是原来的标点键），再按一次、Esc、或按了别的键退出；
     /// 模式里四条方向键都在当前高亮候选的多条释义之间切换，不动第一行候选高亮；
     /// `1`-`9` 上屏对应候选当前选中的释义，空格上屏高亮候选的释义。
     pub(super) fn programmer_key(
@@ -55,7 +41,7 @@ impl LightBookInputInputController {
             return None;
         }
         if key == TILDE_KEY {
-            // 一直按着会不断送重复按下，那不是「又按了一次」，否则按住时打不了数字
+            // 一直按着会不断送重复按下，那不是「又按了一次」，否则长按会把开关来回切
             if repeat {
                 return Some(true);
             }
@@ -65,7 +51,7 @@ impl LightBookInputInputController {
             }
             let composing = host::with(|h| !h.engine.composition().is_empty()).unwrap_or(false);
             if composing {
-                tracing::debug!("按住 ~，进入程序员模式");
+                tracing::debug!("点按 ~，进入程序员模式");
                 host::with(|h| h.programmer_mode = true);
                 self.refresh(client);
                 return Some(true);

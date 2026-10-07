@@ -1,4 +1,4 @@
-//! 组句中的程序员模式：按住 `~`（·）期间数字键 / 空格上屏候选的英文释义。与 Windows 端对齐。
+//! 组句中的程序员模式：点按 `~`（·）切换，模式里数字键 / 空格上屏候选的英文释义。与 Windows 端对齐。
 
 use super::support::{compose, key};
 use crate::dispatch::{Router, RouterConfig};
@@ -83,18 +83,19 @@ fn tilde_digit_commits_the_candidate_gloss() {
     compose(&mut router, "nihao", normal);
     let frame = key(&mut router, 0, None, normal).2;
     let slot = slot_of(&frame, "你好");
-    // 按住 ~ 进程序员模式，再按候选序号：上屏那个候选的英文，组句结束。
-    let (entered, _, held) = key(&mut router, 0x60, Some('`'), normal);
+    // 点按 ~ 进程序员模式，再按候选序号：上屏那个候选的英文，组句结束。
+    let (entered, _, toggled) = key(&mut router, 0x60, Some('`'), normal);
     assert_eq!(entered, KeyOutcome::Consumed);
     assert!(
-        held.candidates
+        toggled
+            .candidates
             .items
             .iter()
             .any(|candidate| candidate.gloss.is_some()),
         "进了模式候选就该带英文释义"
     );
     assert_eq!(
-        held.notice.as_deref(),
+        toggled.notice.as_deref(),
         Some("程序员模式：方向键选释义，数字 / 空格上屏，Esc 退出")
     );
     let (code, character) = digit(slot);

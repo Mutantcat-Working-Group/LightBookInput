@@ -124,7 +124,7 @@
 
 - [x] 中英释义表：LLM 批量生成（2026-09-05 起覆盖整个自建词库，多字词 91% 有英文释义），随仓库发布（`assets/glossary/glossary-en.tsv`）
 - [x] 本地查表：`lightbookinput-dictionary::EnglishGlossary` 解析 TSV（`Engine::set_english_glossary` / `english_gloss`）；CC-CEDICT 表保留为备用来源（`dict-convert cedict`）
-- [x] 程序员模式（2026-10-07）：按住 `~`（·）时候选右侧补出英文释义，数字 / 空格上屏英文而不是候选，松手退出；只本机查表，不联网
+- [x] 程序员模式（2026-10-07）：点按 `~`（·）时候选右侧补出英文释义，数字 / 空格上屏英文而不是候选，再按一次 / Esc / 别的键退出；只本机查表，不联网
 
 ## Phase 4 — Learning
 

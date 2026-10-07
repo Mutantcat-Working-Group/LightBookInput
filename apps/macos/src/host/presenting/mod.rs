@@ -94,7 +94,7 @@ impl Host {
                 let mut row = Row::from_candidate(offset, candidate);
                 row.index = index;
                 row.cloud = candidate.kind == CandidateKind::Cloud;
-                // 程序员模式（按住 ~）：右侧补一行英文释义，方向键选、数字键 / 空格上屏的就是它
+                // 程序员模式（点按 ~ 切换）：右侧补一行英文释义，方向键选、数字键 / 空格上屏的就是它
                 let gloss = self
                     .programmer_mode
                     .then(|| {

@@ -80,19 +80,14 @@ impl Router {
                         self.reset_composition();
                         outcome = KeyOutcome::Consumed;
                     } else if codes::tilde(&event) {
-                        // 松开 ~ 退出程序员模式：preedit 原样留着（用户可能还按着别的键在打字）。
+                        // 程序员模式是点按切换，松键不退出：这里只收「按下过了」的自动重复标记，
+                        // 否则再按一次会被当成重复按下吞掉。preedit 原样留着（用户可能还按着别的键）。
                         self.tilde_held = false;
-                        if self.programmer {
-                            tracing::debug!("松开 ~，退出程序员模式");
-                            self.programmer = false;
-                            self.gloss_index = 0;
-                            outcome = KeyOutcome::Consumed;
-                        }
                     }
                 } else {
                     info.shift_pending = shift && !event.modifiers.has_command_key();
                     event.modifiers.english_mode = info.english;
-                    // ~ 按着不松会连发重复按下：那不是「又按了一次」，原样吞掉，否则按住期间打不了数字
+                    // ~ 按着不松会连发重复按下：那不是「又按了一次」，原样吞掉，否则长按会把开关来回切
                     let repeat = codes::tilde(&event) && self.tilde_held;
                     if codes::tilde(&event) {
                         self.tilde_held = true;

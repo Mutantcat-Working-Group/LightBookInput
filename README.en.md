@@ -8,7 +8,7 @@
 ### 1. Overview
 
 - Cross-platform input method for macOS, Windows, and Linux (Fcitx5). The engine is platform-independent; each platform is only a shell around it.
-- Programmer mode: hold `~` (·) and the English for the highlighted candidate appears beside the candidates. Press a number or `Space` to commit it directly, so writing code or looking up wording never needs a second input method.
+- Programmer mode: tap `~` (·) to toggle it and the English for the highlighted candidate appears beside the candidates. Press a number or `Space` to commit it directly, so writing code or looking up wording never needs a second input method.
 - Sentence input: bigram language model with Viterbi plus beam search, whole-sentence abbreviations, personal n-gram learning online, and a small local Transformer that rescoring the top paths after a pause.
 - Self-built dictionary: 205,000 base entries plus 11 domain dictionaries, mmap'd zero-copy from the `.qj` binary container with roughly 50 ms startup.
 - Privacy first: pinyin conversion, dictionary lookup, local models, and input-habit learning all run on your device. No account, no upload.
@@ -36,9 +36,9 @@ Core value:
 
 #### Programmer mode
 
-- While `~` (·) is held, the English for each candidate appears beside it and the status row hints what to do.
+- With `~` (·) toggled on, the English for each candidate appears beside it and the status row hints what to do.
 - Press `1` to `9` to commit the English of that candidate; press `Space` to commit the first one.
-- Release the key, press `~` again, press `Esc`, or type anything else to leave the mode and return to normal Chinese input.
+- Press `~` again, press `Esc`, or type anything else to leave the mode and return to normal Chinese input.
 - 239,000 Chinese-to-English entries ship with the product, resolved entirely on this device.
 
 #### Input statistics
@@ -69,8 +69,8 @@ Core value:
 ### 4. Quick Start
 
 1. Type as usual: enter pinyin, choose candidates, write whole sentences.
-2. When you need English, hold `~` (·) and the candidates flip to their English spellings; press a number or `Space` to commit.
-3. Release the key and you are back in Chinese input, with no input-method switching and no settings to change.
+2. When you need English, tap `~` (·) and the candidates flip to their English spellings; press a number or `Space` to commit.
+3. Tap `~` once more, press `Esc`, or type anything else and you are back in Chinese input, with no input-method switching and no settings to change.
 
 Full usage documentation is at [the docs site](https://lightbookinput.app/docs).
 
@@ -78,7 +78,7 @@ Full usage documentation is at [the docs site](https://lightbookinput.app/docs).
 
 - [x] Core input engine (pinyin parsing, candidate generation, ranking, sentences, double pinyin, zhuyin, English mode)
 - [x] Self-built dictionary (205,000 base entries plus 11 domain dictionaries)
-- [x] Programmer mode (hold `~` to reveal candidate English, commit with number or space)
+- [x] Programmer mode (tap `~` to reveal candidate English, commit with number or space)
 - [x] Personal n-gram (bigram and trigram)
 - [x] Local sentence model (small Transformer rescoring)
 - [x] Cloud prediction (OpenAI-compatible API)

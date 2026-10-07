@@ -1,4 +1,4 @@
-//! 程序员模式：按住 `~`（·）时数字键 / 空格上屏候选的英文释义。与 macOS 壳对齐。
+//! 程序员模式：点按 `~`（·）切换，模式里数字键 / 空格上屏候选的英文释义。与 macOS 壳对齐。
 
 use lightbookinput_core::{Candidate, CandidateKind};
 use lightbookinput_platform::protocol::{KeyEvent, KeyModifiers};
@@ -13,7 +13,6 @@ impl Router {
     /// 按下 `~` 进模式（只在组句中进：没有候选时它还是原来的标点键），再按一次、Esc、或按了别的键退出；
     /// 模式里方向键切换高亮候选的第二行释义光标（四条方向一致，多条时循环），`1`-`9` 上屏对应候选
     /// 当前选中的英文，空格上屏高亮候选的英文。
-    /// Windows 收不到松键，所以退出靠后三种方式。
     pub(super) fn apply_programmer(&mut self, event: &KeyEvent) -> Option<Effect> {
         // Esc：模式开着时只用来退出，不当作普通退格 / 清缓冲
         if event.virtual_key == codes::ESCAPE {
@@ -33,7 +32,7 @@ impl Router {
                 return Some(Effect::Navigated);
             }
             if self.composing() {
-                tracing::debug!("按住 ~，进入程序员模式");
+                tracing::debug!("点按 ~，进入程序员模式");
                 self.programmer = true;
                 self.gloss_index = 0;
                 return Some(Effect::Navigated);

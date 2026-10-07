@@ -54,7 +54,7 @@ impl Row {
         }
     }
 
-    /// 程序员模式（按住 `~`）时在候选右侧补一行英文释义，数字 / 空格上屏的就是它。
+    /// 程序员模式（点按 `~` 切换）时在候选右侧补一行英文释义，数字 / 空格上屏的就是它。
     /// `senses` 是拆好的各条释义，`selected` 是当前选中的下标。
     pub fn with_gloss(mut self, senses: Option<Vec<String>>, selected: usize) -> Self {
         if let Some(senses) = senses {

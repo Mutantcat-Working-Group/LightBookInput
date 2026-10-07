@@ -24,7 +24,7 @@ TSV 解析、查询与生成工具把 `lue` / `nue` 统一成 `lve` / `nve`。
 解析成 `Vec<(String, String)>` 按中文词排好二分定位；每个词最多留三条释义（`MAX_SENSES` = 3，词性 `v. ` / `adj. ` / `n. ` 剥掉，重复的去重），
 一行缺词或缺释义都算坏行。与词库一样只有 TSV 一种存法，没有 `.qj`：表随 `assets/glossary/glossary-en.tsv` 提交（GPL-3.0-or-later），
 三个壳都从随包资源里找（macOS `paths::resource("glossary-en.tsv")`，Windows 与 Linux 先看生成目录再看随包 `assets/glossary/`），
-找不到只警告：按住 `~` 时数字 / 空格照常上屏中文。样例表在 `assets/sample/glossary-en.tsv`，测试用它。
+找不到只警告：点按 `~` 时数字 / 空格照常上屏中文。样例表在 `assets/sample/glossary-en.tsv`，测试用它。
 一个词最多三条释义由 Core 用 `"; "` 拼成一条给出；macOS 与 Windows 壳按 `"; "` 拆回列表，`↑` / `↓` / `←` / `→` 在当前高亮候选的多条释义间循环切换（带一块光标底），
 数字 / 空格上屏选中的那条；只有一条时也保留光标。Linux Server 同样维护选中的释义，默认 Fcitx5 面板把整条释义交给系统绘制。
 
@@ -234,7 +234,7 @@ IMK 输入法，源码按 `app / host / imk / candidates / menubar / preferences
 - 配置项：云联想 `[predict]`（偏好设置「云服务」页有「测试连接」按钮：`lightbookinput_predict::ConnectionTest` 起线程发一条最小请求，`Host` 用独立定时器 `CloudTestMonitor` 轮询结果显示到窗口底部；
   `reasoning_effort` 缺省 `none`，DeepSeek V4 默认思考，不关正文为空）；模糊音 `[fuzzy]` 默认都关；`[general]` 每页候选数 / 翻页键 / 外观 / 竖排横排 / 拼音显示位置 /
   英文模式候选开关 / 中文优先 `chinese_first` / 双拼方案 `shuangpin`（小鹤 / 自然码 / 微软 / 搜狗 / 智能ABC / 小浪 / 首道，空为全拼）/ 日志级别 `log_level`（缺省 info 不含敲的内容，debug 逐键记，热切换）/ 输入日志 `input_log`；
-  `[shortcut]` 模式键 v / u、`question_mark`（缺省关，开了空缓冲区敲 `?` 进问字）、程序员模式键 `programmer`（缺省 `~`，按住生效）、删候选 `delete_candidate`（缺省 shift，用户词整删、词库词清学习）；
+  `[shortcut]` 模式键 v / u、`question_mark`（缺省关，开了空缓冲区敲 `?` 进问字）、程序员模式键 `programmer`（缺省 `~`，点按切换）、删候选 `delete_candidate`（缺省 shift，用户词整删、词库词清学习）；
   `[apps] english_candidates_off` 按 bundle identifier 列出英文模式不给候选的应用（缺省终端 / 编辑器 / IDE，`*` 前缀匹配）；
   `[dictionaries] domains` 打开随包的领域词库（`Resources/dicts/` 11 本，缺省只开 `idioms`），`disabled` 关掉用户目录 `dicts/` 里的某本导入词库；
   偏好设置「词库」页随包的可开关、导入的可开关 / 移除，可导入 TSV / Rime yaml / .qj。

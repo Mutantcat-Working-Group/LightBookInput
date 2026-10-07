@@ -49,7 +49,7 @@ define_class!(
 
         /// 所有按键事件都到这里（IMK 第一层协议）。IMK 按控制器实现了哪一层决定路线，实现了这个方法就不会再分发成
         /// `inputText:client:` / `didCommandBySelector:client:`（父类缺省实现也不分发），所以自己分：
-        /// 按住 `~` 进程序员模式，数字键上屏候选的英文（`~` 与数字都要按键码认：Shift 出来的 `~` 与
+        /// 点按 `~` 进程序员模式，数字键上屏候选的英文（`~` 与数字都要按键码认：Shift 出来的 `~` 与
         /// 修饰键组合出来的字符都对不上）；命令键按键码映射成原来的选择器；其余按事件带的字符走文本路径。
         /// 返回 true 表示已处理，系统不再把按键交给应用。
         // define_class! 会把返回类型转成 ObjC BOOL，方法体里不能用 `return`，逻辑放在下面的 inherent impl
@@ -191,10 +191,6 @@ impl LightBookInputInputController {
 
     /// 一个按键事件的分发：只管按下；Cmd / Ctrl 组合除 Cmd+左右外一律交给应用；命令键映射成选择器；其余按字符当文本。
     fn dispatch_event(&self, event: &NSEvent, client: TextClient<'_>) -> bool {
-        // 松键：应用送得来 KeyUp 时，松开 ~ 就是退出程序员模式
-        if event.r#type() == NSEventType::KeyUp {
-            return self.programmer_release(event.keyCode(), client);
-        }
         if event.r#type() != NSEventType::KeyDown || self.in_login_window() {
             return false;
         }
@@ -212,7 +208,7 @@ impl LightBookInputInputController {
             control,
             command,
         };
-        // 程序员模式：按住 ~ 时数字键 / 空格上屏候选的英文
+        // 程序员模式：点按 ~ 切换，模式里数字键 / 空格上屏候选的英文
         if let Some(handled) = self.programmer_key(key, event.isARepeat(), pressed, client) {
             return handled;
         }
