@@ -1,7 +1,7 @@
 //! InputMethodKit 这一侧：输入控制器、文本客户端封装、修饰键与 Secure Input 查询。
 //!
-//! 只做两件事：把系统输入事件翻译成 Engine 的调用，把 Engine 的结果交给候选窗口。
-//! 排序、词库、翻译逻辑一概不许出现在这里。
+//! 只做两件事：把系统输入事件转换成 Engine 的调用，把 Engine 的结果交给候选窗口。
+//! 排序、词库、文本变换一概不许出现在这里。
 
 mod client;
 mod controller;

@@ -1,7 +1,7 @@
 //! IMK 输入控制器：每个输入会话（每个应用的文本框）一个实例。
 //!
-//! 只做两件事：把按键翻译成 Engine 的调用，把 Engine 返回的候选交给候选窗口。
-//! **这里不允许出现排序、词库或翻译逻辑。** 会话状态（候选、高亮、页码）在 [`crate::host::Session`]。
+//! 只做两件事：把按键转换成 Engine 的调用，把 Engine 返回的候选交给候选窗口。
+//! **这里不允许出现排序、词库或文本变换逻辑。** 会话状态（候选、高亮、页码）在 [`crate::host::Session`]。
 
 use lightbookinput_core::{Candidate, CandidateKind, QUESTION_PREFIX};
 use lightbookinput_platform::Modifiers;
