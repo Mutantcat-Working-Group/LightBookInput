@@ -43,15 +43,15 @@ if let Some(code) = self.code {
 三条理由：
 
 1. **现成的先例。** `query/mod.rs:103-129` 那个「第一个字母都切不动」的分支已经在返回
-   `segmentations: Vec::new()` + `tail: keys` 的 `Query`，下游（`Engine::annotate`、输入日志、
-   `note_displayed`、各壳渲染）本来就吃得下「无切分」的 `Query`。五笔复用这个形状，不新造结果类型。
+   `segmentations: Vec::new()` + `tail: keys` 的 `Query`，下游（输入日志、各壳渲染）本来就吃得下
+   「无切分」的 `Query`。五笔复用这个形状，不新造结果类型。
 2. **不该开的开关变成天然不存在**，而不是散落一地的 `if wubi`。沿用现有套路
    （`engine/correcting.rs:9` 对双拼直接返回 `None`、`engine/setup.rs:70` 的 `modes()` 返回 `ModeKeys::LETTERLESS`），
    在一个集中判断里关掉：整句 / Viterbi、神经重排、模糊音、拼写纠错与词图敲错边、中英混输、简拼、
    v / u / i 前缀快捷键（**`v` 与 `i` 在五笔里是字根键，必须让位**）。
-3. **轻书的产品特色全部自动保留。** `Learner`（词频 / 用户词 / 选择学习）、`Translator` + `Glossary` 释义、
-   生词本 `VocabularyBook`、CEFR / JLPT 等级、`InputLog`、`UsageStats` 都按「上屏的词」工作，与输入方案无关。
-   **五笔用户照样有候选旁的译文与生词统计**——这是「Core 才是轻书」换来的好处，也是这个功能的卖点。
+3. **轻书的产品特色全部自动保留。** `Learner`（词频 / 用户词 / 选择学习）、中英释义表（`EnglishGlossary`）、
+   `InputLog`、`UsageStats` 都按「上屏的词」工作，与输入方案无关。
+   **五笔用户照样有候选旁的英文释义**——这是「Core 才是轻书」换来的好处，也是这个功能的卖点。
 
 ### 数据层：静态全量码表，不做运行时取码
 
@@ -88,7 +88,7 @@ if let Some(code) = self.code {
 | Gitee「大一统五笔」 | 未声明 | 不能用 |
 
 **词频不用码表自带的权重**（那是码表顺序，不是语料词频）。用现有 `assets/lexicon/dict.tsv` 里
-同一个词的语料词频交叉回填——换方案不会让同一个词的排序变奇怪，释义兜底与生词识别也对得上。
+同一个词的语料词频交叉回填——换方案不会让同一个词的排序变奇怪，英文释义也对得上。
 
 管线：`tools/dict-convert` 加 `wubi` 子命令读码表 → `assets/wubi/wubi86.tsv`（`词\t码\t词频`）
 → `pack code` → `code-wubi86.qj`。
@@ -133,8 +133,8 @@ scheme = "pinyin"   # pinyin | xiaohe | ziranma | microsoft | sogou | zhuyin | w
 | 3 | `[general] scheme` 收敛 + 配置迁移 + Windows 设置页与状态条 | 2–3 天 |
 | | 　└ **已做**（2026-09-16）：`Scheme` 枚举与 `[general] scheme`；旧键 `shuangpin` / `zhuyin` 读取时推断（不自动改写文件）；CLI、macOS 偏好设置与 Windows 设置页/Server/状态条都改成读写新键；Windows Server 按方案装载码表（用户目录优先、随包 `assets/wubi/` 兜底，找不到只警告并按拼音跑）。打包与 macOS 接入**也已做**（2026-09-16 续）：`bundle.sh` 拷进 `Resources/wubi/`、Windows 安装器拷进 `{app}\assets\wubi\`，两处署名（macOS / Windows 的「关于」页）都补了；macOS 的偏好设置那栏换成「输入方案」下拉（`Scheme::ALL`），`apply_config` 里一并设注音与码表——macOS 侧因此顺带把一直没接的**大千注音**也接上了。**还差**：macOS 与 Windows 的真机验证 | |
 | | 　└ 壳真带上码表时，署名要同步：`bundle.sh` 是**按文件白名单**拷数据的（`assets/wubi/` 现在一个都没拷），偏好设置「关于」页的 `ATTRIBUTIONS` 也是照随包数据列的一份。现在两处都没加，因为 macOS 侧还没有输入方案，包里带它只是白占体积 | |
-| 4 | 释义 / 生词 / 统计 / 日志对齐验证、输入日志 `scheme` 进回放、`docs/user/input/` 加页 | 1–2 天 |
-| | 　└ **已做**（2026-09-16）：回放按每条日志的方案切换（`SchemeSwitcher`，形码要有 `--wubi` 的码表）；释义 / 生词 / 词汇记录 / 输入统计在形码下照常，有测试钉住（`code_commits_still_feed_translations_vocabulary_and_usage`）；`docs/user/` 的按键表、拼写纠错、英文模式、偏好设置、模糊音与输入方案各页都补了五笔 | |
+| 4 | 释义 / 统计 / 日志对齐验证、输入日志 `scheme` 进回放、`docs/user/input/` 加页 | 1–2 天 |
+| | 　└ **已做**（2026-09-16）：回放按每条日志的方案切换（`SchemeSwitcher`，形码要有 `--wubi` 的码表）；释义 / 输入统计在形码下照常，有测试钉住（`code_commits_still_feed_usage`）；`docs/user/` 的按键表、拼写纠错、英文模式、偏好设置、模糊音与输入方案各页都补了五笔 | |
 
 合计约 1.5–2 周（单人，不含真机来回）。
 
