@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     assert(context.inputPanel().preedit().empty() == (mode == "inline"));
     auto candidates = context.inputPanel().candidateList();
     assert(candidates && candidates->size() == 3 && candidates->toPageable()->hasNext());
-    assert(candidates->candidate(2).comment().toString() == "hello · 生");
+    assert(candidates->candidate(2).comment().toString() == "hello");
     candidates->candidate(0).select(&context);
     assert(context.committed.empty());
     if (mode == "failure") {
@@ -57,9 +57,8 @@ int main(int argc, char **argv) {
     candidates->toPageable()->next();
     candidates->candidate(2).select(nullptr);
     mock.join();
-    bool sawExposure = false;
+    // 曝光回报已从服务端撤掉，前端不能再发任何 DisplayAcknowledged。
     for (const auto &message : mock.messages) {
-        if (message.contains("DisplayAcknowledged") && message.at("DisplayAcknowledged").at("senses") == Json::parse("[[2,0]]")) sawExposure = true;
+        assert(!message.contains("DisplayAcknowledged"));
     }
-    assert(sawExposure);
 }

@@ -59,11 +59,10 @@ struct Mock {
             auto message = readMessage(fd);
             messages.push_back(message);
             if (message.contains("CloseSession")) break;
-            if (message.contains("DisplayAcknowledged")) continue;
             if (message.contains("Poll")) {
                 assert(message.at("Poll").at("session") == session);
                 if (mode == "rescore" && ++polls == 1) {
-                    frame["candidates"]["items"] = Json::parse(R"([{"text":"你好","translation":{"senses":[{"text":"hello","fresh":true}]}},{"text":"","translation":null},{"text":"","translation":null}])");
+                    frame["candidates"]["items"] = Json::parse(R"([{"text":"你好","gloss":"hello"},{"text":"","gloss":null},{"text":"","gloss":null}])");
                     frame["highlight"] = 0;
                     identity["revision"] = identity.at("revision").get<uint64_t>() + 1;
                 }
@@ -74,7 +73,7 @@ struct Mock {
             Json commit = nullptr;
             std::string outcome = "Passthrough";
             if (event.contains("Key") && !event.at("Key").at("release").get<bool>() && event.at("Key").at("event").at("character") == "n") {
-                frame = Json::parse(R"({"preedit":[{"text":"ni","kind":"Typed"}],"cursor":2,"candidates":{"items":[{"text":"","translation":null},{"text":"","translation":null},{"text":"你好","translation":{"senses":[{"text":"hello","fresh":true}]}}]},"highlight":2,"page":0,"page_count":2,"notice":null})");
+                frame = Json::parse(R"({"preedit":[{"text":"ni","kind":"Typed"}],"cursor":2,"candidates":{"items":[{"text":"","gloss":null},{"text":"","gloss":null},{"text":"你好","gloss":"hello"}]},"highlight":2,"page":0,"page_count":2,"notice":null})");
                 outcome = "Consumed";
             }
             if (event.contains("Candidate")) {

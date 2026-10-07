@@ -40,8 +40,6 @@ private:
 
     std::unique_ptr<HandlerTableEntry<EventHandler>> focusWatcher_;
 
-    std::unique_ptr<HandlerTableEntry<EventHandler>> keyboardWatcher_;
-
     /// 轮询定时器：建一次反复用，没在组句时禁用。
     std::unique_ptr<EventSourceTime> poller_;
 

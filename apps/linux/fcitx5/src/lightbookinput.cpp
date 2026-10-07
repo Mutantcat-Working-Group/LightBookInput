@@ -53,23 +53,11 @@ LightBookInputEngine::LightBookInputEngine(AddonManager *manager)
         session->focused = false;
         if (session->opened) exchange(context, {{"Focus", {{"focused", false}}}}, false);
     });
-    keyboardWatcher_ = instance_->watchEvent(EventType::VirtualKeyboardVisibilityChanged, EventWatcherPhase::PostInputMethod, [this](Event &) {
-        if (!instance_->userInterfaceManager().isVirtualKeyboardVisible()) return;
-        const auto contexts = shared_->contexts;
-        for (const auto &[id, watched] : contexts) {
-            (void)id;
-            auto *context = watched.get();
-            if (!context) continue;
-            auto *session = context->propertyFor(&sessions_);
-            if (session->opened && session->displayIdentity.is_object() && !shared_->connection.send({{"DisplayAcknowledged", {
-                {"session", session->id}, {"identity", session->displayIdentity}, {"senses", nlohmann::json::array()}}}})) disconnectAll();
-        }
-    });
 }
 LightBookInputEngine::~LightBookInputEngine() {
     *alive_ = false;
     poller_.reset(); polled_.unwatch();
-    capabilityWatcher_.reset(); focusWatcher_.reset(); keyboardWatcher_.reset();
+    capabilityWatcher_.reset(); focusWatcher_.reset();
     shared_->watcher.reset(); shared_->deferred.reset(); shared_->connection.close();
     const auto contexts = shared_->contexts;
     shared_->contexts.clear();
@@ -311,17 +299,13 @@ void LightBookInputEngine::render(InputContext *context, const nlohmann::json &f
     list->setPageSize(9);
     list->setLabels({"1", "2", "3", "4", "5", "6", "7", "8", "9"});
     list->setLayoutHint(frame.value("layout", "horizontal") == "vertical" ? CandidateLayoutHint::Vertical : CandidateLayoutHint::Horizontal);
-    nlohmann::json senses = nlohmann::json::array();
     size_t index = 0;
     for (const auto &item : items) {
         std::string annotation;
         auto text = item.at("text").get<std::string>();
-        const auto &translation = item.at("translation");
-        if (!text.empty() && translation.is_object() && !translation.at("senses").empty()) {
-            const auto &sense = translation.at("senses").front();
-            annotation = sense.at("text").get<std::string>();
-            if (!annotation.empty()) senses.push_back({index, 0});
-            if (sense.value("fresh", false)) annotation += " · 生";
+        // 程序员模式开着时候选右侧带一行英文释义；表里没有这个词就没有这一行。
+        if (const auto gloss = item.find("gloss"); gloss != item.end() && gloss->is_string()) {
+            annotation = gloss->get<std::string>();
         }
         list->append(std::make_unique<lightbookinput::Word>(text, annotation, [this, alive = alive_, watched, index, revision, identity](InputContext *ic) {
             if (*alive && ic && ic == watched.get() && ic->hasFocus() && ic->propertyFor(&sessions_)->revision == revision)
@@ -345,11 +329,6 @@ void LightBookInputEngine::render(InputContext *context, const nlohmann::json &f
     if (!current()) return;
     instance_->userInterfaceManager().flush();
     if (!current()) return;
-    if (!session->opened || session->revision != revision || session->displayIdentity != identity || !context->hasFocus()
-        || context->inputPanel().candidateList() == nullptr || instance_->userInterfaceManager().isVirtualKeyboardVisible())
-        senses = nlohmann::json::array();
-    if (!shared_->connection.send({{"DisplayAcknowledged", {{"session", session->id}, {"identity", identity}, {"senses", senses}}}}))
-        throw std::runtime_error("display acknowledgment");
     watch(context, !preedit.empty());
 }
 void LightBookInputEngine::watch(InputContext *context, bool composing) {
