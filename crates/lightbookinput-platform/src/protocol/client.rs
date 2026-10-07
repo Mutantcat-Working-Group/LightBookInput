@@ -68,8 +68,8 @@ pub enum ClientMessage {
         private: bool,
     },
 
-    /// 回应 [`super::ServerMessage::RequestSelection`]：应用当前选中的文字（供「翻译选中文字」）。
-    /// DLL 在读编辑会话里用 `GetSelection` + `GetText` 取；没有选区 / 读不到时 `text` 为空串。
+    /// 回应 [`super::ServerMessage::RequestSelection`]：应用当前选中的文字。本版本已无发送方，
+    /// 消息类型只为老 DLL 兼容保留；老 DLL 用 `GetSelection` + `GetText` 取，取不到时 `text` 为空串。
     Selection {
         /// 会话标识。
         session: SessionId,
@@ -80,7 +80,7 @@ pub enum ClientMessage {
         /// 选中的文字；没有选区时为空串。
         text: String,
 
-        /// 选区的屏幕矩形（拿翻译候选窗口摆在它下方，与组句候选窗一致）；取不到是鼠标处近似。
+        /// 选区的屏幕矩形（拿候选窗口摆在它下方，与组句候选窗一致）；取不到是鼠标处近似。
         rect: ScreenRect,
     },
 

@@ -34,10 +34,6 @@ const ATTRIBUTIONS: &[(&str, &str)] = &[
         "ESDB / SCOWL（© Kevin Atkinson，按其许可保留版权声明）；CSpell 词典（MIT）。",
     ),
     (
-        "词汇等级",
-        "CEFR-J Wordlist v1.5（Yukio Tono，cefr-j.org）；Octanove Vocabulary Profile C1/C2（CC BY-SA 4.0）；JLPT 词表（tanos.co.uk，CC BY）。",
-    ),
-    (
         "五笔码表",
         "86 五笔极点码表（sxjudya/rime-wubi86-jidian，Apache-2.0）；编码来自上游，词频由轻书词库按词面回填。",
     ),

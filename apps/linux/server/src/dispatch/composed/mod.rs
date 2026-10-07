@@ -121,7 +121,7 @@ impl Router {
         Some(self.engine.commit(&candidate))
     }
 
-    /// 按当前状态生成一帧：翻译评审优先；没在组句给空帧；否则给高亮所在的那一页。
+    /// 按当前状态生成一帧：组句中的原文 / 候选优先；没在组句给空帧；否则给高亮所在的那一页。
     pub(super) fn current_frame(&self) -> Frame {
         match &self.composed {
             None => Frame::default(),

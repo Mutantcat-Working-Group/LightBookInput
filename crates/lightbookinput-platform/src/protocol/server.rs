@@ -104,9 +104,9 @@ pub enum ServerMessage {
         indicator: IndicatorState,
     },
 
-    /// 收到「翻译选中文字」快捷键：请 DLL 在读编辑会话里取当前选区，用
-    /// [`super::ClientMessage::Selection`] 回。这是对触发快捷键那次 [`super::ClientMessage::Key`] 的应答
-    /// （替代常规 [`Self::KeyResult`]）；随后 DLL 发来的 `Selection` 才引出翻译候选帧。
+    /// 请 DLL 在读编辑会话里取当前选区，用 [`super::ClientMessage::Selection`] 回。本版本已无发送方，
+    /// 消息类型只为老 DLL 兼容保留：老 DLL 把对触发快捷键那次 [`super::ClientMessage::Key`] 的应答
+    /// （替代常规 [`Self::KeyResult`]）认成这条。
     RequestSelection {
         /// 会话标识。
         session: SessionId,

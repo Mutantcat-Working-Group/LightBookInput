@@ -87,10 +87,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Layout::Horizontal,
         ),
         ("cloud-vertical", cloud(), Layout::Vertical),
-        ("corrected-vertical", corrected_japanese(), Layout::Vertical),
+        ("corrected-vertical", corrected_gloss(), Layout::Vertical),
         (
             "corrected-horizontal",
-            corrected_japanese(),
+            corrected_gloss(),
             Layout::Horizontal,
         ),
         ("probe", probe(), Layout::Vertical),
@@ -150,7 +150,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 // 样例帧：与真机上敲同样拼音看到的候选窗对照，所以内容要和引擎当时给的一致（人工从截图抄）。
 
-/// 真机敲「nihao」看到的第一页（2026-09-13 从截图抄），拼音行带光标、译文、生词橙色、页码。
+/// 真机敲「nihao」看到的第一页（2026-09-13 从截图抄），拼音行带光标、英文释义、页码。
 /// 横排展开成矩阵：6 行 × 9 列，第二行高亮着一条被截断的长候选，末行不满，有一个云端词。
 fn matrix() -> Frame {
     let words = [
@@ -259,9 +259,6 @@ fn nihao() -> Frame {
                 &[
                     ("int. ", Tone::Faint),
                     ("hello", Tone::Gloss),
-                    (" · ", Tone::Faint),
-                    ("int. ", Tone::Faint),
-                    ("hi", Tone::Gloss),
                 ],
                 false,
             ),
@@ -323,8 +320,8 @@ fn cloud() -> Frame {
     frame
 }
 
-/// 纠错后的拼音行（删除线 + 淡色剩余）加日文译词（汉字注假名）。
-fn corrected_japanese() -> Frame {
+/// 纠错后的拼音行（删除线 + 淡色剩余）加程序员模式的英文释义。
+fn corrected_gloss() -> Frame {
     Frame {
         preedit: Some(Preedit {
             segments: vec![
@@ -349,9 +346,7 @@ fn corrected_japanese() -> Frame {
                 "开发",
                 &[
                     ("v. ", Tone::Faint),
-                    ("開発", Tone::Gloss),
-                    ("(かいはつ)", Tone::Faint),
-                    ("する", Tone::Gloss),
+                    ("develop", Tone::Gloss),
                 ],
                 false,
             ),
@@ -360,9 +355,7 @@ fn corrected_japanese() -> Frame {
                 "开",
                 &[
                     ("v. ", Tone::Faint),
-                    ("開", Tone::Fresh),
-                    ("(ひら)", Tone::Faint),
-                    ("く", Tone::Fresh),
+                    ("open", Tone::Fresh),
                 ],
                 false,
             ),

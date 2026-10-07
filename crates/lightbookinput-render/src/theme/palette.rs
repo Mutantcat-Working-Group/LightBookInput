@@ -7,19 +7,19 @@ pub struct Palette {
     /// 候选词。
     pub text: Color,
 
-    /// 译文。
+    /// 程序员模式的英文释义。
     pub gloss: Color,
 
-    /// 词性，比译文更浅。
+    /// 词性，比英文释义更浅。
     pub pos: Color,
 
-    /// 生词译文：比普通译文醒目，看熟了就回到译文色。
+    /// 强调的释义：比普通释义醒目。
     pub fresh: Color,
 
     /// 序号。
     pub index: Color,
 
-    /// 云联想的云朵与文字：比译文醒目一点，但不抢候选词。
+    /// 云联想的云朵与文字：比释义醒目一点，但不抢候选词。
     pub cloud: Color,
 
     /// 窗口背景。

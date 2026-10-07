@@ -45,29 +45,6 @@ impl<'a> TextClient<'a> {
         }
     }
 
-    /// 应用里当前选中的文字与它的范围（翻译用）。没有选区、应用不支持读文本、超过 `max_chars` 个字符都返回 `None`。
-    pub fn selected_text(&self, max_chars: usize) -> Option<(String, NSRange)> {
-        let selected: NSRange = unsafe { msg_send![self.object, selectedRange] };
-        if selected.location == NSNotFound as usize
-            || selected.length == 0
-            || selected.length > max_chars
-        {
-            return None;
-        }
-        let text: Option<Retained<NSAttributedString>> =
-            unsafe { msg_send![self.object, attributedSubstringFromRange: selected] };
-        let text = text?.string().to_string();
-        (!text.trim().is_empty()).then_some((text, selected))
-    }
-
-    /// 用 `text` 替换应用里 `range` 那段文字（翻译结果替换选区）。
-    pub fn replace_range(&self, text: &str, range: NSRange) {
-        let string = NSString::from_str(text);
-        unsafe {
-            let _: () = msg_send![self.object, insertText: &*string, replacementRange: range];
-        }
-    }
-
     /// 读光标附近的文本给联想当上下文：marked text 之前 `before` 个字符、之后 `after` 个字符。
     /// 应用不支持 `attributedSubstringFromRange:`（不少 Electron / 终端）时返回 `None`，由 Core 退回本地历史。
     pub fn surrounding_text(&self, before: usize, after: usize) -> Option<SurroundingText> {

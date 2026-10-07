@@ -203,7 +203,7 @@ impl Renderer {
             Layout::Horizontal => self.horizontal_size(frame, m),
         };
         let width = top_width.max(body_width) + m.padding() * 2.0;
-        // 竖排时候选都很短（没有译词）窗口会窄得难看，给个下限
+        // 竖排时候选都很短（没有英文释义）窗口会窄得难看，给个下限
         let width = match layout {
             Layout::Vertical => width.max(m.px(MIN_VERTICAL_WIDTH)),
             Layout::Horizontal => width,

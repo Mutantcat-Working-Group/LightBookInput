@@ -9,7 +9,7 @@ use crate::panel::{Message, Settings};
 pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> View {
     let g = &settings.config.general;
     let rows = [
-        note("设置改完会自动生效（Server 每秒看一次配置文件）。只有换学习语言要重启 Server。"),
+        note("设置改完会自动生效（Server 每秒看一次配置文件）。"),
         field(
             "配置文件",
             "",
