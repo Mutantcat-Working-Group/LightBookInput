@@ -156,7 +156,6 @@ mod tests {
             kind: CandidateKind::Chinese,
             syllables: vec!["zhang".into(), "tao".into()],
             reading: None,
-            translation: None,
             aux_code: None,
         }
     }

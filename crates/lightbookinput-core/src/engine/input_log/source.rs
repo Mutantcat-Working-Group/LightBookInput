@@ -30,9 +30,6 @@ pub enum InputSource {
     /// 回车原样上屏敲的字母。
     Raw,
 
-    /// 上屏的是候选的译词（修饰键 + 数字）。
-    Translation,
-
     /// Tab 接受的云端整句补全。
     CloudSentence,
 }

@@ -1,7 +1,6 @@
-//! 上屏：译词标注、按候选消耗缓冲区、对齐音节、学习与撤销、自动造词。
+//! 上屏：按候选消耗缓冲区、对齐音节、学习与撤销、自动造词。
 
 use super::alignment::Alignment;
-use super::annotation::AnnotationReport;
 use super::input_log::{InputLogEntry, InputLogger, InputSource};
 use super::learning::Learner;
 use super::query::EnglishTail;
@@ -9,11 +8,10 @@ use super::{
     AUTO_WORD_MAX_CHARS, AUTO_WORD_THRESHOLD, AUTO_WORD_THRESHOLD_SAME_BUFFER,
     EXPLICIT_TRANSITION_WEIGHT, Engine, choice_key, segment_longest_prefix,
 };
-use crate::candidate::{Candidate, CandidateKind, CandidateList, Language};
+use crate::candidate::{Candidate, CandidateKind};
 use crate::correction::typo;
 use crate::{parser, sentence};
 use lightbookinput_dictionary::Dictionary;
-use std::time::Instant;
 
 mod chain;
 mod last;
@@ -24,67 +22,14 @@ pub use last::LastCommit;
 pub use transition::Transition;
 
 impl Engine {
-    /// 给候选补上译文。与 [`Self::query`] 分开调用，平台层可以先画候选再补画译文。
-    pub fn annotate(&self, list: &mut CandidateList) -> AnnotationReport {
-        let start = Instant::now();
-        let mut hits = 0;
-        for candidate in &mut list.items {
-            let mut text = candidate.text.as_str();
-            let traditional_map = self.traditional_map.borrow();
-            if self.traditional
-                && let Some(simp) = traditional_map.get(text)
-            {
-                text = simp.as_str();
-            }
-            candidate.translation = match candidate.kind {
-                CandidateKind::Custom(_) => None,
-                // 英文候选按敲的大小写显示（Company / COMPANY），释义表键是小写
-                CandidateKind::English => self.english_translator.translate(text).or_else(|| {
-                    self.english_translator
-                        .translate(&text.to_ascii_lowercase())
-                }),
-                _ => self.translator.translate(text).map(|mut translation| {
-                    self.mark_fresh(&mut translation);
-                    translation
-                }),
-            };
-            hits += usize::from(candidate.translation.is_some());
-        }
-        AnnotationReport {
-            total: list.items.len(),
-            hits,
-            elapsed: start.elapsed(),
-        }
-    }
-
-    /// 上屏：记入学习，从缓冲区消耗掉该候选对应的拼音，返回要提交给应用的文本。
-    ///
-    /// 上屏候选的译文而不是候选本身（壳里修饰键 + 数字）：学习、拼音消耗都和选了这个候选一样，
-    /// 返回第 `sense` 条释义的译文（0 是第一条，日文不带注音）。候选没有那么多条释义时不动，返回 `None`。
-    pub fn commit_translation(&mut self, candidate: &Candidate, sense: usize) -> Option<String> {
-        let text = candidate
-            .translation
-            .as_ref()
-            .and_then(|t| t.senses().get(sense))
-            .map(|s| s.text.clone())?;
-        self.commit_with(candidate, InputSource::Translation, Some(sense));
-        Some(text)
-    }
-
     /// 候选比输入短时（`kaifazhe` 选了 开发），剩余拼音留在缓冲区，壳应接着 [`Self::query`]。
     /// 候选的最后一个音节比输入长时（`kaif` 选了 开发），把输入吃完。
     pub fn commit(&mut self, candidate: &Candidate) -> String {
-        self.commit_with(candidate, InputSource::from(candidate.kind), None)
+        self.commit_with(candidate, InputSource::from(candidate.kind))
     }
 
-    /// [`Self::commit`] 的内部形式：`source` 写进输入日志（上屏译词时不是候选本身），
-    /// `used_sense` 是直接打出去的那条译词的序号（词汇记录里算「用过」）。
-    pub(super) fn commit_with(
-        &mut self,
-        candidate: &Candidate,
-        source: InputSource,
-        used_sense: Option<usize>,
-    ) -> String {
+    /// [`Self::commit`] 的内部形式：`source` 写进输入日志（上屏候选与候选种类对不上时由调用方给）。
+    pub(super) fn commit_with(&mut self, candidate: &Candidate, source: InputSource) -> String {
         let traditional_text = candidate.text.clone();
         let mut candidate_owned = candidate.clone();
         if self.traditional
@@ -174,31 +119,6 @@ impl Engine {
         }
         let log_id = self.log_commit(&keys, &candidate.text, source);
         self.meter_commit(&candidate.text, source, false);
-        // 上屏带译词的中文候选：那一刻用户看着这条译词，记进词汇（英文候选的中文释义不是学习语言，不记）
-        if !self.private
-            && candidate.kind != CandidateKind::English
-            && let Some(translation) = &candidate.translation
-        {
-            for (index, sense) in translation.senses().iter().enumerate() {
-                self.vocabulary.record_commit(
-                    translation.language,
-                    &sense.text,
-                    used_sense == Some(index),
-                );
-            }
-        }
-        // 词库里有、释义表里没有的词：交给释义兜底在后台问云端，写进个人释义表，下次就有译词；私密输入中不问
-        if matches!(
-            candidate.kind,
-            CandidateKind::Chinese | CandidateKind::Cloud | CandidateKind::Code
-        ) && self.gloss_filler.is_enabled()
-            && !self.private
-            && self.translator.language() != Language::Chinese
-            && self.translator.translate(&candidate.text).is_none()
-        {
-            self.gloss_filler
-                .request(self.translator.language(), &candidate.text);
-        }
         self.composition.drain_prefix(consumed);
         // 上屏即收尾：码段清空、回初始态（数字键与「标点先上屏」都走这里）
         self.aux_code = None;
@@ -309,7 +229,6 @@ impl Engine {
             kind: CandidateKind::Chinese,
             syllables,
             reading: None,
-            translation: None,
             aux_code: None,
         };
         if !self.knows_word(&candidate)
@@ -636,7 +555,6 @@ impl Engine {
             kind: CandidateKind::Chinese,
             syllables: joined_syllables,
             reading: None,
-            translation: None,
             aux_code: None,
         };
         if self.knows_word(&candidate) {

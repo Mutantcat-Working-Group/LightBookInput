@@ -154,7 +154,6 @@ impl Engine {
                 kind,
                 syllables: conversion.syllables,
                 reading: None,
-                translation: None,
                 aux_code: None,
             });
         }

@@ -26,7 +26,6 @@ fn custom_positions_survive_normal_candidates_and_cloud() {
             kind: CandidateKind::Cloud,
             syllables: vec![],
             reading: None,
-            translation: None,
             aux_code: None,
         }]);
         assert_eq!(layout.candidate(1).unwrap().text, "；");

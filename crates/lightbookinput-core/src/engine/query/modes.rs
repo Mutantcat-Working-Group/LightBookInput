@@ -18,7 +18,6 @@ impl Engine {
                 kind: CandidateKind::English,
                 syllables: Vec::new(),
                 reading: None,
-                translation: None,
                 aux_code: None,
             });
         }
@@ -49,7 +48,6 @@ impl Engine {
             kind: CandidateKind::English,
             syllables: Vec::new(),
             reading: None,
-            translation: None,
             aux_code: None,
         }];
         Query {
@@ -92,7 +90,6 @@ impl Engine {
             kind: CandidateKind::English,
             syllables: Vec::new(),
             reading: None,
-            translation: None,
             aux_code: None,
         })
         .collect();
@@ -136,7 +133,6 @@ impl Engine {
                         kind: CandidateKind::Shortcut,
                         syllables: Vec::new(),
                         reading: None,
-                        translation: None,
                         aux_code: None,
                     }],
                 },

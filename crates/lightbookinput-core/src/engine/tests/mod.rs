@@ -20,8 +20,6 @@ use std::sync::{Arc, Mutex};
 
 use super::*;
 
-use crate::candidate::{PartOfSpeech, Sense, Translation};
-
 const SAMPLE: &str = "开发\tkai fa\t9000\n开发者\tkai fa zhe\t3000\n开饭\tkai fan\t800\n开放\tkai fang\t20000\n西安\txi an\t4000\n先\txian\t10000\n下\txia\t8000\n想\txiang\t9000\n开\tkai\t20000\n咖啡\tka fei\t5000\n不\tbu\t1000\n";
 
 fn engine() -> Engine {
@@ -116,28 +114,6 @@ impl Learner for CountingLearner {
     }
 }
 
-struct FixedTranslator;
-
-impl Translator for FixedTranslator {
-    fn language(&self) -> Language {
-        Language::English
-    }
-
-    fn translate(&self, text: &str) -> Option<Translation> {
-        (text == "开发").then(|| {
-            Translation::new(
-                Language::English,
-                vec![Sense {
-                    part_of_speech: Some(PartOfSpeech::Verb),
-                    text: "develop".into(),
-                    reading: None,
-                    fresh: false,
-                }],
-            )
-        })
-    }
-}
-
 /// 把请求记下来、按序号原样回一条结果的假联想器。
 struct EchoPredictor {
     submitted: std::rc::Rc<std::cell::RefCell<Vec<PredictionRequest>>>,
@@ -178,76 +154,6 @@ fn cloud(text: &str, syllables: &[&str]) -> CloudWord {
 
 /// 记请求、按需吐结果的假释义兜底。
 #[derive(Default)]
-struct MemoryFiller {
-    requested: Arc<Mutex<Vec<String>>>,
-    ready: Arc<Mutex<Vec<FilledGloss>>>,
-}
-
-impl GlossFiller for MemoryFiller {
-    fn request(&mut self, language: Language, word: &str) {
-        assert_eq!(language, Language::English);
-        self.requested.lock().unwrap().push(word.to_owned());
-    }
-
-    fn poll(&mut self) -> Vec<FilledGloss> {
-        std::mem::take(&mut *self.ready.lock().unwrap())
-    }
-}
-
-/// 会记住学到的释义的译者：随包只有 开发。
-#[derive(Default)]
-struct LearningTranslator(HashMap<String, Translation>);
-
-impl Translator for LearningTranslator {
-    fn language(&self) -> Language {
-        Language::English
-    }
-
-    fn translate(&self, text: &str) -> Option<Translation> {
-        self.0
-            .get(text)
-            .cloned()
-            .or_else(|| FixedTranslator.translate(text))
-    }
-
-    fn learn(&mut self, word: &str, translation: Translation) {
-        self.0.insert(word.to_owned(), translation);
-    }
-}
-
-/// (看到轮次, 上屏次数, 用过次数)。
-type VocabularyCounts = HashMap<(Language, String), (u32, u32, u32)>;
-
-/// 记在内存里的词汇记录。
-#[derive(Default)]
-struct MemoryVocabulary(Arc<Mutex<VocabularyCounts>>);
-
-impl VocabularyTracker for MemoryVocabulary {
-    fn exposures(&self, language: Language, word: &str) -> u32 {
-        self.0
-            .lock()
-            .unwrap()
-            .get(&(language, word.to_owned()))
-            .map_or(0, |entry| entry.0)
-    }
-
-    fn record_exposure(&mut self, language: Language, word: &str) {
-        self.0
-            .lock()
-            .unwrap()
-            .entry((language, word.to_owned()))
-            .or_default()
-            .0 += 1;
-    }
-
-    fn record_commit(&mut self, language: Language, word: &str, used: bool) {
-        let mut map = self.0.lock().unwrap();
-        let entry = map.entry((language, word.to_owned())).or_default();
-        entry.1 += 1;
-        entry.2 += u32::from(used);
-    }
-}
-
 /// 把输入统计攒起来的假累计方。
 struct MemoryMeter(Arc<Mutex<Vec<Usage>>>);
 

@@ -4,7 +4,7 @@
 //! 编号请求、校验云端词的拼音、丢弃过期结果。联想**不参与排序、不阻塞输入**；
 //! 云端词到了只补进候选窗口第一页末尾几格（[`crate::CandidateLayout`]），前面的本地候选不挪。
 //!
-//! Engine 这一侧的实现：组句中发请求、收结果校验、Tab 接受整句；翻译选中文字也走这里。
+//! Engine 这一侧的实现：组句中发请求、收结果校验、Tab 接受整句。
 
 mod cloud_word;
 mod fuzzy;
@@ -14,7 +14,6 @@ mod predictor;
 mod question;
 mod request;
 mod response;
-mod script;
 mod surrounding_text;
 
 pub use cloud_word::CloudWord;
@@ -25,7 +24,6 @@ pub use predictor::{NoPredictor, Predictor};
 pub use question::restates_question;
 pub use request::PredictionRequest;
 pub use response::Prediction;
-pub use script::translation_target;
 pub use surrounding_text::SurroundingText;
 
 use super::*;
@@ -136,42 +134,9 @@ impl Engine {
                 policy.max_items
             },
             want_sentence: policy.sentence && !question,
-            text: String::new(),
-            target_language: String::new(),
         };
         self.last_prediction_kind = kind;
         self.last_prediction_scope = scope.to_owned();
-        self.predictor.submit(request);
-        Some(self.prediction_sequence)
-    }
-
-    /// 把应用里选中的一段文字交给云端翻译（壳里快捷键触发）：主要是汉字就译成学习语言，是外文（拉丁字母、假名）就译成中文
-    /// （[`translation_target`]）。云联想关着、私密输入中、文字为空时不发，返回 `None`；
-    /// 译文从 [`Self::poll_prediction`] 的 `sentence` 里出。不进学习、不动缓冲区。
-    pub fn request_translation(&mut self, text: &str) -> Option<u64> {
-        let text = text.trim();
-        if !self.predictor.is_enabled() || self.private || text.is_empty() {
-            return None;
-        }
-        self.prediction_sequence += 1;
-        let request = PredictionRequest {
-            sequence: self.prediction_sequence,
-            kind: PredictionKind::Translate,
-            before: String::new(),
-            after: String::new(),
-            pinyin: String::new(),
-            letters: String::new(),
-            syllables: 0,
-            candidates: Vec::new(),
-            guess: String::new(),
-            max_items: 1,
-            want_sentence: true,
-            text: text.to_owned(),
-            target_language: translation_target(text, self.translator.language())
-                .code()
-                .to_owned(),
-        };
-        self.last_prediction_kind = PredictionKind::Translate;
         self.predictor.submit(request);
         Some(self.prediction_sequence)
     }
@@ -186,7 +151,7 @@ impl Engine {
     pub fn poll_prediction(&mut self) -> Option<Prediction> {
         while let Some(mut prediction) = self.predictor.poll() {
             if prediction.sequence == self.prediction_sequence {
-                // 问字的答案、翻译的译文和敲的拼音本来就对不上，只有组句联想的云端词要校验
+                // 问字的答案和敲的拼音本来就对不上，只有组句联想的云端词要校验
                 if self.last_prediction_kind == PredictionKind::Question {
                     let guess = &self.last_question_guess;
                     prediction
@@ -211,7 +176,6 @@ impl Engine {
                     }
                 }
                 if self.traditional
-                    && self.last_prediction_kind != PredictionKind::Translate
                     && let Some(opencc) = &self.opencc
                 {
                     for word in &mut prediction.words {

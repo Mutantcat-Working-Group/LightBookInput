@@ -2,7 +2,7 @@
 
 use super::commit::CommitChain;
 use super::{Engine, LastCommit, Transition};
-use crate::{Composition, InputHistory, Language, Punctuation};
+use crate::{Composition, InputHistory, Punctuation};
 use std::time::Instant;
 
 /// 一个输入上下文的组句、标点配对和学习链；不复制词库或落盘服务。
@@ -41,9 +41,6 @@ pub struct EngineSession {
     /// 上次学习链断开后是否已有上屏。
     committed_since_break: bool,
 
-    /// 当前可见候选的译词。
-    displayed: Vec<(Language, String)>,
-
     /// 本会话最近的上屏前文。
     history: InputHistory,
 
@@ -77,7 +74,6 @@ impl Engine {
             &mut self.committed_since_break,
             &mut session.committed_since_break,
         );
-        std::mem::swap(&mut self.displayed, &mut session.displayed);
         std::mem::swap(&mut self.history, &mut session.history);
         std::mem::swap(&mut self.chain, &mut session.chain);
         self.forget_span_cache();
@@ -99,7 +95,6 @@ impl EngineSession {
         self.page_turns = 0;
         self.composition_started = None;
         self.committed_since_break = false;
-        self.displayed.clear();
         self.history.clear();
         self.chain = CommitChain::default();
     }
@@ -120,7 +115,6 @@ impl Engine {
         self.page_turns = 0;
         self.composition_started = None;
         self.committed_since_break = false;
-        self.displayed.clear();
         self.history.clear();
         self.chain = CommitChain::default();
         self.rescoring_before = None;

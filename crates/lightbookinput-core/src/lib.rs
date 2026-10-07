@@ -1,6 +1,6 @@
 //! 轻书输入法内核。
 //!
-//! 平台无关：词库、拼音解析、候选生成、排序、学习与翻译的接口全部在这里。
+//! 平台无关：词库、拼音解析、候选生成、排序与学习的接口全部在这里。
 //! 平台层（IMK / TSF / IBus-Fcitx）只负责把按键喂给 [`Engine`]、把候选画出来。
 //! 判断标准：换掉 IMK 换成 TSF，不应该需要改这里的任何一行。
 
@@ -25,21 +25,18 @@ pub mod zhuyin;
 pub use custom_phrase::CustomPhrase;
 
 pub use candidate::{
-    Candidate, CandidateKind, CandidateLayout, CandidateList, Cell, GRID_ROWS, Grid, Language,
-    MAX_CELL_EMS, PartOfSpeech, Sense, Translation,
+    Candidate, CandidateKind, CandidateLayout, CandidateList, Cell, GRID_ROWS, Grid, MAX_CELL_EMS,
 };
 pub use composition::Composition;
 pub use correction::Correction;
 pub use emoji::EmojiTable;
 pub use engine::{
-    AnnotationReport, AuxSegment, BOOKS, Book, CloudWord, CommitEntry, DEFAULT_AUX_CODE_KEY,
-    Engine, EngineSession, FRESH_UNTIL, FilledGloss, Forgotten, GlossFiller, INPUT_LOG_VERSION,
-    InputLogEntry, InputLogger, InputSource, Learner, LevelCount, MarkedKind, MarkedSegment,
-    ModeKeys, NEURAL_MARGIN, NEURAL_WEIGHT, NoGlossFiller, NoInputLogger, NoLearner, NoPredictor,
-    NoTranslator, NoUsageMeter, NoVocabularyTracker, Prediction, PredictionKind, PredictionPolicy,
-    PredictionRequest, Predictor, QUESTION_PREFIX, Query, RESCORE_CONTEXT_CHARS, RawPreedit,
-    SurroundingText, Timings, Translator, Usage, UsageMeter, UsageSummary, VocabularySummary,
-    VocabularyTracker, book_scale, is_valid_aux_code_key,
+    AuxSegment, BOOKS, Book, CloudWord, CommitEntry, DEFAULT_AUX_CODE_KEY, Engine, EngineSession,
+    Forgotten, INPUT_LOG_VERSION, InputLogEntry, InputLogger, InputSource, Learner, MarkedKind,
+    MarkedSegment, ModeKeys, NEURAL_MARGIN, NEURAL_WEIGHT, NoInputLogger, NoLearner, NoPredictor,
+    NoUsageMeter, Prediction, PredictionKind, PredictionPolicy, PredictionRequest, Predictor,
+    QUESTION_PREFIX, Query, RESCORE_CONTEXT_CHARS, RawPreedit, SurroundingText, Timings, Usage,
+    UsageMeter, UsageSummary, book_scale, is_valid_aux_code_key,
 };
 pub use fuzzy::FuzzyRules;
 pub use history::InputHistory;

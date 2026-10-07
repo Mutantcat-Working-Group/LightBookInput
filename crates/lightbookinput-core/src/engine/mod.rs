@@ -1,17 +1,15 @@
 //! Engine：Core 对外的唯一门面。
 //!
-//! 平台层只跟这里打交道：喂按键、拿候选、上屏。翻译与学习通过 trait 注入，
+//! 平台层只跟这里打交道：喂按键、拿候选、上屏。学习与联想通过 trait 注入，
 //! 默认实现都是空操作，所以单元测试和 CLI 不需要真实词典也能跑。
 
 mod alignment;
-mod annotation;
 mod aux_code;
 mod commit;
 mod composing;
 mod correcting;
 mod decoded;
 mod extras;
-mod gloss;
 mod input_log;
 mod learning;
 mod marked;
@@ -25,8 +23,6 @@ mod session;
 mod setup;
 mod statistics;
 mod timings;
-mod translator;
-mod vocabulary;
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -35,10 +31,8 @@ use std::time::{Duration, Instant};
 use lightbookinput_dictionary::{AuxCodeLookup, CodeTable, Dictionary, Match, WordList};
 
 pub use alignment::Alignment;
-pub use annotation::AnnotationReport;
 pub use aux_code::is_valid_aux_code_key;
 pub use commit::{LastCommit, Transition};
-pub use gloss::{FilledGloss, GlossFiller, NoGlossFiller};
 pub use input_log::{
     CommitEntry, INPUT_LOG_VERSION, InputLogEntry, InputLogger, InputSource, LOGGED_CANDIDATES,
     NoInputLogger,
@@ -56,12 +50,8 @@ pub use raw::RawPreedit;
 pub use session::EngineSession;
 pub use statistics::{BOOKS, Book, NoUsageMeter, Usage, UsageMeter, UsageSummary, book_scale};
 pub use timings::Timings;
-pub use translator::{NoTranslator, Translator};
-pub use vocabulary::{
-    FRESH_UNTIL, LevelCount, NoVocabularyTracker, VocabularySummary, VocabularyTracker,
-};
 
-use crate::candidate::{Candidate, CandidateKind, CandidateList, Language};
+use crate::candidate::{Candidate, CandidateKind, CandidateList};
 use crate::composition::Composition;
 use crate::correction::{self, Correction, TypoCosts, typo};
 use crate::emoji::EmojiTable;
@@ -83,19 +73,12 @@ pub struct Engine {
     /// 静态词库。
     dictionary: Dictionary,
 
-    /// 译文提供方，缺省为 [`NoTranslator`]。
-    translator: Box<dyn Translator>,
-
     /// 前缀模式键（表达式 / 问字）。
     modes: ModeKeys,
 
     /// 附加词库（领域词库、用户导入的），与主词库一起查词、一起进整句词图；不参与语言模型（它们没有 bigram，
     /// 走词频兜底）。壳按用户目录 `dicts/` 与配置 `[dictionaries]` 装配。
     extra_dictionaries: Vec<Dictionary>,
-
-    /// 英文候选的释义（英→中），缺省为 [`NoTranslator`]。英文候选的辅助语言是主语言中文，
-    /// 与中文候选查学习语言的表分开，仍是「一个候选只显示一种辅助语言」。
-    english_translator: Box<dyn Translator>,
 
     /// 用户词频，缺省为 [`NoLearner`]；私密输入期间只读不写（[`learning::MutedLearner`]）。
     learner: learning::MutedLearner,
@@ -200,15 +183,6 @@ pub struct Engine {
 
     /// 输入统计的累计方（打了多少字）；缺省不记。
     meter: Box<dyn UsageMeter>,
-
-    /// 学习语言的词汇记录（见过 / 上屏过哪些译词）；缺省不记也不标生词。
-    vocabulary: Box<dyn VocabularyTracker>,
-
-    /// 释义兜底：释义表里没有的词上屏后问云端；缺省不问。
-    gloss_filler: Box<dyn GlossFiller>,
-
-    /// 候选窗口当前页上的译词（壳每次画完告知），上屏时记成「看到过」。
-    displayed: Vec<(Language, String)>,
 
     /// 上一次查询的摘要，上屏时写进输入日志。
     last_query: std::cell::RefCell<Option<query::QuerySnapshot>>,
@@ -386,8 +360,6 @@ impl Engine {
         Self {
             dictionary,
             extra_dictionaries: Vec::new(),
-            translator: Box::new(NoTranslator),
-            english_translator: Box::new(NoTranslator),
             modes: ModeKeys::default(),
             learner: learning::MutedLearner::new(Box::new(NoLearner)),
             composition: Composition::default(),
@@ -424,9 +396,6 @@ impl Engine {
             committed_since_break: false,
             last_prediction_scope: String::new(),
             meter: Box::new(NoUsageMeter),
-            vocabulary: Box::new(NoVocabularyTracker),
-            gloss_filler: Box::new(NoGlossFiller),
-            displayed: Vec::new(),
             last_query: std::cell::RefCell::new(None),
             recording: Vec::new(),
             history: InputHistory::default(),

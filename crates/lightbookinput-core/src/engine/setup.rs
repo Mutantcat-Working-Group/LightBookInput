@@ -1,4 +1,4 @@
-//! 注入与开关：词库、模糊音、双拼、翻译 / 学习 / 联想等 trait 实现的挂接，以及相应的只读访问。
+//! 注入与开关：词库、模糊音、双拼、学习 / 联想等 trait 实现的挂接，以及相应的只读访问。
 
 use super::aux_code::is_valid_aux_code_key;
 use super::*;
@@ -372,22 +372,6 @@ impl Engine {
         self
     }
 
-    pub fn with_translator(mut self, translator: Box<dyn Translator>) -> Self {
-        self.translator = translator;
-        self
-    }
-
-    /// 运行时换学习语言的释义表。
-    /// 接英文候选用的释义表（英→中）。
-    pub fn with_english_translator(mut self, translator: Box<dyn Translator>) -> Self {
-        self.english_translator = translator;
-        self
-    }
-
-    pub fn set_translator(&mut self, translator: Box<dyn Translator>) {
-        self.translator = translator;
-    }
-
     pub fn with_mode_keys(mut self, keys: ModeKeys) -> Self {
         self.modes = keys.sanitized();
         self
@@ -454,21 +438,6 @@ impl Engine {
         self.meter.summary()
     }
 
-    pub fn with_vocabulary_tracker(mut self, tracker: Box<dyn VocabularyTracker>) -> Self {
-        self.vocabulary = tracker;
-        self
-    }
-
-    pub fn with_gloss_filler(mut self, filler: Box<dyn GlossFiller>) -> Self {
-        self.gloss_filler = filler;
-        self
-    }
-
-    /// 运行时换释义兜底（随云联想开关）。
-    pub fn set_gloss_filler(&mut self, filler: Box<dyn GlossFiller>) {
-        self.gloss_filler = filler;
-    }
-
     pub fn dictionary(&self) -> &Dictionary {
         &self.dictionary
     }
@@ -510,9 +479,5 @@ impl Engine {
     pub fn learner_mut(&mut self) -> &mut dyn Learner {
         self.forget_span_cache();
         self.learner.inner_mut()
-    }
-
-    pub fn learning_language(&self) -> Language {
-        self.translator.language()
     }
 }

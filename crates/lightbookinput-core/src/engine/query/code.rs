@@ -67,7 +67,6 @@ impl Engine {
                 // 编码不是拼音音节：候选窗按音节高亮的部分对形码没有意义，留空
                 syllables: Vec::new(),
                 reading: None,
-                translation: None,
                 aux_code: None,
             })
             .collect();

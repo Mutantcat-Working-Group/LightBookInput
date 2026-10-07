@@ -21,7 +21,6 @@ impl CloudWord {
             kind: CandidateKind::Cloud,
             syllables: self.syllables,
             reading: self.reading,
-            translation: None,
             aux_code: None,
         }
     }

@@ -125,7 +125,6 @@ pub(super) fn chinese_candidate(item: &Scored<'_>, aux_code: Option<&str>) -> Ca
         kind: CandidateKind::Chinese,
         syllables: item.hit.syllables().map(str::to_owned).collect(),
         reading: None,
-        translation: None,
         aux_code: aux_code.map(str::to_owned),
     }
 }

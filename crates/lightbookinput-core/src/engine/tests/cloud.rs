@@ -257,7 +257,6 @@ fn cloud_words_tolerate_typos_but_not_unrelated_words() {
         kind: CandidateKind::Cloud,
         syllables: prediction.words[0].syllables.clone(),
         reading: None,
-        translation: None,
         aux_code: None,
     };
     assert_eq!(engine.commit(&word), "这个东西吗");
@@ -395,7 +394,6 @@ fn committing_a_cloud_word_learns_it_and_it_ranks_first_next_time() {
         kind: CandidateKind::Cloud,
         syllables: vec!["zhang".into(), "tao".into()],
         reading: None,
-        translation: None,
         aux_code: None,
     };
     assert_eq!(engine.commit(&word), "账套");
@@ -443,7 +441,6 @@ fn traditional_mode_preserves_original_text_across_queries() {
         kind: CandidateKind::Cloud,
         syllables: vec!["kai".into(), "fa".into()],
         reading: None,
-        translation: None,
         aux_code: None,
     };
     assert_eq!(engine.commit(&word), "凱發");
@@ -460,7 +457,6 @@ fn cloud_words_are_learned_with_the_typed_reading_when_it_fits() {
         kind: CandidateKind::Cloud,
         syllables: syllables.iter().map(|s| (*s).to_owned()).collect(),
         reading: None,
-        translation: None,
         aux_code: None,
     };
     let has = |engine: &Engine, text: &str| texts_of(engine).iter().any(|t| t == text);
@@ -500,38 +496,6 @@ fn no_predictor_never_requests() {
     assert!(!engine.prediction_enabled());
     engine.set_input("kaifa");
     assert_eq!(engine.request_prediction(None, &[]), None);
-}
-
-#[test]
-fn translation_requests_carry_the_text_and_target_language() {
-    use std::sync::{Arc, Mutex};
-    struct Recorder(Arc<Mutex<Vec<PredictionRequest>>>);
-    impl Predictor for Recorder {
-        fn policy(&self) -> PredictionPolicy {
-            PredictionPolicy::default()
-        }
-        fn submit(&mut self, request: PredictionRequest) {
-            self.0.lock().unwrap().push(request);
-        }
-        fn poll(&mut self) -> Option<Prediction> {
-            None
-        }
-    }
-    let sent = Arc::new(Mutex::new(Vec::new()));
-    let mut engine = Engine::new(Dictionary::parse(SAMPLE).unwrap())
-        .with_predictor(Box::new(Recorder(sent.clone())));
-    assert!(engine.request_translation("  ").is_none());
-    let sequence = engine.request_translation("我想去吃饭").unwrap();
-    let requests = sent.lock().unwrap();
-    assert_eq!(requests.len(), 1);
-    assert_eq!(requests[0].sequence, sequence);
-    assert_eq!(requests[0].kind, PredictionKind::Translate);
-    assert_eq!(requests[0].text, "我想去吃饭");
-    assert_eq!(requests[0].target_language, "en");
-    drop(requests);
-    // 外文选区译回中文
-    engine.request_translation("I want to eat.").unwrap();
-    assert_eq!(sent.lock().unwrap()[1].target_language, "zh");
 }
 
 #[test]

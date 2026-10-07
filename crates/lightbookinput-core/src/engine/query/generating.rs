@@ -50,7 +50,6 @@ impl Engine {
                 kind: CandidateKind::Generated,
                 syllables: Vec::new(),
                 reading: None,
-                translation: None,
                 aux_code: None,
             });
         }
