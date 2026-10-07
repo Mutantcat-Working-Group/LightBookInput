@@ -91,10 +91,8 @@ struct Mock {
             }
             identity["revision"] = identity.at("revision").get<uint64_t>() + 1;
             writeMessage(fd, {{"KeyResult", {{"session", session}, {"identity", identity}, {"frame", frame}, {"commit", commit}, {"outcome", outcome}}}});
-            if (mode == "failure" && event.contains("Key")) {
-                messages.push_back(readMessage(fd)); // 默认面板反馈。
-                break;
-            }
+            // 连接在返回这一帧后消失：前端不能等第二帧，也不能重放提交。
+            if (mode == "failure" && event.contains("Key")) break;
         }
         close(fd);
     }
