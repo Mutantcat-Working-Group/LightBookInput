@@ -70,8 +70,10 @@ impl Router {
         let Some(gloss) = gloss else {
             return Effect::Changed(self.commit_index(index));
         };
+        // 一个词可能有多条释义（Core 用 "; " 拼成一条给）；这两个壳暂时只上屏第一条
+        let text = gloss.split("; ").next().unwrap_or(&gloss).to_owned();
         let english = Candidate {
-            text: gloss,
+            text,
             // 快捷候选：上屏时吃掉整段拼音，不记学习
             kind: CandidateKind::Shortcut,
             syllables: Vec::new(),
