@@ -149,6 +149,16 @@ pub fn digit_with(n: u32, modifiers: KeyModifiers) -> KeyEvent {
     KeyEvent::new(0x30 + n, Some(c), modifiers)
 }
 
+/// 程序员模式键：`~`（·，Esc 左边那个，Shift 出来才是 `~`）。字符随布局变，伺服端按按键码认。
+pub fn tilde() -> KeyEvent {
+    KeyEvent::new(0xC0, Some('`'), Default::default())
+}
+
+/// 空格。
+pub fn space() -> KeyEvent {
+    KeyEvent::new(0x20, Some(' '), Default::default())
+}
+
 pub const SHIFT: KeyModifiers = KeyModifiers {
     shift: true,
     ..ALT_OFF
@@ -172,23 +182,6 @@ pub const ALT_OFF: KeyModifiers = KeyModifiers {
 pub const WIN: KeyModifiers = KeyModifiers {
     win: true,
     ..ALT_OFF
-};
-
-/// 平台缺省的程序员模式键：macOS 是 Alt，Windows 是 Ctrl（Alt 被系统菜单截走）。
-#[cfg(not(windows))]
-pub const PROGRAMMER: KeyModifiers = KeyModifiers {
-    alt: true,
-    ..ALT_OFF
-};
-#[cfg(windows)]
-pub const PROGRAMMER: KeyModifiers = KeyModifiers {
-    ctrl: true,
-    ..ALT_OFF
-};
-
-pub const PROGRAMMER_SECOND: KeyModifiers = KeyModifiers {
-    shift: true,
-    ..PROGRAMMER
 };
 
 /// 当前页里 `text` 排第几（1 起）。
