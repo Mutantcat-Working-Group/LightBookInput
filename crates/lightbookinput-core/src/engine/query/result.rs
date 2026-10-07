@@ -44,13 +44,13 @@ pub(crate) fn join_marked_typed(typed: &str, segmentations: &[Segmentation], tai
 use crate::engine::timings::Timings;
 use crate::engine::{AuxSegment, MarkedKind, MarkedSegment};
 
-/// 不带译文的候选查询结果。
+/// 不带英文释义的候选查询结果。
 #[derive(Debug, Clone, Default)]
 pub struct Query {
     /// 参与候选生成的所有切分，索引 0 为首选切分。
     pub segmentations: Vec<Segmentation>,
 
-    /// 排好序的候选，`translation` 均为 `None`。
+    /// 排好序的候选，`gloss` 均为 `None`。
     pub candidates: CandidateList,
 
     /// 输入末尾无法切分的字母（如 `kaifv` 的 `v`），不参与本次候选，留给后续输入。
