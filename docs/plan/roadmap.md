@@ -16,9 +16,7 @@
 - [x] 简拼（声母缩写 `kf` → 开发，与全拼混用，marked text 自动补 `'`）
 - [x] 开发测试词库：曾用雾凇拼音（GPL，不可发布）；2026-09-05 起换成自建词库，见 Phase 2 末尾「产品词库」
 - [x] 中→英释义：`tools/dict-convert` 从 CC-CEDICT 生成 11.5 万条（CC BY-SA 4.0，可发布）
-- [x] 带词性的中英 / 中日释义表：`tools/gloss-gen` 用 LLM 批量生成（2026-09-05 起覆盖整个自建词库 23.9 万词，词性 + 英文译词 + 日文译词与假名，`assets/glossary/`），
-  `Sense.reading` + 汉字注平假名（`candidate::furigana`）；取代 CC-CEDICT 表做随包数据
-- [x] Option+数字上屏候选的译文（`Engine::commit_translation`，控制器在 `handleEvent:client:` 里按键码认，其余交父类）
+- [x] 带词性的中英释义表：LLM 批量生成（2026-09-05 起覆盖整个自建词库 23.9 万词，词性 + 英文释义，`assets/glossary/`）；取代 CC-CEDICT 表做随包数据
 - [x] 整段切不动时取能切分的最长前缀出候选，剩余字母作为未切分尾部保留（`kaifv` → `kai'f'v`）
 - [x] 整句转换（bigram + Viterbi），含简拼整句（`wxqcf` → 我想去蹭饭 / `jttqhh` → 今天天气很好）
 - [x] 模糊音（Core `fuzzy`，配置 `[fuzzy]`）：z/zh、c/ch、s/sh、n/l、f/h、l/r、an/ang、en/eng、in/ing，
@@ -75,7 +73,7 @@
 - [x] 英文直输段：组句中敲 `-` 后整段原样上屏（`no-way`），`-` 不再翻页
 - [x] emoji 候选（Core `emoji`，Unicode CLDR 中文 annotations，`assets/emoji/`）：紧跟对应词，右侧标注词
 - [x] 密钥：输入法进程读配置同目录的 `.env`（launchd 看不到 shell 环境变量）
-- [x] 学习语言、每页候选数、翻页键、外观、模式键从配置文件读取（`[general]` / `[shortcut]`），保存后自动热加载
+- [x] 每页候选数、翻页键、外观、模式键从配置文件读取（`[general]` / `[shortcut]`），保存后自动热加载
 - [x] 应用图标与输入法菜单图标（根 `icon.png` → bundle.sh 生成 icns；菜单图标 `assets/icon/menu.pdf` 模板图随深浅色反色）
 - [x] 菜单栏「中 / 英」状态项（NSStatusItem，激活时显示，定时轮询 Caps Lock）
 - [x] 输入法菜单（状态项 + 系统输入源菜单共用一份 NSMenu：云联想 / 模糊音勾选、偏好设置、日志目录、版本）
@@ -112,7 +110,7 @@
 - [x] 偏好设置重做（2026-09-05）：六页标签视图（通用 / 候选窗口 / 快捷键 / 模糊音 / 词库 / 云服务 / 高级），用户视角措辞，
   快捷键录制按钮 + 「恢复默认快捷键」，「词库」页导入 / 开关 / 移除，编辑菜单让 ⌘V 能粘贴
 - [x] 产品词库（2026-09-05）：`assets/lexicon/` 自建源（规范字 8105 + 常用词 5.6 万 + THUOCL 领域词 15.7 万），`dict-convert lexicon` 建 `dict.tsv`，
-  读音 Unihan + LLM 多音字标注（`gloss-gen pinyin`，6.8 万词，含常用词表自带拼音的 288 处纠错），词频用自己的语料统计；成品 20.5 万条，
+  读音 Unihan + LLM 多音字标注（离线 JSONL，6.8 万词，含常用词表自带拼音的 288 处纠错），词频用自己的语料统计；成品 20.5 万条，
   `dict.qj` 10 MB、`lm.qj` 27 MB，启动 70 ms；英文词表换成 ESDB / CSpell 9.5 万词。雾凇拼音与其英文词表已全部移除
 - [x] 短语层（2026-09-12）：常用词表是词典词头，不收 我的 / 好的 / 不知道 / 有没有 这类人整块打的组合；`dict-convert phrases` 从语料相邻两三词里挖
   （对话语料 ≥ 2000 次 + 边界规则，读音由成分词拼出）5400 条进基础词库，品牌词 轻书 也进（`brand.tsv`）；起因与验收见 `docs/notes/phrase-layer.md`
@@ -122,21 +120,11 @@
 2026-09-06 状态：自用日常在用；`bundle.sh` 从 `assets/`（词库源、释义表）与 `data/generated/`（生成物、`.qj`、领域词库）打产品数据，没有生成物时打样例；
 `--pkg` 出分发包。给测试者发第一版前只剩特殊应用验证；签名等 Developer ID 证书。
 
-## Phase 3 — Translation
+## Phase 3 — 英文释义（程序员模式）
 
-- [x] Candidate Translation API（`Translator` trait，`Engine::annotate` 候选生成后异步补译文；`Sense` 词性 + 译文 + 读音）
-- [x] 中文 → English、中文 → 日本語：`tools/gloss-gen` LLM 批量生成 6.4 万常用词（词性、译词、日文假名），随包表；日文按汉字段注平假名
-- [x] 本地词典：`Glossary` 内存查表，格式 `词\t词性. 译词[|假名]`；CC-CEDICT 表保留为备用来源
-- [x] 翻译语言设置：`[general] learning_language`，菜单与偏好设置只列打进包里有释义表的语言
-- [x] Option+数字上屏候选的译文
-- [x] 释义表随仓库发布（`assets/glossary/`，2026-09-05）：中→英 / 日覆盖整个自建词库 24.9 万词，多字词 91.6% 有英文释义、98% 日文；
-  英→中 4.5 万词（wordfreq ≥ 2500 + 技术词），英文候选右侧显示中文（Engine 按候选种类查表）；三张表都进 `.qj`
-- [x] 上屏译词：⌥ + 数字第一条、⇧⌥ + 数字第二条，修饰键可录制；⌃⌥T 翻译应用里选中的文字（云服务）
-- [x] 释义兜底（2026-09-06）：Core `GlossFiller` trait（与 `Predictor` 分开：独立线程、攒批、不丢请求），随包表查不到的词库词 / 云端词**上屏后**入队，
-  `lightbookinput-predict::CloudGlossFiller` 攒 1.5 秒或 8 个词发一次（提示词与 gloss-gen 同源，只要当前学习语言），结果经 `Translator::learn` 进
-  `lightbookinput-translate::PersonalGlossary`（`user-glossary-<语言>.tsv`，格式同随包表，可手改，`LayeredTranslator` 个人表优先），随 flush 落盘；
-  壳每秒 `Engine::poll_glosses`；随云联想开关一起开，发出去的只有那个词
-- [ ] JMdict 校对假名与日文词性（等级标签已做，见 Phase 4）
+- [x] 中英释义表：LLM 批量生成（2026-09-05 起覆盖整个自建词库，多字词 91% 有英文释义），随仓库发布（`assets/glossary/glossary-en.tsv`）
+- [x] 本地查表：`lightbookinput-dictionary::EnglishGlossary` 解析 TSV（`Engine::set_english_glossary` / `english_gloss`）；CC-CEDICT 表保留为备用来源（`dict-convert cedict`）
+- [x] 程序员模式（2026-10-07）：按住 `~`（·）时候选右侧补出英文释义，数字 / 空格上屏英文而不是候选，松手退出；只本机查表，不联网
 
 ## Phase 4 — Learning
 
@@ -148,12 +136,6 @@
 - [x] 输入统计（2026-09-06）：Core `UsageMeter` trait，每次上屏折成汉字 / 中文词（整句按切词数）/ 英文词 / 次数；
   `lightbookinput-learning::UsageStats` 按天记 `usage.tsv`，与输入日志无关（日志关掉或清空统计还在），随学习数据每 60 秒落盘；
   偏好设置「统计」页：今天 / 最近 7 天 / 累计 三行四列 + 「累计 xx 字，约等于 n 本《某书》」（`book_scale`，书目从《道德经》到《平凡的世界》）
-- [x] 生词识别（2026-09-06）：Core `VocabularyTracker` trait + `Sense::fresh`；一条译词在用户上屏时出现在候选窗口里的轮次不到 3（`FRESH_UNTIL`）算生词，
-  候选里橙色画译词，看熟了变回灰。「看到」按上屏那一刻屏幕上那一页算（壳 `Engine::note_displayed`），上屏带译词的候选记「上屏过」，⌥+数字 打出译词记「用过」；
-  `lightbookinput-learning::VocabularyBook` 一个译词一行 `user-vocab.tsv`（语言 / 译词 / 看到轮次 / 上屏 / 用过 / 首见 / 末见），只记译词与次数
-- [x] 学习词汇统计（2026-09-06）：偏好设置「统计」页词汇块：见过 / 看熟 / 上屏过 / 打出过 / 本周新见的译词数（`VocabularySummary`），
-  再按等级分行（词表总数 / 见过 / 看熟 / 上屏过）：英文 CEFR A1–C2（CEFR-J 1.5 + Octanove，8,845 词）、日文 JLPT N5–N1（Tanos 经 elzup，7,757 词），
-  `lightbookinput-translate::LevelTable` 读 `assets/levels/levels-{en,ja}.tsv`（`tools/corpus/levels.py` 生成），`VocabularyBook::with_levels`；等级不进候选窗口
 - [ ] 可选复习功能
 
 ## Phase 5 — Cross-platform
@@ -173,7 +155,7 @@
 
 ## Phase 6 — 云联想
 
-Core 定义 `Predictor` trait（与 `Translator` / `Learner` 同一模式），网络实现放独立 crate `lightbookinput-predict`，
+Core 定义 `Predictor` trait（与 `Learner` 同一模式），网络实现放独立 crate `lightbookinput-predict`，
 Core 永远不联网。第一个实现接 DeepSeek（OpenAI 兼容接口），接口做成 provider 无关。
 
 - [x] 本地输入历史：`InputHistory`（内存环形 4096 字符，可清除；落盘与查看界面待做）
@@ -193,12 +175,9 @@ Core 永远不联网。第一个实现接 DeepSeek（OpenAI 兼容接口），�
 - [x] 问字模式：`?` + 问题拼音，`PredictionKind::Question` 走同一条 Predictor 通道、单独的提示词，答案带声调读音、不校验拼音（见 candidate-ui.md）
 - [x] 问字只答字不复述（2026-09-05）：请求带本地整句转换出的问题汉字（`guess`），提示词只答被问的字，`restates_question` 剔掉把问题写回来的「答案」
 - [x] 菜单开关、偏好设置窗口里的开关 / 接口 / 模型 / 密钥
-- [x] 释义表进 `.qj`（2026-09-05）：`Glossary` 双存法（TSV 哈希表 / 映射的 arena + 词条表 + 释义表 + 哈希索引），`pack glossary --language`，启动回到 50 ms
-- [x] 翻译选中文字读不到选区时候选窗口提示 2.5 秒（`host/presenting/notice.rs`）
+- [x] 中英释义表改走 TSV（2026-10-07）：`EnglishGlossary` 解析 `glossary-en.tsv` 进哈希表，不再进 `.qj`
 - [x] 语料挖新词（`dict-convert mine`）：分词落成连续单字的段按子串计数，虚词规则 + 相邻字对 PMI≥3 过滤（2026-09-07 从会话脚本进工具，`oov_filter.rs`），`lexicon --extra-words` 并入词库
 - [x] 多词库与词库管理（2026-09-05）：Engine 附加词库列表；用户目录 `dicts/` + `[dictionaries] disabled`；偏好设置「词库」页导入（TSV / Rime yaml / .qj → .qj）、开关、移除
-- [x] 翻译选中的文字（2026-09-05）：⌃⌥T 把应用里的选区交给云端翻译，译文在候选窗口里回车替换、Esc 保留；快捷键可改；
-  双向：中文选区译成学习语言，外文（拉丁字母 / 假名）选区译回中文，方向按字符统计定（`translation_target`）
 - [x] 输入历史落盘与清除（2026-09-05）：`input-log.jsonl` + 偏好设置「高级」页开关 / 清空（查看界面没做，文件是 jsonl 直接看）
 - [ ] 密钥进钥匙串（等签名定了再做）；云联想按应用禁用
 - [ ] 请求量控制：按分钟限流、统计本月请求数并显示
