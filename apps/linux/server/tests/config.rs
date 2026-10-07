@@ -4,6 +4,7 @@
 mod server;
 use lightbookinput_platform::protocol::{PROTOCOL_VERSION, read_message, write_message};
 use serde_json::{Value, json};
+use server::Server;
 
 /// 敲键时按下的修饰键：都不按。
 fn modifiers() -> Value {
