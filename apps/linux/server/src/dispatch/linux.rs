@@ -1,5 +1,5 @@
 //! Linux 事件决策；Fcitx 插件只报告事实并应用返回值。
-use super::{Router, key::Effect};
+use super::{Router, key::Effect, key::codes};
 use crate::protocol::{DisplayIdentity, LinuxEvent, LinuxRequest};
 use lightbookinput_platform::protocol::{KeyOutcome, ServerMessage, SessionId};
 
@@ -79,12 +79,27 @@ impl Router {
                             (!self.engine.composition().is_empty()).then(|| self.engine.take_raw());
                         self.reset_composition();
                         outcome = KeyOutcome::Consumed;
+                    } else if codes::tilde(&event) {
+                        // 松开 ~ 退出程序员模式：preedit 原样留着（用户可能还按着别的键在打字）。
+                        self.tilde_held = false;
+                        if self.programmer {
+                            tracing::debug!("松开 ~，退出程序员模式");
+                            self.programmer = false;
+                            outcome = KeyOutcome::Consumed;
+                        }
                     }
                 } else {
                     info.shift_pending = shift && !event.modifiers.has_command_key();
                     event.modifiers.english_mode = info.english;
+                    // ~ 按着不松会连发重复按下：那不是「又按了一次」，原样吞掉，否则按住期间打不了数字
+                    let repeat = codes::tilde(&event) && self.tilde_held;
+                    if codes::tilde(&event) {
+                        self.tilde_held = true;
+                    }
                     let effect = if shift {
                         Effect::Passthrough
+                    } else if repeat {
+                        Effect::Navigated
                     } else {
                         self.apply_key(&event)
                     };
@@ -156,6 +171,7 @@ impl Router {
             self.composed = None;
             self.sentence = None;
             self.notice = None;
+            self.reset_programmer();
             self.highlight = 0;
             self.navigated = false;
         } else {

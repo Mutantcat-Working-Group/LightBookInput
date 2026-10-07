@@ -10,6 +10,9 @@ impl Router {
     /// 功能键靠键码，其余靠字符。组句中修饰键 + 数字是快捷键；带 Ctrl / Alt / Win 而没配到快捷键的键归应用。
     /// 表达式模式里 Shift + 数字打的是 `^ * ( )`，不当快捷键。
     pub(crate) fn apply_key(&mut self, event: &KeyEvent) -> Effect {
+        if let Some(effect) = self.apply_programmer(event) {
+            return effect;
+        }
         if self.composing()
             && !self.engine.expression_mode()
             && let Some(digit) = codes::digit_key(event.virtual_key)
@@ -314,7 +317,7 @@ impl Router {
 
     /// 数字键在当前页对应的格子下标；这一页没有这一格（`gpt6` 只有三个候选）返回 `None`，数字当内容进缓冲区。
     /// 云端词还没到的占位格算有：按了不算，免得结果一到就选错。
-    fn slot_index(&self, digit: usize) -> Option<usize> {
+    pub(super) fn slot_index(&self, digit: usize) -> Option<usize> {
         let page_size = self.config.page_size;
         let index = self.highlight / page_size * page_size + digit - 1;
         (digit <= page_size && index < self.candidate_count()).then_some(index)
@@ -328,7 +331,7 @@ impl Router {
         }
     }
 
-    fn composing(&self) -> bool {
+    pub(super) fn composing(&self) -> bool {
         !self.engine.composition().is_empty()
     }
 }

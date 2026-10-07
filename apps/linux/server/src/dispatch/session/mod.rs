@@ -40,6 +40,7 @@ impl Router {
         self.engine.set_private(next.private);
         self.notice = None;
         self.sentence = None;
+        self.reset_programmer();
         self.focused = Some(session);
     }
     pub(super) fn set_privacy(&mut self, session: SessionId, private: bool) {
@@ -67,6 +68,7 @@ impl Router {
             self.composed = None;
             self.sentence = None;
             self.notice = None;
+            self.reset_programmer();
             self.highlight = 0;
             self.navigated = false;
         } else {
@@ -80,6 +82,7 @@ impl Router {
         self.composed = None;
         self.sentence = None;
         self.notice = None;
+        self.reset_programmer();
         self.highlight = 0;
         self.navigated = false;
     }

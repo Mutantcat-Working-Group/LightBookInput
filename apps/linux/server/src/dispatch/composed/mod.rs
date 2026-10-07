@@ -6,7 +6,7 @@ use lightbookinput_core::{Candidate, CandidateKind, CandidateLayout, CandidateLi
 use lightbookinput_platform::protocol::{Frame, PreeditKind, PreeditSegment};
 
 pub(super) use self::state::Composed;
-use super::Router;
+use super::{PROGRAMMER_STATUS, Router};
 
 impl Router {
     /// 缓冲变化后：按 Engine 状态重建 [`Composed`]，发一次云联想请求，归零高亮与整句补全。
@@ -140,7 +140,7 @@ impl Router {
                 theme: self.config.theme,
                 aux_code_show: false,
                 sentence: None,
-                notice: self.notice.clone(),
+                notice: self.status_line(),
             },
             Some(Composed::Candidates {
                 preedit,
@@ -164,6 +164,15 @@ impl Router {
                             gloss: None,
                         })
                     })
+                    // 程序员模式开着时候选右侧补一行英文释义，数字 / 空格上屏的就是它
+                    .map(|candidate| {
+                        if self.programmer {
+                            let gloss = self.engine.english_gloss(&candidate.text);
+                            candidate.with_gloss(gloss)
+                        } else {
+                            candidate
+                        }
+                    })
                     .collect();
                 let candidates = CandidateList { items };
                 Frame {
@@ -178,9 +187,18 @@ impl Router {
                     theme: self.config.theme,
                     aux_code_show: false,
                     sentence: self.sentence.clone(),
-                    notice: self.notice.clone(),
+                    notice: self.status_line(),
                 }
             }
+        }
+    }
+
+    /// 候选窗口里常驻的一行字：程序员模式开着时是模式提示，否则是删候选后的提示。
+    fn status_line(&self) -> Option<String> {
+        if self.programmer {
+            Some(PROGRAMMER_STATUS.to_owned())
+        } else {
+            self.notice.clone()
         }
     }
 }

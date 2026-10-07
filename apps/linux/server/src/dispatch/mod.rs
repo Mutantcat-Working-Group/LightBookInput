@@ -23,6 +23,9 @@ use std::time::{Duration, Instant};
 /// 学习数据落盘间隔（与 macOS 壳一致）；Server 没有定时器，借消息节拍与主循环的 tick 看时间。
 const LEARNING_FLUSH_INTERVAL: Duration = Duration::from_secs(60);
 
+/// 程序员模式开着时候选窗口里常驻的一行字。
+const PROGRAMMER_STATUS: &str = "程序员模式：数字键上屏英文，Esc 退出";
+
 /// Fcitx5 输入上下文分派器；所有 Engine 操作都在 Server 主线程串行执行。
 pub struct Router {
     /// 唯一的词库及学习服务，输入状态在会话切换时交换。
@@ -51,6 +54,12 @@ pub struct Router {
 
     /// 删除候选等操作提示。
     notice: Option<String>,
+
+    /// 程序员模式开着：数字 / 空格上屏候选的英文（按住 `~` 触发，`~` / Esc / 别的键退出）。
+    programmer: bool,
+
+    /// `~` 按着没松：连发重复按下不当「又按了一次」，等松开才再次生效。
+    tilde_held: bool,
 
     /// 全服务帧号递增，关闭再开不会复用展示身份。
     display_revision: u64,
@@ -82,6 +91,8 @@ impl Router {
             navigated: false,
             sentence: None,
             notice: None,
+            programmer: false,
+            tilde_held: false,
             display_revision: 0,
             last_flush: Instant::now(),
             model_path: None,
@@ -115,6 +126,12 @@ impl Router {
         } else {
             self.config.full_width
         }
+    }
+
+    /// 退出程序员模式并作废 `~` 的按住状态：组句状态归零时一起调。
+    pub(super) fn reset_programmer(&mut self) {
+        self.programmer = false;
+        self.tilde_held = false;
     }
 }
 

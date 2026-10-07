@@ -6,6 +6,7 @@ pub(crate) const BACK: u32 = 0x08;
 pub(crate) const DELETE: u32 = 0x2E;
 pub(crate) const TAB: u32 = 0x09;
 pub(crate) const RETURN: u32 = 0x0D;
+pub(crate) const SPACE: u32 = 0x20;
 pub(crate) const ESCAPE: u32 = 0x1B;
 pub(crate) const PRIOR: u32 = 0x21;
 pub(crate) const NEXT: u32 = 0x22;
@@ -46,4 +47,11 @@ pub(crate) fn digit_key(virtual_key: u32) -> Option<usize> {
 /// 协议保留小键盘来源，运算符保持半角。
 pub(crate) fn is_keypad(virtual_key: u32) -> bool {
     (0x60..=0x6F).contains(&virtual_key)
+}
+
+/// 程序员模式键：`~`（·，Esc 左边那个，Shift 出来才是 `~`）。
+/// 前端按 X keysym 送：不按 Shift 是 grave（0x60），按了是 asciitilde（0x7e）；
+/// 0x60 与小键盘 0 的键码撞车，再用字符确认一次（小键盘 0 带的是 `0`）。
+pub(crate) fn tilde(event: &KeyEvent) -> bool {
+    matches!(event.virtual_key, 0x60 | 0x7e) && matches!(event.character, Some('`') | Some('~'))
 }

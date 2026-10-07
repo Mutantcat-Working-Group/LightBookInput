@@ -1,9 +1,10 @@
-//! 按键处理：键码 / 字符解析在 [`codes`]，分流在 [`input`]，「修饰键 + 数字」快捷键在 [`shortcut`]，
-//! 一次按键的结果是 [`Effect`]。
+//! 按键处理：键码 / 字符解析在 [`codes`]，分流在 [`input`]，程序员模式在 [`programmer`]，
+//! 「修饰键 + 数字」快捷键在 [`shortcut`]，一次按键的结果是 [`Effect`]。
 
-mod codes;
+pub(super) mod codes;
 mod effect;
 mod input;
+mod programmer;
 mod shortcut;
 
 pub(super) use self::effect::Effect;
