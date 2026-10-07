@@ -1,4 +1,4 @@
 ---
-title: 学习
+title: 输入统计
 order: 3
 ---
