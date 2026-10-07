@@ -130,7 +130,6 @@ impl Router {
             sessions: HashMap::new(),
             focused: None,
             composed: None,
-            translation: None,
             pending_selection: None,
             selection_seq: 0,
             sentence: None,

@@ -3,7 +3,6 @@ resolver = "3"
 members = [
     "crates/lightbookinput-core",
     "crates/lightbookinput-dictionary",
-    "crates/lightbookinput-translate",
     "crates/lightbookinput-learning",
     "crates/lightbookinput-platform",
     "crates/lightbookinput-predict",
@@ -12,7 +11,7 @@ members = [
     "crates/lightbookinput-neural",
     "crates/lightbookinput-render",
     "crates/lightbookinput-update",
-    "apps/linux/server", "apps/cli", "apps/macos", "apps/windows/server", "apps/windows/tsf", "apps/windows/settings", "tools/dict-convert", "tools/gloss-gen", "tools/release-sign",
+    "apps/linux/server", "apps/cli", "apps/macos", "apps/windows/server", "apps/windows/tsf", "apps/windows/settings", "tools/dict-convert", "tools/release-sign",
 ]
 
 [workspace.package]
@@ -28,7 +27,6 @@ all = "warn"
 # 内部 crate
 lightbookinput-core = { path = "crates/lightbookinput-core" }
 lightbookinput-dictionary = { path = "crates/lightbookinput-dictionary" }
-lightbookinput-translate = { path = "crates/lightbookinput-translate" }
 lightbookinput-learning = { path = "crates/lightbookinput-learning" }
 lightbookinput-platform = { path = "crates/lightbookinput-platform" }
 lightbookinput-predict = { path = "crates/lightbookinput-predict" }

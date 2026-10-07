@@ -123,7 +123,6 @@ fn translate_candidate(text: String) -> Candidate {
         kind: CandidateKind::Cloud,
         syllables: Vec::new(),
         reading: None,
-        translation: None,
         aux_code: None,
     }
 }

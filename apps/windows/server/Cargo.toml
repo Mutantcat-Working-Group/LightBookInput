@@ -23,7 +23,6 @@ lightbookinput-neural.workspace = true
 lightbookinput-platform.workspace = true
 lightbookinput-predict.workspace = true
 lightbookinput-render.workspace = true
-lightbookinput-translate.workspace = true
 lightbookinput-update.workspace = true
 dotenvy.workspace = true
 thiserror.workspace = true

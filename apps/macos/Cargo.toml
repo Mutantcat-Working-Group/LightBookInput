@@ -21,7 +21,6 @@ lightbookinput-predict.workspace = true
 lightbookinput-render.workspace = true
 lightbookinput-lm.workspace = true
 lightbookinput-neural = { workspace = true, features = ["metal"] }
-lightbookinput-translate.workspace = true
 lightbookinput-update.workspace = true
 thiserror.workspace = true
 tracing.workspace = true

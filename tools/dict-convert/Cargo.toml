@@ -14,7 +14,6 @@ lightbookinput-dictionary.workspace = true
 lightbookinput-format.workspace = true
 lightbookinput-lm.workspace = true
 lightbookinput-neural.workspace = true
-lightbookinput-translate.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

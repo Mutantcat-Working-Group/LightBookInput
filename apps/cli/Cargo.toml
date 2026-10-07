@@ -21,7 +21,6 @@ lightbookinput-platform.workspace = true
 lightbookinput-predict.workspace = true
 lightbookinput-lm.workspace = true
 lightbookinput-neural.workspace = true
-lightbookinput-translate.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 tracing-appender.workspace = true

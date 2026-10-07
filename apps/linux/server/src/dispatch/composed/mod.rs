@@ -160,7 +160,6 @@ impl Router {
                             kind: CandidateKind::Chinese,
                             syllables: Vec::new(),
                             reading: None,
-                            translation: None,
                             aux_code: None,
                         })
                     })

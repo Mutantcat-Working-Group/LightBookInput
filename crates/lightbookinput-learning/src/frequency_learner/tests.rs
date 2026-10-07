@@ -6,7 +6,6 @@ fn candidate(text: &str) -> Candidate {
         kind: lightbookinput_core::CandidateKind::Chinese,
         syllables: Vec::new(),
         reading: None,
-        translation: None,
         aux_code: None,
     }
 }
@@ -74,7 +73,6 @@ fn unrecord_reverses_each_kind_of_record() {
         kind: lightbookinput_core::CandidateKind::Chinese,
         syllables: vec!["kai".into(), "fang".into()],
         reading: None,
-        translation: None,
         aux_code: None,
     };
     learner.record(&candidate);

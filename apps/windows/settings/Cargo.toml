@@ -29,7 +29,6 @@ lightbookinput-render.workspace = true
 lightbookinput-learning.workspace = true
 lightbookinput-core.workspace = true
 lightbookinput-dictionary.workspace = true
-lightbookinput-translate.workspace = true
 lightbookinput-update.workspace = true
 jiff.workspace = true
 rfd = "0.17"

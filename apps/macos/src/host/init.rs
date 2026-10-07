@@ -146,7 +146,6 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             status: None,
             input_log_enabled: None,
             translate_keys: KeyCombo::TRANSLATE_DEFAULT,
-            translation: None,
             notice: None,
             preedit_mode: PreeditMode::default(),
             layout: LayoutMode::default(),

@@ -1801,6 +1801,295 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6d2cec3eae94f9f509c767b45932f1ada8350c4bdb85af2fcab4a3c14807981"
 
 [[package]]
+name = "lightbookinput-cli"
+version = "0.1.1"
+dependencies = [
+ "clap",
+ "dotenvy",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "lightbookinput-platform",
+ "lightbookinput-predict",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "lightbookinput-core"
+version = "0.1.1"
+dependencies = [
+ "ferrous-opencc",
+ "foldhash",
+ "jiff",
+ "lightbookinput-dictionary",
+ "serde",
+ "thiserror 2.0.20",
+ "toml",
+ "tracing",
+]
+
+[[package]]
+name = "lightbookinput-dict-convert"
+version = "0.1.1"
+dependencies = [
+ "clap",
+ "jiff",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-format",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "lightbookinput-dictionary"
+version = "0.1.1"
+dependencies = [
+ "lightbookinput-format",
+ "thiserror 2.0.20",
+ "tracing",
+ "zerocopy",
+]
+
+[[package]]
+name = "lightbookinput-format"
+version = "0.1.1"
+dependencies = [
+ "memmap2",
+ "serde",
+ "thiserror 2.0.20",
+ "toml",
+ "tracing",
+ "zerocopy",
+]
+
+[[package]]
+name = "lightbookinput-learning"
+version = "0.1.1"
+dependencies = [
+ "foldhash",
+ "jiff",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "tracing",
+]
+
+[[package]]
+name = "lightbookinput-linux-server"
+version = "0.1.5-dev"
+dependencies = [
+ "libc",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "lightbookinput-platform",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "lightbookinput-lm"
+version = "0.1.1"
+dependencies = [
+ "lightbookinput-core",
+ "lightbookinput-format",
+ "thiserror 2.0.20",
+ "tracing",
+ "zerocopy",
+]
+
+[[package]]
+name = "lightbookinput-macos"
+version = "0.1.5-dev"
+dependencies = [
+ "dotenvy",
+ "jiff",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "lightbookinput-platform",
+ "lightbookinput-predict",
+ "lightbookinput-render",
+ "lightbookinput-update",
+ "objc2",
+ "objc2-app-kit",
+ "objc2-core-foundation",
+ "objc2-core-text",
+ "objc2-foundation",
+ "objc2-input-method-kit",
+ "plist",
+ "thiserror 2.0.20",
+ "toml_edit",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "lightbookinput-neural"
+version = "0.1.1"
+dependencies = [
+ "candle-core",
+ "candle-nn",
+ "lightbookinput-core",
+ "lightbookinput-format",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "tracing",
+]
+
+[[package]]
+name = "lightbookinput-platform"
+version = "0.1.1"
+dependencies = [
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-predict",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "toml",
+ "toml_edit",
+ "tracing",
+]
+
+[[package]]
+name = "lightbookinput-predict"
+version = "0.1.1"
+dependencies = [
+ "async-openai",
+ "lightbookinput-core",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "lightbookinput-release-sign"
+version = "0.1.1"
+dependencies = [
+ "base64 0.23.1",
+ "clap",
+ "ed25519-dalek",
+ "lightbookinput-update",
+ "thiserror 2.0.20",
+]
+
+[[package]]
+name = "lightbookinput-render"
+version = "0.1.1"
+dependencies = [
+ "clap",
+ "cosmic-text",
+ "thiserror 2.0.20",
+ "tiny-skia",
+ "tracing",
+ "tracing-subscriber",
+ "windows",
+]
+
+[[package]]
+name = "lightbookinput-update"
+version = "0.1.1"
+dependencies = [
+ "base64 0.23.1",
+ "ed25519-dalek",
+ "lightbookinput-platform",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "lightbookinput-windows-server"
+version = "0.1.5-dev"
+dependencies = [
+ "dotenvy",
+ "embed-manifest",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-lm",
+ "lightbookinput-neural",
+ "lightbookinput-platform",
+ "lightbookinput-predict",
+ "lightbookinput-render",
+ "lightbookinput-update",
+ "thiserror 2.0.20",
+ "toml_edit",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "windows",
+ "windows-registry",
+ "winresource",
+]
+
+[[package]]
+name = "lightbookinput-windows-settings"
+version = "0.1.5-dev"
+dependencies = [
+ "jiff",
+ "lightbookinput-core",
+ "lightbookinput-dictionary",
+ "lightbookinput-learning",
+ "lightbookinput-platform",
+ "lightbookinput-predict",
+ "lightbookinput-render",
+ "lightbookinput-update",
+ "rfd",
+ "toml_edit",
+ "windows",
+ "windows-reactor",
+ "windows-reactor-setup",
+ "winresource",
+]
+
+[[package]]
+name = "lightbookinput-windows-tsf"
+version = "0.1.5-dev"
+dependencies = [
+ "lightbookinput-core",
+ "lightbookinput-platform",
+ "lightbookinput-windows-server",
+ "thiserror 2.0.20",
+ "windows",
+ "windows-core 0.62.2",
+ "windows-registry",
+]
+
+[[package]]
 name = "linebender_resource_handle"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2596,329 +2885,6 @@ name = "pulp-wasm-simd-flag"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d8f70e07b9c3962945a74e59ca1c511bba65b6419468acc217c457d93f3c740"
-
-[[package]]
-name = "lightbookinput-cli"
-version = "0.1.1"
-dependencies = [
- "clap",
- "dotenvy",
- "lightbookinput-core",
- "lightbookinput-dictionary",
- "lightbookinput-learning",
- "lightbookinput-lm",
- "lightbookinput-neural",
- "lightbookinput-platform",
- "lightbookinput-predict",
- "lightbookinput-translate",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "lightbookinput-core"
-version = "0.1.1"
-dependencies = [
- "ferrous-opencc",
- "foldhash",
- "jiff",
- "lightbookinput-dictionary",
- "serde",
- "thiserror 2.0.20",
- "toml",
- "tracing",
-]
-
-[[package]]
-name = "lightbookinput-dict-convert"
-version = "0.1.1"
-dependencies = [
- "clap",
- "jiff",
- "lightbookinput-core",
- "lightbookinput-dictionary",
- "lightbookinput-format",
- "lightbookinput-lm",
- "lightbookinput-neural",
- "lightbookinput-translate",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "lightbookinput-dictionary"
-version = "0.1.1"
-dependencies = [
- "lightbookinput-format",
- "thiserror 2.0.20",
- "tracing",
- "zerocopy",
-]
-
-[[package]]
-name = "lightbookinput-format"
-version = "0.1.1"
-dependencies = [
- "memmap2",
- "serde",
- "thiserror 2.0.20",
- "toml",
- "tracing",
- "zerocopy",
-]
-
-[[package]]
-name = "lightbookinput-gloss-gen"
-version = "0.1.1"
-dependencies = [
- "async-openai",
- "clap",
- "dotenvy",
- "lightbookinput-core",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "lightbookinput-learning"
-version = "0.1.1"
-dependencies = [
- "foldhash",
- "jiff",
- "lightbookinput-core",
- "lightbookinput-dictionary",
- "lightbookinput-translate",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "tracing",
-]
-
-[[package]]
-name = "lightbookinput-linux-server"
-version = "0.1.5-dev"
-dependencies = [
- "libc",
- "lightbookinput-core",
- "lightbookinput-dictionary",
- "lightbookinput-learning",
- "lightbookinput-lm",
- "lightbookinput-neural",
- "lightbookinput-platform",
- "lightbookinput-translate",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "lightbookinput-lm"
-version = "0.1.1"
-dependencies = [
- "lightbookinput-core",
- "lightbookinput-format",
- "thiserror 2.0.20",
- "tracing",
- "zerocopy",
-]
-
-[[package]]
-name = "lightbookinput-macos"
-version = "0.1.5-dev"
-dependencies = [
- "dotenvy",
- "jiff",
- "objc2",
- "objc2-app-kit",
- "objc2-core-foundation",
- "objc2-core-text",
- "objc2-foundation",
- "objc2-input-method-kit",
- "plist",
- "lightbookinput-core",
- "lightbookinput-dictionary",
- "lightbookinput-learning",
- "lightbookinput-lm",
- "lightbookinput-neural",
- "lightbookinput-platform",
- "lightbookinput-predict",
- "lightbookinput-render",
- "lightbookinput-translate",
- "lightbookinput-update",
- "thiserror 2.0.20",
- "toml_edit",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "lightbookinput-neural"
-version = "0.1.1"
-dependencies = [
- "candle-core",
- "candle-nn",
- "lightbookinput-core",
- "lightbookinput-format",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "tracing",
-]
-
-[[package]]
-name = "lightbookinput-platform"
-version = "0.1.1"
-dependencies = [
- "lightbookinput-core",
- "lightbookinput-dictionary",
- "lightbookinput-predict",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "toml",
- "toml_edit",
- "tracing",
-]
-
-[[package]]
-name = "lightbookinput-predict"
-version = "0.1.1"
-dependencies = [
- "async-openai",
- "lightbookinput-core",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "lightbookinput-release-sign"
-version = "0.1.1"
-dependencies = [
- "base64 0.23.1",
- "clap",
- "ed25519-dalek",
- "lightbookinput-update",
- "thiserror 2.0.20",
-]
-
-[[package]]
-name = "lightbookinput-render"
-version = "0.1.1"
-dependencies = [
- "clap",
- "cosmic-text",
- "thiserror 2.0.20",
- "tiny-skia",
- "tracing",
- "tracing-subscriber",
- "windows",
-]
-
-[[package]]
-name = "lightbookinput-translate"
-version = "0.1.1"
-dependencies = [
- "lightbookinput-core",
- "lightbookinput-format",
- "thiserror 2.0.20",
- "tracing",
- "zerocopy",
-]
-
-[[package]]
-name = "lightbookinput-update"
-version = "0.1.1"
-dependencies = [
- "base64 0.23.1",
- "ed25519-dalek",
- "lightbookinput-platform",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "lightbookinput-windows-server"
-version = "0.1.5-dev"
-dependencies = [
- "dotenvy",
- "embed-manifest",
- "lightbookinput-core",
- "lightbookinput-dictionary",
- "lightbookinput-learning",
- "lightbookinput-lm",
- "lightbookinput-neural",
- "lightbookinput-platform",
- "lightbookinput-predict",
- "lightbookinput-render",
- "lightbookinput-translate",
- "lightbookinput-update",
- "thiserror 2.0.20",
- "toml_edit",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
- "windows",
- "windows-registry",
- "winresource",
-]
-
-[[package]]
-name = "lightbookinput-windows-settings"
-version = "0.1.5-dev"
-dependencies = [
- "jiff",
- "lightbookinput-core",
- "lightbookinput-dictionary",
- "lightbookinput-learning",
- "lightbookinput-platform",
- "lightbookinput-predict",
- "lightbookinput-render",
- "lightbookinput-translate",
- "lightbookinput-update",
- "rfd",
- "toml_edit",
- "windows",
- "windows-reactor",
- "windows-reactor-setup",
- "winresource",
-]
-
-[[package]]
-name = "lightbookinput-windows-tsf"
-version = "0.1.5-dev"
-dependencies = [
- "lightbookinput-core",
- "lightbookinput-platform",
- "lightbookinput-windows-server",
- "thiserror 2.0.20",
- "windows",
- "windows-core 0.62.2",
- "windows-registry",
-]
 
 [[package]]
 name = "quick-xml"
