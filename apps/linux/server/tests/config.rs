@@ -58,7 +58,8 @@ fn items(frame: &Value) -> &[Value] {
 }
 
 /// 起一个带着中英释义表的 Server（`你好` → `hello`）并握好手，资源目录由调用方清理。
-fn gloss_server(directory: &std::path::Path) -> Server {
+/// 会话挂在连接上：握手用的连接必须一起交出去，断开就等于服务端 CloseSession，之后按键只会收到 Ignored。
+fn gloss_server(directory: &std::path::Path) -> (Server, Stream) {
     std::fs::create_dir_all(directory.join("resources/assets/glossary")).unwrap();
     std::fs::write(
         directory.join("resources/assets/glossary/glossary-en.tsv"),
@@ -83,16 +84,14 @@ fn gloss_server(directory: &std::path::Path) -> Server {
         &mut stream,
         json!({"Capabilities": {"sensitive": false, "password": false, "disabled": false}}),
     );
-    drop(stream);
-    server
+    (server, stream)
 }
 
 #[test]
 fn the_glossary_shows_up_once_the_tilde_is_tapped() {
     let directory =
         std::env::temp_dir().join(format!("lightbookinput-gloss-{}", std::process::id()));
-    let mut server = gloss_server(&directory);
-    let mut stream = server.connect();
+    let (mut server, mut stream) = gloss_server(&directory);
 
     // 平常打字：候选只有文字，没有那一行英文。
     let frame = compose(&mut stream, "nihao");
@@ -128,8 +127,7 @@ fn releasing_the_tilde_does_not_leave_programmer_mode() {
         std::process::id(),
         line!()
     ));
-    let mut server = gloss_server(&directory);
-    let mut stream = server.connect();
+    let (mut server, mut stream) = gloss_server(&directory);
 
     compose(&mut stream, "nihao");
     let entered = press(&mut stream, key(0x60, "`"))["KeyResult"]["frame"].clone();
