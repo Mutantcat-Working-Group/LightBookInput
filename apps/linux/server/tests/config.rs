@@ -91,7 +91,7 @@ fn gloss_server(directory: &std::path::Path) -> (Server, Stream) {
 fn the_glossary_shows_up_once_the_tilde_is_tapped() {
     let directory =
         std::env::temp_dir().join(format!("lightbookinput-gloss-{}", std::process::id()));
-    let (mut server, mut stream) = gloss_server(&directory);
+    let (server, mut stream) = gloss_server(&directory);
 
     // 平常打字：候选只有文字，没有那一行英文。
     let frame = compose(&mut stream, "nihao");
@@ -127,7 +127,7 @@ fn releasing_the_tilde_does_not_leave_programmer_mode() {
         std::process::id(),
         line!()
     ));
-    let (mut server, mut stream) = gloss_server(&directory);
+    let (server, mut stream) = gloss_server(&directory);
 
     compose(&mut stream, "nihao");
     let entered = press(&mut stream, key(0x60, "`"))["KeyResult"]["frame"].clone();
