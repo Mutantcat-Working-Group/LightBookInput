@@ -5,10 +5,10 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "lowercase")]
 pub enum PreeditMode {
     /// 行内 marked text 与候选窗口顶部都显示。
-    #[default]
     Both,
 
     /// 只在行内（应用里的 marked text），候选窗口不带拼音行。
+    #[default]
     Inline,
 
     /// 只在候选窗口顶部，应用里不放 marked text（终端、部分 Electron 应用画不好行内拼音时用）。

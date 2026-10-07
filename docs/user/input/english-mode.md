@@ -53,6 +53,9 @@ description: 进入英文模式的方式、英文补全与拼写纠正、Space �
 
 ## 行为
 
+英文模式的候选**缺省关闭**（`[general] english_candidates`）：切到英文后按键直接输入，不弹候选窗口，也不占用应用自己的补全与快捷键。
+想要下面的补全与拼写纠正，在「设置 → 通用」（macOS：「偏好设置 → 通用」）勾上「英文模式给候选」。
+
 英文模式下输入字母时，候选窗口给出英文词的补全与拼写纠正：`recieve` → receive，`seperate` → separate。
 字母缺省小写，按住 `Shift` 输出大写。
 
@@ -71,7 +74,7 @@ description: 进入英文模式的方式、英文补全与拼写纠正、Space �
 
 ## 关闭
 
-- 全局：「偏好设置 → 通用」（Windows：「设置 → 通用」）取消「英文模式给候选」。关闭后为纯直通，与未使用输入法时一致。
+- 全局：「偏好设置 → 通用」（Windows：「设置 → 通用」）取消「英文模式给候选」。**缺省就是关闭**，关闭后为纯直通，与未使用输入法时一致。
 - 按应用：终端与代码编辑器中缺省不给候选，以免遮挡应用自身的补全或占用 `Tab` 键。
   macOS 的名单包括 Terminal、iTerm、Warp、Ghostty、VS Code、Cursor、Zed、JetBrains 系列、Xcode 等；
   Windows 的名单包括命令提示符、PowerShell、Windows Terminal、VS Code、Cursor、JetBrains 系列、Visual Studio 等。

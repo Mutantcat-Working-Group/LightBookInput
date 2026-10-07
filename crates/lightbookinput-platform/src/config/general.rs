@@ -120,7 +120,7 @@ impl Default for GeneralConfig {
             renderer: CandidateRenderer::default(),
             font: String::new(),
             preedit: PreeditMode::default(),
-            english_candidates: true,
+            english_candidates: false,
             traditional: false,
             chinese_first: false,
             shift_letter: ShiftLetter::default(),

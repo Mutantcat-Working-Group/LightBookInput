@@ -360,9 +360,9 @@ Core `correction` 模块只产生候选纠正，挑选与学习在 Engine 里。
 选错了词也有补救：上屏后马上把它整个退格删掉、重打同一段拼音换选别的词，上一次记的学习（选择次数、输入串选择、词转移）会退回去，
 不用担心一次误按空格把错词教给输入法。
 
-拼音显示在哪由 `[general] preedit` 定：`both`（缺省）行内 marked text 与窗口顶部都显示；`inline` 只在行内，窗口不带拼音行
-（云联想的整句补全仍在窗口顶部单独一行）；`window` 只在窗口，应用里放空的 marked text——终端与部分 Electron 应用行内拼音画得难看时用，
-光标矩形仍从应用的插入点取（macOS 拿插入点，Windows 拿当前选区）。
+拼音显示在哪由 `[general] preedit` 定：`inline`（缺省）只在行内，窗口不带拼音行（敲的字母在输入框里已有，窗口再画一份是重复）；
+`both` 行内 marked text 与窗口顶部都显示；`window` 只在窗口，应用里放空的 marked text——终端与部分 Electron 应用行内拼音画得难看时用。
+云联想的整句补全不受此设置影响，仍在窗口顶部单独一行；光标矩形仍从应用的插入点取（macOS 拿插入点，Windows 拿当前选区）。
 
 Windows 上这条设置由 Server 读、随 `Frame.preedit_mode` 下发（2026-09-16）：DLL 按 `inline()` 决定要不要起 TSF 组句，
 Server 按 `in_window()` 决定窗口顶部画不画拼音行；帧里始终带着拼音分段，两边各取所需。`window` 模式下应用里没有组句范围，

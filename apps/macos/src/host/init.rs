@@ -110,7 +110,7 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             preedit_mode: PreeditMode::default(),
             layout: LayoutMode::default(),
             horizontal_grid: false,
-            english_candidates: true,
+            english_candidates: false,
             text_replacements: Vec::new(),
             apps: AppsConfig::default(),
             monitor,

@@ -195,10 +195,10 @@ horizontal_grid = false
 renderer = "lightbookinput"
 # 候选窗口字体（字族名，如 "LXGW WenKai"）；空为系统字体。只对轻书渲染器生效，没装这个字体时自动回到系统字体
 font = ""
-# 组句中的拼音显示在哪：both 行内和候选窗口 / inline 只在行内 / window 只在候选窗口（应用里不放 marked text）
-preedit = "both"
-# 英文模式（Caps Lock 亮着）是否给英文候选：Tab 或方向键选词，空格、回车、标点仍原样上屏敲的字母；false 就是纯直通
-english_candidates = true
+# 组句中的拼音显示在哪：inline 只在行内（缺省）/ both 行内和候选窗口 / window 只在候选窗口（应用里不放 marked text）
+preedit = "inline"
+# 英文模式（Caps Lock 亮着）是否给英文候选：true 时 Tab 或方向键选词，空格、回车、标点仍原样上屏敲的字母；false（缺省）纯直通、不弹窗
+english_candidates = false
 
 # 繁体输出模式。开启后上屏繁体，不影响词库和个人词频的简体记录。
 traditional = false
@@ -565,7 +565,7 @@ mod tests {
         assert_eq!(config.general.theme, ThemeMode::Dark);
         assert_eq!(config.general.layout, LayoutMode::Horizontal);
         assert_eq!(config.general.preedit, PreeditMode::Window);
-        assert!(config.general.english_candidates);
+        assert!(!config.general.english_candidates);
         assert!(!config.general.traditional);
         assert_eq!(config.general.shuangpin(), None);
         assert_eq!(config.general.log_level, LogLevel::Info);
