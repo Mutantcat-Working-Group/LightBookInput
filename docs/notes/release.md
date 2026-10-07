@@ -98,7 +98,7 @@ cargo 命令全 `--locked`（含 `bundle.sh`、`build-dmg.sh` 与 `build-nsis.ps
   `bundle.sh`、`build-dmg.sh`、`lightbookinput.nsi` 与 Linux 打包脚本将两份模型分别装入对应目录，产品端优先使用通变。
   标签与各资产哈希记进 `build-info.json`（`data_tag` / `data_sha256` / `model_sha256` / `p2c_model_sha256`）。
 
-数据重生成之后（重跑 lexicon / bigram / gloss-gen export）或模型重训之后跑一次 `data-bundle.sh`（三件套比 `.qjm` 新会自动重打），
+数据重生成之后（重跑 lexicon / bigram export）或模型重训之后跑一次 `data-bundle.sh`（三件套比 `.qjm` 新会自动重打），
 把锁文件的改动提交（`chore(data): 数据 data-vN`），否则 CI 打的包还是锁文件指的旧数据。模型文件缺失或哈希不符时 CI 会失败，不会静默地发出错数据的包。
 2026-09-16 之前用的是滚动覆盖的 `data` Release，已冻结不再更新。
 
@@ -138,7 +138,7 @@ Apple Developer 账号有了以后，在仓库 Secrets 里配齐 `release.yml` �
       "version": "0.1.3",
       "date": "2026-09-18",
       "channel": "stable",
-      "notes": ["整句输入：……", "候选旁有词性和译词……"],
+      "notes": ["整句输入：……", "候选旁有词性和英文释义……"],
       "mirrors": [{ "name": "夸克网盘", "url": "https://pan.quark.cn/s/…" }],
       "commit": "869ad00…（40 位）",
       "built_at": "2026-09-07T08:38:12Z",
