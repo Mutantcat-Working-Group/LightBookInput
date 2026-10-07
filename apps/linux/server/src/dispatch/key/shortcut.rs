@@ -19,7 +19,7 @@ impl Router {
         if chord == self.config.delete_keys {
             Some(self.forget_on_page(digit))
         } else {
-            return None;
+            None
         }
     }
 

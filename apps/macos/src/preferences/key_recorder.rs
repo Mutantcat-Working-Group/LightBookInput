@@ -1,6 +1,6 @@
 use std::cell::{Cell, RefCell};
 
-use lightbookinput_platform::{KeyCombo, Modifiers};
+use lightbookinput_platform::Modifiers;
 use objc2::rc::Retained;
 use objc2::runtime::AnyObject;
 use objc2::{DefinedClass, MainThreadMarker, MainThreadOnly, define_class, msg_send};
@@ -83,11 +83,10 @@ define_class!(
                     .and_then(|c| c.to_string().chars().next())
                     .filter(|c| c.is_ascii_alphanumeric())
                     .map(|c| {
-                        let combo = KeyCombo {
-                            modifiers,
-                            key: c.to_ascii_lowercase(),
-                        };
-                        (combo.key_string(), combo.label())
+                        // 组合键的两种写法：配置里的 `control+option+t` 和标题上的 `⌃⌥T`
+                        let key = format!("{}+{}", modifiers.key(), c.to_ascii_lowercase());
+                        let label = format!("{}{}", modifiers.label(), c.to_ascii_uppercase());
+                        (key, label)
                     })
             };
             let Some((key, label)) = value else {

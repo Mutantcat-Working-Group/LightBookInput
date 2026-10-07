@@ -100,9 +100,7 @@ impl Host {
     /// 模型接上时用户正在组句：这一轮的查询从没见过打分器，不补查一次就永远错过重排。
     /// 补查只为攒下整句路径、起防抖，不动画面；用户已翻页或动过高亮就不打扰。
     fn rescore_current_round(&mut self) {
-        if self.engine.composition().is_empty()
-            || self.session.page != 0
-            || self.session.navigated
+        if self.engine.composition().is_empty() || self.session.page != 0 || self.session.navigated
         {
             return;
         }
@@ -161,7 +159,7 @@ impl Host {
         if self.session.page != 0 || self.session.navigated {
             return;
         }
-        let Ok(mut query) = self.engine.query() else {
+        let Ok(query) = self.engine.query() else {
             return;
         };
         let preedit = Preedit::from_marked(&query.marked_segments(), query.segments_cursor());

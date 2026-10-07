@@ -5,9 +5,7 @@ use objc2::MainThreadMarker;
 use objc2::rc::Retained;
 use objc2_app_kit::{NSButton, NSPopUpButton};
 
-use crate::preferences::controls::{
-    checkbox, note, row_checkbox, row_popup, select, set_checked,
-};
+use crate::preferences::controls::{checkbox, note, row_checkbox, row_popup, select, set_checked};
 use crate::preferences::layout::Layout;
 use crate::preferences::setting::Setting;
 use crate::preferences::target::PreferencesTarget;
@@ -43,11 +41,7 @@ pub struct GeneralPage {
 }
 
 impl GeneralPage {
-    pub fn build(
-        layout: &mut Layout,
-        mtm: MainThreadMarker,
-        target: &PreferencesTarget,
-    ) -> Self {
+    pub fn build(layout: &mut Layout, mtm: MainThreadMarker, target: &PreferencesTarget) -> Self {
         let page_size_titles: Vec<String> = (1..=MAX_PAGE_SIZE).map(|n| n.to_string()).collect();
         let page_size = row_popup(
             layout,
@@ -88,8 +82,7 @@ impl GeneralPage {
         note(
             layout,
             mtm,
-            "与拼音方案同时开着就是混输：编码打全的五笔词在前，打不出的字直接打拼音。单用五笔请把拼音方案关掉；第 5 个字母起五笔查不到东西，自动只剩拼音。",
-             " 程序员模式照常：按住 ~ 可以用数字或空格直接上屏候选的英文。",
+            "与拼音方案同时开着就是混输：编码打全的五笔词在前，打不出的字直接打拼音。单用五笔请把拼音方案关掉；第 5 个字母起五笔查不到东西，自动只剩拼音。 程序员模式照常：按住 ~ 可以用数字或空格直接上屏候选的英文。",
         );
         let punctuation = row_popup(
             layout,

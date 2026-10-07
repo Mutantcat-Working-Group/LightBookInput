@@ -34,7 +34,7 @@ impl LightBookInputInputController {
             let candidates = h
                 .engine
                 .query()
-                .map(|mut query| {
+                .map(|query| {
                     marked = query.marked_text();
                     cursor = query.marked_cursor();
                     preedit =

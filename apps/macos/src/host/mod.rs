@@ -19,21 +19,19 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 
 use lightbookinput_core::{
-    Candidate, CandidateKind, Cell, CloudWord, EmojiTable, Engine, FuzzyRules, ModeKeys,
-    NoInputLogger, NoPredictor, Prediction,
+    Candidate, CandidateKind, CloudWord, EmojiTable, Engine, FuzzyRules, ModeKeys, NoInputLogger,
+    NoPredictor, Prediction,
 };
 use lightbookinput_dictionary::{Dictionary, EnglishGlossary, WordList};
 use lightbookinput_learning::{FrequencyLearner, InputLog, UsageStats};
 use lightbookinput_lm::BigramModel;
 use lightbookinput_platform::extra_dictionaries;
 use lightbookinput_platform::{
-    AppsConfig, CandidateRenderer, DEFAULT_ENGLISH_CANDIDATES_OFF, DictionariesConfig,
-    GeneralConfig, LayoutMode, LocalModelConfig, LogLevel,
-    Modifiers, PAGE_KEY_OPTIONS, PreeditMode, Scheme, ShortcutConfig, ThemeMode, UpdateChannel,
+    AppsConfig, CandidateRenderer, DEFAULT_ENGLISH_CANDIDATES_OFF, DictionariesConfig, LayoutMode,
+    LocalModelConfig, LogLevel, Modifiers, PAGE_KEY_OPTIONS, PreeditMode, Scheme, ShortcutConfig,
+    ThemeMode, UpdateChannel,
 };
-use lightbookinput_predict::{
-    CloudPredictor, ConnectionTest, PredictConfig, PredictError,
-};
+use lightbookinput_predict::{CloudPredictor, ConnectionTest, PredictConfig, PredictError};
 use objc2::MainThreadMarker;
 use objc2_app_kit::{NSPasteboard, NSPasteboardTypeString};
 use objc2_foundation::{NSProcessInfo, NSRect, NSString};

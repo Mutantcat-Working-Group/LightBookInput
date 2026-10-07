@@ -17,10 +17,10 @@ impl Router {
             return None;
         }
         if chord == self.config.delete_keys {
-            return Some(self.forget_on_page(digit));
+            Some(self.forget_on_page(digit))
         } else {
-            return None;
-        };
+            None
+        }
     }
 
     /// 删第 `digit` 个候选（用户词整删、词库词清学习记录），提示随下一帧下发。
