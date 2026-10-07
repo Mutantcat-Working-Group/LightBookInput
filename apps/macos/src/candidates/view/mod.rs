@@ -637,7 +637,6 @@ impl CandidateView {
     fn tone_color(&self, tone: Tone) -> &NSColor {
         match tone {
             Tone::Gloss => &self.theme().gloss_color,
-            Tone::Faint => &self.theme().pos_color,
         }
     }
 

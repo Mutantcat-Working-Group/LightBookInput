@@ -157,7 +157,7 @@ fn linux_ui_negotiates_after_legacy_open_and_keeps_the_display_identity() {
     let opened = read_message::<_, Value>(&mut stream).unwrap().unwrap();
     assert_eq!(
         opened["Update"]["linux_ui"],
-        json!({"version": 3, "preedit": "both"})
+        json!({"version": 3, "preedit": "inline"})
     );
     write_message(
         &mut stream,

@@ -7,9 +7,6 @@ use lightbookinput_core::Candidate;
 pub enum Tone {
     /// 译文。
     Gloss,
-
-    /// 词性与分隔符，最浅。
-    Faint,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
