@@ -2,13 +2,15 @@
 
 - `lightbookinput-mark.svg`：README 页头使用的透明竹简图标，与官网品牌图标一致。
 
-应用图标的源文件在仓库根：`icon.png`（1024×1024，不透明）。README 页头、macOS 的 `LightBookInput.icns`、
+应用图标的源文件在仓库根：`icon.png`（1024×1024，四角磨圆、圆角外透明）。README 页头、macOS 的 `LightBookInput.icns`、
 Linux 的 hicolor 桌面图标都用它，改图只改这一份：
 
 - `apps/macos/scripts/bundle.sh` 用 `sips` + `iconutil` 生成 `LightBookInput.icns`，生成物不进仓库。
 - `apps/linux/scripts/files.py` 把它装到 `~/.local/share/icons/hicolor/128x128/apps/lightbookinput.png`；
   `apps/linux/scripts/build-appimage.sh` 另拷一份进 AppDir 根当 AppImage 规范要求的目录图标。
-- `apps/windows/tsf/resources/lightbookinput.ico` 是同一个图样导出的多帧图标。
+- `apps/windows/tsf/resources/lightbookinput.ico` 是同一个图样导出的多帧图标，帧位 16 / 24 / 32 / 48 / 64 / 128 / 256，
+  每帧都从大图重新算圆角（不缩放 alpha），所以小尺寸下圆角不发虚。
+- 圆角半径统一取 1024 画布的 1/9（约 112px），换成新图时按同一比例磨圆再导出上面的派生文件。
 - `menu.svg`：macOS 输入法图标源文件，黑色键帽镂空四片竹简（模板图，系统只取 alpha）。`menu.pdf` 是它导出的
   22×16pt 矢量版，打包时拷成 `lightbookinput-menu.pdf`，Info.plist 的图标键都指向它。为什么是这个形式和尺寸见
   `docs/design/architecture.md`「Info.plist 约定」。改了 svg 重新导出：
