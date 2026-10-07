@@ -105,6 +105,9 @@ pub struct Host {
     /// 程序员模式：用户按住 `~` 时开着，松键（或敲 Esc）退出。开着时数字键 / 空格上屏候选的英文释义。
     pub programmer_mode: bool,
 
+    /// 程序员模式下当前选中的英文释义索引（按 `; ` 分割后的第几个）。
+    pub gloss_index: usize,
+
     /// 候选窗口顶行显示的一句临时状态（删了什么词），下一次查询就没了。
     pub status: Option<String>,
 

@@ -25,6 +25,8 @@ TSV 解析、查询与生成工具把 `lue` / `nue` 统一成 `lve` / `nve`。
 一行缺词或缺释义都算坏行。与词库一样只有 TSV 一种存法，没有 `.qj`：表随 `assets/glossary/glossary-en.tsv` 提交（GPL-3.0-or-later），
 三个壳都从随包资源里找（macOS `paths::resource("glossary-en.tsv")`，Windows 与 Linux 先看生成目录再看随包 `assets/glossary/`），
 找不到只警告：按住 `~` 时数字 / 空格照常上屏中文。样例表在 `assets/sample/glossary-en.tsv`，测试用它。
+一个词有多条释义时 Core 用 `"; "` 拼成一条给出；macOS 壳按 `"; "` 拆回列表，`←` / `→` 在当前候选的多条释义间切换（带一块光标底），
+数字 / 空格上屏选中的那条。Windows 与 Linux 壳暂时只上屏第一条。
 
 ## crates/lightbookinput-core
 

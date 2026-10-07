@@ -11,6 +11,12 @@ const ESC_KEY: u16 = 53;
 /// 空格与小键盘空格的键码。
 const SPACE_KEY: u16 = 49;
 
+/// 上下左右键的键码。
+const UP_KEY: u16 = 126;
+const DOWN_KEY: u16 = 125;
+const LEFT_KEY: u16 = 123;
+const RIGHT_KEY: u16 = 124;
+
 impl LightBookInputInputController {
     /// 松开 `~`：应用送得来 KeyUp 时就地退出程序员模式（送不来的靠 Esc 或再按一次退出）。
     pub(super) fn programmer_release(&self, key: u16, client: TextClient<'_>) -> bool {
@@ -30,7 +36,8 @@ impl LightBookInputInputController {
     /// 返回 `None` 表示这儿不管，按普通按键继续走。
     ///
     /// 按下 `~` 进模式（只在组句中进：没有候选时它还是原来的标点键），再按一次、Esc、或按了别的键退出；
-    /// 模式里 `1`-`9` 上屏对应候选的英文，空格上屏第一个候选的英文。
+    /// 模式里 `↑` / `↓` 换候选（选中项回到第一条释义）、`←` / `→` 换当前候选的多条释义，
+    /// `1`-`9` 上屏对应候选当前选中的释义，空格上屏高亮候选的释义。
     pub(super) fn programmer_key(
         &self,
         key: u16,
@@ -73,6 +80,30 @@ impl LightBookInputInputController {
             host::with(|h| h.programmer_mode = false);
             return None;
         }
+        // 上下换候选：选中的释义回到第一条；左右换当前候选的多条释义
+        if key == UP_KEY || key == DOWN_KEY {
+            let delta = if key == UP_KEY { -1 } else { 1 };
+            let changed = host::with(|h| {
+                if h.session.move_highlight(delta) {
+                    h.gloss_index = 0;
+                    true
+                } else {
+                    false
+                }
+            })
+            .unwrap_or(false);
+            if changed {
+                self.render(client);
+            }
+            return Some(true);
+        }
+        if key == LEFT_KEY || key == RIGHT_KEY {
+            let delta = if key == LEFT_KEY { -1 } else { 1 };
+            if host::with(|h| h.move_gloss(delta)).unwrap_or(false) {
+                self.render(client);
+            }
+            return Some(true);
+        }
         if key == SPACE_KEY {
             return Some(self.commit_english(1, client));
         }
@@ -90,7 +121,7 @@ impl LightBookInputInputController {
         self.refresh(client);
     }
 
-    /// 上屏当前页第 `digit` 个候选的英文释义。释义表里没有这个词就照常上屏中文；
+    /// 上屏当前页第 `digit` 个候选当前选中的英文释义。释义表里没有这个词就照常上屏中文；
     /// 那一格没有候选就退出模式，把这个键交回普通流程。
     pub(super) fn commit_english(&self, digit: usize, client: TextClient<'_>) -> bool {
         let Some(index) = host::with(|h| h.session.index_on_page(digit - 1)).flatten() else {
@@ -104,8 +135,15 @@ impl LightBookInputInputController {
         let Some(gloss) = gloss else {
             return self.commit_index(index, client);
         };
+        let selected = host::with(|h| h.gloss_index).unwrap_or(0);
+        let senses: Vec<&str> = gloss.split("; ").collect();
+        let text = senses
+            .get(selected)
+            .copied()
+            .unwrap_or(senses[0])
+            .to_owned();
         let english = Candidate {
-            text: gloss,
+            text,
             // 快捷候选：上屏时吃掉整段拼音，不记学习
             kind: CandidateKind::Shortcut,
             syllables: Vec::new(),

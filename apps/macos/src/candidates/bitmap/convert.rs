@@ -51,6 +51,8 @@ fn row(row: &Row) -> lightbookinput_render::Row {
                 (text.clone(), tone)
             })
             .collect(),
+        gloss: row.gloss.clone(),
+        gloss_selected: row.gloss_selected,
         cloud: row.cloud,
     }
 }

@@ -383,6 +383,8 @@ fn annotated(index: usize, text: &str, annotation: &[(&str, Tone)], cloud: bool)
             .iter()
             .map(|(s, tone)| ((*s).to_owned(), *tone))
             .collect(),
+        gloss: Vec::new(),
+        gloss_selected: 0,
         cloud,
     }
 }

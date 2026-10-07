@@ -33,15 +33,11 @@ impl Renderer {
     /// 横排时高亮候选的译文行尺寸；高亮候选没有译文时为 `None`。
     fn highlighted_annotation_size(&mut self, frame: &Frame, m: &Metrics) -> Option<(f32, f32)> {
         let row = frame.rows.get(frame.highlighted?)?;
-        if row.annotation.is_empty() {
+        if row.annotation.is_empty() && row.gloss.is_empty() {
             return None;
         }
         let style = m.annotation_style(m.theme.colors.gloss);
-        let width: f32 = row
-            .annotation
-            .iter()
-            .map(|(s, _)| self.measure(s, &style).width)
-            .sum();
+        let width = self.annotation_row_width(row, m);
         Some((width, style.line_height + m.row_padding()))
     }
 
@@ -129,12 +125,15 @@ impl Renderer {
         }
         // 高亮候选的译文
         if let Some(row) = frame.highlighted.and_then(|i| frame.rows.get(i)) {
-            let mut x = left + m.padding() + inset;
             let annotation_top = y + row_height + m.row_padding() / 2.0;
-            for (segment, tone) in &row.annotation {
-                let style = m.annotation_style(m.tone_color(*tone));
-                x += self.draw_text(canvas, segment, &style, x, annotation_top);
-            }
+            self.draw_annotation_row(
+                canvas,
+                m,
+                row,
+                left + m.padding() + inset,
+                annotation_top,
+                true,
+            );
         }
     }
 }

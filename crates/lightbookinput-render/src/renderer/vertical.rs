@@ -30,7 +30,6 @@ impl Renderer {
         };
         let text_style = m.text_style();
         let index_style = m.index_style();
-        let annotation_style = m.annotation_style(m.theme.colors.gloss);
         for row in rows {
             let index = self.measure(&row.index, &index_style);
             let mut text = self.measure(&row.text, &text_style);
@@ -38,11 +37,7 @@ impl Renderer {
                 text.width += m.cloud_width();
             }
             text.width += self.code_width(row, m);
-            let annotation: f32 = row
-                .annotation
-                .iter()
-                .map(|(s, _)| self.measure(s, &annotation_style).width)
-                .sum();
+            let annotation = self.annotation_row_width(row, m);
             columns.index_width = columns.index_width.max(index.width);
             columns.text_width = columns.text_width.max(text.width);
             columns.annotation_width = columns.annotation_width.max(annotation);
@@ -86,11 +81,14 @@ impl Renderer {
                 top + small_offset,
             );
             self.draw_word(canvas, m, row, text_x, top, text_height);
-            let mut x = annotation_x;
-            for (segment, tone) in &row.annotation {
-                let style = m.annotation_style(m.tone_color(*tone));
-                x += self.draw_text(canvas, segment, &style, x, top + small_offset);
-            }
+            self.draw_annotation_row(
+                canvas,
+                m,
+                row,
+                annotation_x,
+                top + small_offset,
+                Some(i) == frame.highlighted,
+            );
             y += columns.row_height;
         }
         if let Some(footer) = frame.footer.as_deref() {

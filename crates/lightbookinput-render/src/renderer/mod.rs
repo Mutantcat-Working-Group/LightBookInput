@@ -289,6 +289,74 @@ impl Renderer {
         self.measure(code, &style).width
     }
 
+    /// 高亮候选下面 / 右边那行释义的宽度：普通模式量 annotation，程序员模式量拆开的英文释义。
+    pub(super) fn annotation_row_width(&mut self, row: &Row, m: &Metrics) -> f32 {
+        let style = m.annotation_style(m.theme.colors.gloss);
+        if row.gloss.is_empty() {
+            return row
+                .annotation
+                .iter()
+                .map(|(s, _)| self.measure(s, &style).width)
+                .sum();
+        }
+        let sep = m.annotation_style(m.tone_color(Tone::Faint));
+        let sep_width = self.measure("; ", &sep).width;
+        row.gloss
+            .iter()
+            .enumerate()
+            .map(|(i, sense)| {
+                self.measure(sense, &style).width + if i > 0 { sep_width } else { 0.0 }
+            })
+            .sum()
+    }
+
+    /// 画高亮候选的那行释义：普通模式画 annotation；程序员模式逐条画英文释义，
+    /// 当前选中的一条加一块高亮底（跟第一行候选的光标一个意思）。`x` 是左起点，`top` 是行框顶边；
+    /// `highlight` 为假时不画选中底（竖排里非高亮候选只列释义）。返回占用宽度。
+    pub(super) fn draw_annotation_row(
+        &mut self,
+        canvas: &mut Canvas,
+        m: &Metrics,
+        row: &Row,
+        x: f32,
+        top: f32,
+        highlight: bool,
+    ) -> f32 {
+        let start = x;
+        let mut x = x;
+        if row.gloss.is_empty() {
+            for (segment, tone) in &row.annotation {
+                let style = m.annotation_style(m.tone_color(*tone));
+                x += self.draw_text(canvas, segment, &style, x, top);
+            }
+            return x - start;
+        }
+        let style = m.annotation_style(m.theme.colors.gloss);
+        let line_height = style.line_height;
+        let pad = m.px(2.0);
+        let selected = row.gloss_selected.min(row.gloss.len() - 1);
+        for (i, sense) in row.gloss.iter().enumerate() {
+            if i > 0 {
+                let sep = m.annotation_style(m.tone_color(Tone::Faint));
+                x += self.draw_text(canvas, "; ", &sep, x, top);
+            }
+            let width = self.measure(sense, &style).width;
+            if highlight && i == selected {
+                canvas.fill_round_rect(
+                    x - pad,
+                    top,
+                    width + pad * 2.0,
+                    line_height,
+                    m.corner_radius() / 2.0,
+                    m.theme.colors.highlight,
+                );
+            }
+            self.draw_text(canvas, sense, &style, x, top);
+            x += width;
+        }
+        x - start
+    }
+
     fn fill_highlight(
         &mut self,
         canvas: &mut Canvas,

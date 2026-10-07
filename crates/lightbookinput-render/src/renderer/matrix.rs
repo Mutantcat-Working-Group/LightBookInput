@@ -145,14 +145,18 @@ impl Renderer {
             x += used + m.px(INFO_GAP);
             budget -= used + m.px(INFO_GAP);
         }
-        for (segment, tone) in &row.annotation {
-            if budget <= 0.0 {
-                break;
+        if row.gloss.is_empty() {
+            for (segment, tone) in &row.annotation {
+                if budget <= 0.0 {
+                    break;
+                }
+                let used =
+                    self.draw_clipped(canvas, m, segment, m.tone_color(*tone), x, info_top, budget);
+                x += used;
+                budget -= used;
             }
-            let used =
-                self.draw_clipped(canvas, m, segment, m.tone_color(*tone), x, info_top, budget);
-            x += used;
-            budget -= used;
+        } else {
+            self.draw_annotation_row(canvas, m, row, x, info_top, true);
         }
     }
 

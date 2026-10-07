@@ -23,6 +23,12 @@ pub struct Row {
     /// 右侧 annotation，按顺序绘制；没有译文时为空。
     pub annotation: Vec<(String, Tone)>,
 
+    /// 程序员模式的英文释义：按 `; ` 拆开的各条；空表示不在程序员模式。
+    pub gloss: Vec<String>,
+
+    /// `gloss` 里当前选中的下标（越界时按 0 处理）。
+    pub gloss_selected: usize,
+
     /// 来自云联想：词前画一个小云朵，与本地候选区分。
     pub cloud: bool,
 }
@@ -45,17 +51,18 @@ impl Row {
                 candidate.text.clone()
             },
             annotation,
+            gloss: Vec::new(),
+            gloss_selected: 0,
             cloud: false,
         }
     }
 
     /// 程序员模式（按住 `~`）时在候选右侧补一行英文释义，数字 / 空格上屏的就是它。
-    pub fn with_gloss(mut self, gloss: Option<String>) -> Self {
-        if let Some(gloss) = gloss {
-            if !self.annotation.is_empty() {
-                self.annotation.push((" · ".to_owned(), Tone::Faint));
-            }
-            self.annotation.push((gloss, Tone::Gloss));
+    /// `senses` 是拆好的各条释义，`selected` 是当前选中的下标。
+    pub fn with_gloss(mut self, senses: Option<Vec<String>>, selected: usize) -> Self {
+        if let Some(senses) = senses {
+            self.gloss = senses;
+            self.gloss_selected = selected;
         }
         self
     }

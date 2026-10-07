@@ -281,14 +281,10 @@ impl CandidateView {
     fn highlighted_annotation_size(&self, frame: &Frame) -> Option<(f64, f64)> {
         let theme = self.theme();
         let row = frame.rows.get(frame.highlighted)?;
-        if row.annotation.is_empty() {
+        if row.annotation.is_empty() && row.gloss.is_empty() {
             return None;
         }
-        let width: f64 = row
-            .annotation
-            .iter()
-            .map(|(s, _)| self.measure(s, &theme.annotation_font).width)
-            .sum();
+        let width = self.annotation_row_width(row);
         let height = self.measure("x", &theme.annotation_font).height + theme.row_padding;
         Some((width, height))
     }
@@ -338,11 +334,7 @@ impl CandidateView {
             if row.cloud {
                 text.width += self.cloud_width();
             }
-            let annotation: f64 = row
-                .annotation
-                .iter()
-                .map(|(s, _)| self.measure(s, &theme.annotation_font).width)
-                .sum();
+            let annotation = self.annotation_row_width(row);
             columns.index_width = columns.index_width.max(index.width);
             columns.text_width = columns.text_width.max(text.width);
             columns.annotation_width = columns.annotation_width.max(annotation);
@@ -476,16 +468,12 @@ impl CandidateView {
                 theme.padding,
             );
             self.draw_word(row, text_x, baseline, text_size.height);
-            let mut x = annotation_x;
-            for (segment, tone) in &row.annotation {
-                x += self.draw_text(
-                    segment,
-                    &theme.annotation_font,
-                    self.tone_color(*tone),
-                    baseline + small_offset,
-                    x,
-                );
-            }
+            self.draw_annotation_row(
+                row,
+                annotation_x,
+                baseline + small_offset,
+                i == frame.highlighted,
+            );
             y += columns.row_height;
         }
         if let Some(footer) = frame.footer.as_deref() {
@@ -547,8 +535,38 @@ impl CandidateView {
         }
         // 高亮候选的译文
         if let Some(row) = frame.rows.get(frame.highlighted) {
-            let mut x = theme.padding + HIGHLIGHT_INSET;
             let top = y + row_height + theme.row_padding / 2.0;
+            self.draw_annotation_row(row, theme.padding + HIGHLIGHT_INSET, top, true);
+        }
+    }
+
+    /// 高亮候选那行释义的宽度：普通模式量 annotation，程序员模式量拆开的英文释义。
+    fn annotation_row_width(&self, row: &Row) -> f64 {
+        let theme = self.theme();
+        if row.gloss.is_empty() {
+            return row
+                .annotation
+                .iter()
+                .map(|(s, _)| self.measure(s, &theme.annotation_font).width)
+                .sum();
+        }
+        let sep = self.measure("; ", &theme.annotation_font).width;
+        row.gloss
+            .iter()
+            .enumerate()
+            .map(|(i, sense)| {
+                self.measure(sense, &theme.annotation_font).width + if i > 0 { sep } else { 0.0 }
+            })
+            .sum()
+    }
+
+    /// 画高亮候选那行释义：普通模式画 annotation；程序员模式逐条画英文释义，
+    /// `highlight` 为真时给当前选中的一条加一块高亮底。返回占用宽度。
+    fn draw_annotation_row(&self, row: &Row, x: f64, top: f64, highlight: bool) -> f64 {
+        let theme = self.theme();
+        let start = x;
+        let mut x = x;
+        if row.gloss.is_empty() {
             for (segment, tone) in &row.annotation {
                 x += self.draw_text(
                     segment,
@@ -558,7 +576,31 @@ impl CandidateView {
                     x,
                 );
             }
+            return x - start;
         }
+        let line_height = self.measure("x", &theme.annotation_font).height;
+        let selected = row.gloss_selected.min(row.gloss.len() - 1);
+        for (i, sense) in row.gloss.iter().enumerate() {
+            if i > 0 {
+                x += self.draw_text("; ", &theme.annotation_font, &theme.pos_color, top, x);
+            }
+            let width = self.measure(sense, &theme.annotation_font).width;
+            if highlight && i == selected {
+                theme.highlight.set();
+                NSBezierPath::bezierPathWithRoundedRect_xRadius_yRadius(
+                    NSRect::new(
+                        NSPoint::new(x - 2.0, top),
+                        NSSize::new(width + 4.0, line_height),
+                    ),
+                    2.0,
+                    2.0,
+                )
+                .fill();
+            }
+            self.draw_text(sense, &theme.annotation_font, &theme.gloss_color, top, x);
+            x += width;
+        }
+        x - start
     }
 
     /// 候选词本体：云端词前带云朵、换颜色。

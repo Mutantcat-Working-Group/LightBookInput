@@ -3,6 +3,27 @@
 use super::*;
 
 impl Host {
+    /// 程序员模式下左右键切换英文释义。返回是否有变化。
+    pub fn move_gloss(&mut self, delta: isize) -> bool {
+        let Some(candidate) = self.session.candidate(self.session.highlighted) else {
+            return false;
+        };
+        let Some(gloss) = self.engine.english_gloss(&candidate.text) else {
+            return false;
+        };
+        let count = gloss.split("; ").count();
+        if count <= 1 {
+            return false;
+        }
+        let current = self.gloss_index as isize;
+        let next = (current + delta).rem_euclid(count as isize) as usize;
+        if next == self.gloss_index {
+            return false;
+        }
+        self.gloss_index = next;
+        true
+    }
+
     /// 删掉当前页第 `offset` 格的候选：用户词整个删、词库词清学习。返回给用户看的一句话；那格没有候选返回 `None`。
     pub fn forget_candidate(&mut self, offset: usize) -> Option<String> {
         let index = self.session.index_on_page(offset)?;
@@ -34,6 +55,7 @@ impl Host {
         let page_size = self.page_size.min(self.window.max_rows()).max(1);
         self.session
             .reset(preedit, candidates, page_size, self.cloud_slots);
+        self.gloss_index = 0;
     }
 
     /// 按会话状态画候选窗口。候选为空且没有 preedit 时收窗。
@@ -70,12 +92,16 @@ impl Host {
                 let mut row = Row::from_candidate(offset, candidate);
                 row.index = index;
                 row.cloud = candidate.kind == CandidateKind::Cloud;
-                // 程序员模式（按住 ~）：右侧补一行英文释义，数字键 / 空格上屏的就是它
+                // 程序员模式（按住 ~）：右侧补一行英文释义，方向键选、数字键 / 空格上屏的就是它
                 let gloss = self
                     .programmer_mode
-                    .then(|| self.engine.english_gloss(&candidate.text))
+                    .then(|| {
+                        self.engine
+                            .english_gloss(&candidate.text)
+                            .map(|gloss| gloss.split("; ").map(str::to_owned).collect::<Vec<_>>())
+                    })
                     .flatten();
-                row.with_gloss(gloss)
+                row.with_gloss(gloss, self.gloss_index)
             })
             .collect();
         // 配置成只在行内显示时，窗口顶部不画拼音行
@@ -115,4 +141,4 @@ impl Host {
 }
 
 /// 程序员模式开着时候选窗口里常驻的一行字。
-const PROGRAMMER_STATUS: &str = "程序员模式：数字键上屏英文，Esc 退出";
+const PROGRAMMER_STATUS: &str = "程序员模式：↑↓ 换词 ←→ 换释义，数字 / 空格上屏，Esc 退出";
