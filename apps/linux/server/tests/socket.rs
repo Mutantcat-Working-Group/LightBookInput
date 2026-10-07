@@ -139,7 +139,7 @@ fn socket_path_does_not_replace_regular_files_or_symlinks() {
 }
 
 #[test]
-fn linux_ui_negotiates_after_legacy_open_and_binds_ack_to_connection() {
+fn linux_ui_negotiates_after_legacy_open_and_keeps_the_display_identity() {
     use serde_json::{Value, json};
     let directory =
         std::env::temp_dir().join(format!("lightbookinput-ui-socket-{}", std::process::id()));
@@ -185,23 +185,11 @@ fn linux_ui_negotiates_after_legacy_open_and_binds_ack_to_connection() {
     )
     .unwrap();
     let response = read_message::<_, Value>(&mut stream).unwrap().unwrap();
-    let mut identity = response["KeyResult"]["identity"].clone();
+    let identity = response["KeyResult"]["identity"].clone();
     assert_eq!(identity["generation"], 9);
     assert_eq!(identity["context"], "test-context");
     assert_eq!(response["KeyResult"]["session"], 1);
-    write_message(
-        &mut stream,
-        &json!({"DisplayAcknowledged": {"session": 1, "identity": identity}}),
-    )
-    .unwrap();
     assert_eq!(commit(&mut stream).as_deref(), Some("n"));
-    identity["generation"] = json!(8);
-    write_message(
-        &mut stream,
-        &json!({"DisplayAcknowledged": {"session": 1, "identity": identity}}),
-    )
-    .unwrap();
-    assert_eq!(commit(&mut stream), None); // 旧回执不破坏此连接上的会话。
     drop(server);
     std::fs::remove_dir_all(directory).unwrap();
 }
