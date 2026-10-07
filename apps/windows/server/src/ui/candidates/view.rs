@@ -330,14 +330,7 @@ fn draw_horizontal(hdc: HDC, data: &RenderData, y: i32, width: i32) {
     }
     if let Some(row) = data.rows.get(data.highlight) {
         let top = y + row_height + theme.row_padding / 2;
-        draw_annotation_row(
-            hdc,
-            theme,
-            row,
-            theme.padding + highlight_inset,
-            top,
-            true,
-        );
+        draw_annotation_row(hdc, theme, row, theme.padding + highlight_inset, top, true);
     }
 }
 

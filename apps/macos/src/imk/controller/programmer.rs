@@ -82,7 +82,11 @@ impl LightBookInputInputController {
         }
         // 四条方向键都只切当前高亮候选的第二行释义光标，不移动第一行候选高亮
         if key == UP_KEY || key == DOWN_KEY || key == LEFT_KEY || key == RIGHT_KEY {
-            let delta = if key == UP_KEY || key == LEFT_KEY { -1 } else { 1 };
+            let delta = if key == UP_KEY || key == LEFT_KEY {
+                -1
+            } else {
+                1
+            };
             if host::with(|h| h.move_gloss(delta)).unwrap_or(false) {
                 self.render(client);
             }

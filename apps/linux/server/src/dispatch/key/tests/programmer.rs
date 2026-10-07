@@ -32,9 +32,7 @@ fn router() -> Router {
 fn router_with_two_senses() -> Router {
     let mut engine =
         Engine::new(Dictionary::parse("你\tni\t100\n好\thao\t90\n上\tshang\t80\n").unwrap());
-    engine.set_english_glossary(
-        EnglishGlossary::parse("你好\thello; hi\n").unwrap(),
-    );
+    engine.set_english_glossary(EnglishGlossary::parse("你好\thello; hi\n").unwrap());
     let mut router = Router::new(
         engine,
         RouterConfig {
