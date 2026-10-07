@@ -90,14 +90,10 @@ fn horizontal_size(hdc: HDC, data: &RenderData) -> (i32, i32) {
 fn highlighted_annotation_size(hdc: HDC, data: &RenderData) -> Option<(i32, i32)> {
     let theme = &data.theme;
     let row = data.rows.get(data.highlight)?;
-    if row.annotation.is_empty() {
+    if row.annotation.is_empty() && row.gloss.is_empty() {
         return None;
     }
-    let width: i32 = row
-        .annotation
-        .iter()
-        .map(|(s, _)| measure(hdc, theme.annotation_font, s).cx)
-        .sum();
+    let width = annotation_row_width(hdc, theme, row);
     let height = line_height(hdc, theme.annotation_font) + theme.row_padding;
     Some((width, height))
 }
@@ -246,17 +242,14 @@ fn draw_rows(hdc: HDC, data: &RenderData, mut y: i32, width: i32) {
             &row.index,
         );
         draw_word(hdc, theme, row, text_x, baseline, small_offset);
-        let mut x = annotation_x;
-        for (segment, tone) in &row.annotation {
-            x += draw_text(
-                hdc,
-                theme.annotation_font,
-                tone_color(theme, *tone),
-                x,
-                baseline + small_offset,
-                segment,
-            );
-        }
+        draw_annotation_row(
+            hdc,
+            theme,
+            row,
+            annotation_x,
+            baseline + small_offset,
+            i == data.highlight,
+        );
         y += columns.row_height;
     }
     if let Some(footer) = &data.footer {
@@ -336,18 +329,15 @@ fn draw_horizontal(hdc: HDC, data: &RenderData, y: i32, width: i32) {
         );
     }
     if let Some(row) = data.rows.get(data.highlight) {
-        let mut x = theme.padding + highlight_inset;
         let top = y + row_height + theme.row_padding / 2;
-        for (segment, tone) in &row.annotation {
-            x += draw_text(
-                hdc,
-                theme.annotation_font,
-                tone_color(theme, *tone),
-                x,
-                top,
-                segment,
-            );
-        }
+        draw_annotation_row(
+            hdc,
+            theme,
+            row,
+            theme.padding + highlight_inset,
+            top,
+            true,
+        );
     }
 }
 
@@ -382,11 +372,7 @@ fn columns(hdc: HDC, theme: &Theme, rows: &[Row]) -> Columns {
     for row in rows {
         let index = measure(hdc, theme.index_font, &row.index);
         let text = measure(hdc, theme.text_font, &row.text);
-        let annotation: i32 = row
-            .annotation
-            .iter()
-            .map(|(s, _)| measure(hdc, theme.annotation_font, s).cx)
-            .sum();
+        let annotation = annotation_row_width(hdc, theme, row);
         columns.index_width = columns.index_width.max(index.cx);
         columns.text_width = columns
             .text_width
@@ -395,6 +381,86 @@ fn columns(hdc: HDC, theme: &Theme, rows: &[Row]) -> Columns {
         columns.row_height = columns.row_height.max(text.cy + theme.row_padding * 2);
     }
     columns
+}
+
+/// 候选旁那行释义的宽度：普通模式量 annotation，程序员模式量按 `; ` 拆开的各条英文。
+fn annotation_row_width(hdc: HDC, theme: &Theme, row: &Row) -> i32 {
+    if row.gloss.is_empty() {
+        return row
+            .annotation
+            .iter()
+            .map(|(s, _)| measure(hdc, theme.annotation_font, s).cx)
+            .sum();
+    }
+    let separator = measure(hdc, theme.annotation_font, "; ").cx;
+    row.gloss
+        .iter()
+        .enumerate()
+        .map(|(i, sense)| {
+            measure(hdc, theme.annotation_font, sense).cx + if i > 0 { separator } else { 0 }
+        })
+        .sum()
+}
+
+/// 画候选旁那行释义：普通模式画 annotation；程序员模式逐条画英文释义，
+/// 当前选中的一条垫一块高亮底（跟第一行候选的光标一个意思）。`highlighted` 为假时不画底。
+fn draw_annotation_row(
+    hdc: HDC,
+    theme: &Theme,
+    row: &Row,
+    x: i32,
+    y: i32,
+    highlighted: bool,
+) -> i32 {
+    if row.gloss.is_empty() {
+        let mut width = 0;
+        for (segment, tone) in &row.annotation {
+            width += draw_text(
+                hdc,
+                theme.annotation_font,
+                tone_color(theme, *tone),
+                x + width,
+                y,
+                segment,
+            );
+        }
+        return width;
+    }
+    let selected = row.gloss_selected.min(row.gloss.len() - 1);
+    let pad = (theme.padding / 4).max(1);
+    let mut offset = 0;
+    for (i, sense) in row.gloss.iter().enumerate() {
+        if i > 0 {
+            offset += draw_text(
+                hdc,
+                theme.annotation_font,
+                theme.pos_color,
+                x + offset,
+                y,
+                "; ",
+            );
+        }
+        let width = measure(hdc, theme.annotation_font, sense).cx;
+        if highlighted && i == selected {
+            let rect = RECT {
+                left: x + offset - pad,
+                top: y,
+                right: x + offset + width + pad,
+                bottom: y + line_height(hdc, theme.annotation_font),
+            };
+            fill_round_rect(hdc, rect, theme.highlight, theme.corner_radius / 2);
+        }
+        draw_text(
+            hdc,
+            theme.annotation_font,
+            theme.gloss_color,
+            x + offset,
+            y,
+            sense,
+        );
+        offset += width;
+    }
+    offset
 }
 
 /// 小字相对候选词往下挪多少才纵向居中（GDI y 向下，取一半差）。

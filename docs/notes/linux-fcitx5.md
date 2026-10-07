@@ -46,7 +46,7 @@ LinuxEvent 转发能力、按下 / 释放、焦点、停用原因、客户端预
 FocusOut 的行内预编辑由框架或声明 ClientUnfocusCommit 的客户端提交，Server 不重复返回它；仅窗口预编辑才返回原样组句。
 
 每次候选响应绑定 generation/context/revision，revision 在整个 Server 内递增；过期或跨会话点击返回 Ignored，不改变当前会话的展示状态。
-默认面板只展示第一条释义，完成面板更新后报告当前页对应的 `(候选槽位, 0)`。
+默认面板展示整行 `; ` 分隔的释义；方向键的选择在 Server 侧维护，数字 / 空格上屏当前选中的那条。
 隐藏、失焦、私密、无候选与过期回报不产生有效展示记录；Server 只凭已生成帧不记展示。
 
 组句期间插件每 80 ms 发一次 `Poll`（与 Windows DLL 的轮询间隔相同），Server 先 tick 再回当前帧。

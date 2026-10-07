@@ -10,7 +10,8 @@
 - **Core 与平台层严格解耦。** `lightbookinput-core` 及其兄弟 crate 必须平台无关：词库、拼音解析、候选生成、排序、学习、文本变换全部属于 Core。
   平台层（IMK / TSF / IBus-Fcitx）只做两件事：把系统输入事件转换成 Core 的输入，把 Core 返回的帧画到候选窗口。
   **平台层里不允许出现排序逻辑、词库访问或文本变换。** 判断标准：把 IMK 换成 TSF，不应该需要改 Core 的任何一行。
-- **一个候选词的英文释义只有一条。** 程序员模式（按住 `~`）下每个候选只从 `EnglishGlossary` 取一条中英释义（`Option<String>` 的 annotation）。
+- **英文释义仍然是一条 `Option<String>` annotation，不引入多语言并列结构。** 程序员模式（按住 `~`）下一个词最多三条英文释义，
+  Core 用 `"; "` 拼成一条交给平台层；平台层只负责拆开、画选择光标并上屏用户选中的那条。
   不要设计成 `translations: Vec<Translation>` 或 `HashMap<Lang, String>` 这类多语言并列的数据结构：候选窗那一小行只放得下一行英文，多语言并列纯属浪费。
 - **输入优先于学习。** 任何为学习功能增加的延迟、弹窗、UI 干扰都是设计错误。释义查询不能阻塞候选生成，Core 必须能在释义表尚未就绪时先返回候选。
 - **输入方案是配置项，不是模式。** 双拼、注音这类键盘方案放 `[general]` 里当设置，中 / 英切换始终是布尔；新方案不能改变别的方案的既定按键行为（[user/getting-started/keys.md](user/getting-started/keys.md)）。

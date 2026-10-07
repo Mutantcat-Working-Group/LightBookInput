@@ -24,7 +24,7 @@ use std::time::{Duration, Instant};
 const LEARNING_FLUSH_INTERVAL: Duration = Duration::from_secs(60);
 
 /// 程序员模式开着时候选窗口里常驻的一行字。
-const PROGRAMMER_STATUS: &str = "程序员模式：数字键上屏英文，Esc 退出";
+const PROGRAMMER_STATUS: &str = "程序员模式：方向键选释义，数字 / 空格上屏，Esc 退出";
 
 /// Fcitx5 输入上下文分派器；所有 Engine 操作都在 Server 主线程串行执行。
 pub struct Router {
@@ -57,6 +57,9 @@ pub struct Router {
 
     /// 程序员模式开着：数字 / 空格上屏候选的英文（按住 `~` 触发，`~` / Esc / 别的键退出）。
     programmer: bool,
+
+    /// 程序员模式里高亮候选当前选中的英文释义下标；换候选、重建组句时归零。
+    gloss_index: usize,
 
     /// `~` 按着没松：连发重复按下不当「又按了一次」，等松开才再次生效。
     tilde_held: bool,
@@ -92,6 +95,7 @@ impl Router {
             sentence: None,
             notice: None,
             programmer: false,
+            gloss_index: 0,
             tilde_held: false,
             display_revision: 0,
             last_flush: Instant::now(),
@@ -131,6 +135,7 @@ impl Router {
     /// 退出程序员模式并作废 `~` 的按住状态：组句状态归零时一起调。
     pub(super) fn reset_programmer(&mut self) {
         self.programmer = false;
+        self.gloss_index = 0;
         self.tilde_held = false;
     }
 }

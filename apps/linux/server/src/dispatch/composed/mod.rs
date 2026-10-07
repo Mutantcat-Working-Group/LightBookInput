@@ -12,6 +12,7 @@ impl Router {
     /// 缓冲变化后：按 Engine 状态重建 [`Composed`]，发一次云联想请求，归零高亮与整句补全。
     pub(super) fn recompose(&mut self) {
         self.highlight = 0;
+        self.gloss_index = 0;
         self.navigated = false;
         self.sentence = None;
         if self.engine.composition().is_empty() {
@@ -134,6 +135,7 @@ impl Router {
                 preedit_mode: self.config.preedit,
                 candidates: CandidateList { items: Vec::new() },
                 highlight: usize::MAX,
+                gloss_selected: 0,
                 page: 0,
                 page_count: 1,
                 layout: self.config.layout,
@@ -181,6 +183,7 @@ impl Router {
                     preedit_mode: self.config.preedit,
                     candidates,
                     highlight: highlight - page * page_size,
+                    gloss_selected: self.gloss_index,
                     page,
                     page_count: layout.pages().max(1),
                     layout: self.config.layout,

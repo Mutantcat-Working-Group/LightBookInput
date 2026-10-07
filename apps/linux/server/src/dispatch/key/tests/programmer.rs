@@ -28,6 +28,28 @@ fn router() -> Router {
     router
 }
 
+/// 一个候选有多条英文释义：用来验证方向键切换第二行释义光标。
+fn router_with_two_senses() -> Router {
+    let mut engine =
+        Engine::new(Dictionary::parse("你\tni\t100\n好\thao\t90\n上\tshang\t80\n").unwrap());
+    engine.set_english_glossary(
+        EnglishGlossary::parse("你好\thello; hi\n").unwrap(),
+    );
+    let mut router = Router::new(
+        engine,
+        RouterConfig {
+            page_size: 9,
+            ..Default::default()
+        },
+    );
+    router.handle(ClientMessage::OpenSession {
+        session: SessionId(1),
+        app: None,
+        protocol: PROTOCOL_VERSION,
+    });
+    router
+}
+
 fn preedit(frame: &Frame) -> String {
     frame
         .preedit
@@ -75,13 +97,34 @@ fn tilde_digit_commits_the_candidate_gloss() {
     );
     assert_eq!(
         held.notice.as_deref(),
-        Some("程序员模式：数字键上屏英文，Esc 退出")
+        Some("程序员模式：方向键选释义，数字 / 空格上屏，Esc 退出")
     );
     let (code, character) = digit(slot);
     let (outcome, commit, after) = key(&mut router, code, character, normal);
     assert_eq!(
         (outcome, commit.as_deref()),
         (KeyOutcome::Consumed, Some("hello"))
+    );
+    assert!(after.is_empty());
+}
+
+#[test]
+fn arrow_keys_move_the_gloss_cursor_and_commit_the_selected_sense() {
+    let normal = KeyModifiers::default();
+    let mut router = router_with_two_senses();
+    compose(&mut router, "nihao", normal);
+    let frame = key(&mut router, 0, None, normal).2;
+    let slot = slot_of(&frame, "你好");
+    key(&mut router, 0x60, Some('`'), normal);
+    // 右 / 下都往同一条逻辑上走：切到第二条释义，再按数字上屏 selected 的那条。
+    let (moved, _, frame) = key(&mut router, 0x27, None, normal);
+    assert_eq!(moved, KeyOutcome::Consumed);
+    assert_eq!(frame.gloss_selected, 1);
+    let (code, character) = digit(slot);
+    let (outcome, commit, after) = key(&mut router, code, character, normal);
+    assert_eq!(
+        (outcome, commit.as_deref()),
+        (KeyOutcome::Consumed, Some("hi"))
     );
     assert!(after.is_empty());
 }

@@ -23,6 +23,9 @@ pub(crate) struct RenderData {
     /// 候选行。
     pub(super) rows: Vec<Row>,
 
+    /// 程序员模式里高亮候选当前选中的英文释义下标。
+    pub(super) gloss_selected: usize,
+
     /// 高亮行下标（页内）。
     pub(super) highlight: usize,
 
@@ -52,6 +55,7 @@ impl RenderData {
             preedit: Vec::new(),
             cursor: 0,
             rows: Vec::new(),
+            gloss_selected: 0,
             highlight: usize::MAX,
             footer: None,
             sentence: None,
@@ -68,12 +72,15 @@ impl RenderData {
         self.show_code = frame.aux_code_show;
         self.preedit = window_preedit(frame);
         self.cursor = frame.cursor;
+        self.gloss_selected = frame.gloss_selected;
         self.rows = frame
             .candidates
             .items
             .iter()
             .enumerate()
-            .map(|(i, candidate)| row::from_candidate(i, candidate, self.show_code))
+            .map(|(i, candidate)| {
+                row::from_candidate(i, candidate, self.show_code, self.gloss_selected)
+            })
             .collect();
         self.highlight = frame.highlight;
         self.footer =

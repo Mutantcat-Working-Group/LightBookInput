@@ -1,7 +1,7 @@
 //! Tab 与分页的三端约定；直接注入整句补全状态，不接云服务。
 use crate::dispatch::{Router, RouterConfig};
 use lightbookinput_core::{CustomPhrase, Engine};
-use lightbookinput_dictionary::{Dictionary, WordList};
+use lightbookinput_dictionary::{Dictionary, EnglishGlossary, WordList};
 use lightbookinput_platform::protocol::{
     ClientMessage, Frame, KeyEvent, KeyModifiers, KeyOutcome, PROTOCOL_VERSION, ServerMessage,
     SessionId,
@@ -148,4 +148,47 @@ fn tab_with_raw_input_and_no_candidates_is_consumed_without_commit() {
     assert_eq!(result.0, KeyOutcome::Consumed);
     assert_eq!(result.1, None);
     assert_eq!(result.2.page, 0);
+}
+
+#[test]
+fn programmer_arrow_keys_move_the_gloss_cursor_and_commit_the_selected_sense() {
+    let normal = KeyModifiers::default();
+    let mut engine = Engine::new(Dictionary::parse("你好\tni'hao\t100\n").unwrap());
+    engine.set_english_glossary(EnglishGlossary::parse("你好\thello; hi\n").unwrap());
+    let mut router = Router::new(
+        engine,
+        RouterConfig {
+            page_size: 9,
+            ..Default::default()
+        },
+    );
+    router.handle(ClientMessage::OpenSession {
+        session: SessionId(1),
+        app: None,
+        protocol: PROTOCOL_VERSION,
+    });
+    compose(&mut router, "nihao", normal);
+    let frame = key(&mut router, 0xC0, None, normal).2;
+    let slot = frame
+        .candidates
+        .items
+        .iter()
+        .position(|candidate| candidate.text == "你好")
+        .expect("「你好」应在当前页")
+        + 1;
+    // 左右与上下都驱动第二行释义光标：切到第二条，数字键上屏对应的那一条。
+    let (outcome, commit, frame) = key(&mut router, 0x27, None, normal);
+    assert_eq!((outcome, commit), (KeyOutcome::Consumed, None));
+    assert_eq!(frame.gloss_selected, 1);
+    let (outcome, commit, after) = key(
+        &mut router,
+        0x30 + slot as u32,
+        char::from_digit(slot as u32, 10),
+        normal,
+    );
+    assert_eq!(
+        (outcome, commit.as_deref()),
+        (KeyOutcome::Consumed, Some("hi"))
+    );
+    assert!(after.is_empty());
 }

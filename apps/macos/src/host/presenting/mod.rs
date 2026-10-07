@@ -3,7 +3,7 @@
 use super::*;
 
 impl Host {
-    /// 程序员模式下左右键切换英文释义。返回是否有变化。
+    /// 程序员模式下方向键切换英文释义。返回是否有变化。
     pub fn move_gloss(&mut self, delta: isize) -> bool {
         let Some(candidate) = self.session.candidate(self.session.highlighted) else {
             return false;
@@ -143,4 +143,4 @@ impl Host {
 }
 
 /// 程序员模式开着时候选窗口里常驻的一行字。
-const PROGRAMMER_STATUS: &str = "程序员模式：↑↓ 换词 ←→ 换释义，数字 / 空格上屏，Esc 退出";
+const PROGRAMMER_STATUS: &str = "程序员模式：方向键选释义，数字 / 空格上屏，Esc 退出";

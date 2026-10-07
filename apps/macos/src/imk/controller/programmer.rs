@@ -36,7 +36,7 @@ impl LightBookInputInputController {
     /// 返回 `None` 表示这儿不管，按普通按键继续走。
     ///
     /// 按下 `~` 进模式（只在组句中进：没有候选时它还是原来的标点键），再按一次、Esc、或按了别的键退出；
-    /// 模式里 `↑` / `↓` 换候选（选中项回到第一条释义）、`←` / `→` 换当前候选的多条释义，
+    /// 模式里四条方向键都在当前高亮候选的多条释义之间切换，不动第一行候选高亮；
     /// `1`-`9` 上屏对应候选当前选中的释义，空格上屏高亮候选的释义。
     pub(super) fn programmer_key(
         &self,
@@ -80,25 +80,9 @@ impl LightBookInputInputController {
             host::with(|h| h.programmer_mode = false);
             return None;
         }
-        // 上下换候选：选中的释义回到第一条；左右换当前候选的多条释义
-        if key == UP_KEY || key == DOWN_KEY {
-            let delta = if key == UP_KEY { -1 } else { 1 };
-            let changed = host::with(|h| {
-                if h.session.move_highlight(delta) {
-                    h.gloss_index = 0;
-                    true
-                } else {
-                    false
-                }
-            })
-            .unwrap_or(false);
-            if changed {
-                self.render(client);
-            }
-            return Some(true);
-        }
-        if key == LEFT_KEY || key == RIGHT_KEY {
-            let delta = if key == LEFT_KEY { -1 } else { 1 };
+        // 四条方向键都只切当前高亮候选的第二行释义光标，不移动第一行候选高亮
+        if key == UP_KEY || key == DOWN_KEY || key == LEFT_KEY || key == RIGHT_KEY {
+            let delta = if key == UP_KEY || key == LEFT_KEY { -1 } else { 1 };
             if host::with(|h| h.move_gloss(delta)).unwrap_or(false) {
                 self.render(client);
             }

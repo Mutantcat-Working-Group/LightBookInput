@@ -85,6 +85,7 @@ impl Router {
                         if self.programmer {
                             tracing::debug!("松开 ~，退出程序员模式");
                             self.programmer = false;
+                            self.gloss_index = 0;
                             outcome = KeyOutcome::Consumed;
                         }
                     }

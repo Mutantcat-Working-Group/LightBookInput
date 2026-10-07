@@ -88,7 +88,10 @@ fn the_glossary_only_shows_up_while_the_tilde_is_held() {
     let held = press(&mut stream, key(0x60, "`"))["KeyResult"]["frame"].clone();
     assert_eq!(items(&held)[0]["text"], "你好");
     assert_eq!(items(&held)[0]["gloss"], "hello");
-    assert_eq!(held["notice"], "程序员模式：数字键上屏英文，Esc 退出");
+    assert_eq!(
+        held["notice"],
+        "程序员模式：方向键选释义，数字 / 空格上屏，Esc 退出"
+    );
 
     // 数字键上屏那一行英文，组句结束。
     let committed = press(&mut stream, key(0x31, "1"))["KeyResult"].clone();

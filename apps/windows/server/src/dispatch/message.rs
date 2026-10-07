@@ -91,6 +91,7 @@ impl Router {
                 // 组句在 DLL 侧结束（应用终止组句）：只收窗口；缓冲留给下一键的 Commit 清。
                 if self.focused == Some(session) {
                     self.programmer = false;
+                    self.gloss_index = 0;
                     self.hide_candidate_window();
                 }
                 None

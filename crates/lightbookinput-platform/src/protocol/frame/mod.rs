@@ -31,6 +31,10 @@ pub struct Frame {
     /// 当前页里高亮的候选下标（页内，从 0 起）。
     pub highlight: usize,
 
+    /// 程序员模式里高亮候选当前选中的英文释义下标（页内所有候选共用）。不在程序员模式时为 0。
+    #[serde(default)]
+    pub gloss_selected: usize,
+
     /// 当前页码（从 0 起）。
     pub page: usize,
 

@@ -11,7 +11,8 @@ impl Router {
     /// 返回 `None` 表示这儿不管，按普通按键继续走。
     ///
     /// 按下 `~` 进模式（只在组句中进：没有候选时它还是原来的标点键），再按一次、Esc、或按了别的键退出；
-    /// 模式里 `1`-`9` 上屏对应候选的英文，空格上屏第一个候选的英文。
+    /// 模式里方向键切换高亮候选的第二行释义光标（四条方向一致，多条时循环），`1`-`9` 上屏对应候选
+    /// 当前选中的英文，空格上屏高亮候选的英文。
     /// 松键由 Linux 事件的 release 分支处理（见 `dispatch::linux`）。
     pub(super) fn apply_programmer(&mut self, event: &KeyEvent) -> Option<Effect> {
         // Esc：模式开着时只用来退出，不当作普通退格 / 清缓冲
@@ -19,6 +20,7 @@ impl Router {
             if self.programmer {
                 tracing::debug!("Esc 退出程序员模式");
                 self.programmer = false;
+                self.gloss_index = 0;
                 return Some(Effect::Navigated);
             }
             return None;
@@ -27,11 +29,13 @@ impl Router {
             if self.programmer {
                 tracing::debug!("再按一次 ~，退出程序员模式");
                 self.programmer = false;
+                self.gloss_index = 0;
                 return Some(Effect::Navigated);
             }
             if self.composing() {
                 tracing::debug!("按住 ~，进入程序员模式");
                 self.programmer = true;
+                self.gloss_index = 0;
                 return Some(Effect::Navigated);
             }
             return None;
@@ -42,6 +46,7 @@ impl Router {
         // 带修饰键的（⇧1 是删候选、⌥1 是应用快捷键）先退出，按普通按键处理
         if event.modifiers.chord() != KeyModifiers::default() {
             self.programmer = false;
+            self.gloss_index = 0;
             return None;
         }
         if event.virtual_key == codes::SPACE {
@@ -50,8 +55,35 @@ impl Router {
         if let Some(digit) = codes::digit(event) {
             return Some(self.commit_english(digit));
         }
+        // 方向键统一驱动第二行释义光标：不管当前候选有几条翻译，都把选中的那条画上光标；
+        // 多条时循环切换，数字 / 空格上屏当前选中的那条。
+        if matches!(
+            event.virtual_key,
+            codes::UP | codes::DOWN | codes::LEFT | codes::RIGHT
+        ) {
+            let Some(index) = self.slot_index(1) else {
+                return Some(Effect::Navigated);
+            };
+            let candidate = self.layout_candidate(index);
+            let count = candidate
+                .as_ref()
+                .and_then(|candidate| self.engine.english_gloss(&candidate.text))
+                .map(|gloss| gloss.split("; ").count())
+                .unwrap_or(0);
+            if count > 1 {
+                let delta = if matches!(event.virtual_key, codes::UP | codes::LEFT) {
+                    -1
+                } else {
+                    1
+                };
+                self.gloss_index =
+                    (self.gloss_index as isize + delta).rem_euclid(count as isize) as usize;
+            }
+            return Some(Effect::Navigated);
+        }
         // 别的键（字母、翻页键…）：退出模式，按普通按键处理
         self.programmer = false;
+        self.gloss_index = 0;
         None
     }
 
@@ -70,8 +102,13 @@ impl Router {
         let Some(gloss) = gloss else {
             return Effect::Changed(self.commit_index(index));
         };
-        // 一个词可能有多条释义（Core 用 "; " 拼成一条给）；这两个壳暂时只上屏第一条
-        let text = gloss.split("; ").next().unwrap_or(&gloss).to_owned();
+        // 一个词可能有多条释义（Core 用 "; " 拼成一条给）：上屏当前高亮的那一条，越界回第一条
+        let senses: Vec<&str> = gloss.split("; ").collect();
+        let text = senses
+            .get(self.gloss_index)
+            .copied()
+            .unwrap_or(senses[0])
+            .to_owned();
         let english = Candidate {
             text,
             // 快捷候选：上屏时吃掉整段拼音，不记学习
@@ -82,6 +119,7 @@ impl Router {
             gloss: None,
         };
         self.programmer = false;
+        self.gloss_index = 0;
         Effect::Changed(Some(self.engine.commit(&english)))
     }
 }

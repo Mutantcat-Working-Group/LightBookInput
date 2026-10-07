@@ -39,7 +39,8 @@ pub use self::status::{NoopStatusSink, StatusEvent, StatusSink, StatusView};
 const LEARNING_FLUSH_INTERVAL: Duration = Duration::from_secs(60);
 
 /// 程序员模式开着时候选窗口里常驻的一行字。
-pub(super) const PROGRAMMER_STATUS: &str = "程序员模式：数字键上屏英文，Esc 退出";
+pub(super) const PROGRAMMER_STATUS: &str =
+    "程序员模式：方向键选释义，数字 / 空格上屏，Esc 退出";
 
 /// 同一时刻只有一个应用有键盘焦点，所以一个 Engine 持当前组句；焦点切到别的会话时先清掉上一个的残留。
 pub struct Router {
@@ -112,6 +113,9 @@ pub struct Router {
 
     /// 程序员模式开着：数字 / 空格上屏候选的英文（按住 `~` 触发，`~` / Esc / 别的键退出）。
     programmer: bool,
+
+    /// 程序员模式里高亮候选当前选中的英文释义下标；换候选、重建组句时归零。
+    gloss_index: usize,
 }
 
 impl Router {
@@ -143,6 +147,7 @@ impl Router {
             applied_model: LocalModelConfig::default(),
             rescore: RescoreState::default(),
             programmer: false,
+            gloss_index: 0,
         }
     }
 

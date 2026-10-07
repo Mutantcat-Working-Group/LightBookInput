@@ -67,6 +67,7 @@ impl Router {
         self.stop_rescoring();
         self.composed = None;
         self.programmer = false;
+        self.gloss_index = 0;
         self.sentence = None;
         self.notice = None;
         self.highlight = 0;
