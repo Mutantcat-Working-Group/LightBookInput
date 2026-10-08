@@ -36,8 +36,9 @@ fi
 
 cd "$ROOT"
 
-# .app（含 cargo 构建、数据拷贝、ad-hoc 签名）交给 bundle.sh；版本号显式传进去保持一致。
-LIGHTBOOKINPUT_VERSION="$VERSION" apps/macos/scripts/bundle.sh
+# .app 与 .pkg（含 cargo 构建、数据拷贝、ad-hoc 签名）交给 bundle.sh；版本号显式传进去保持一致。
+# --pkg 模式同时产出 .app 和 .pkg，DMG 里放两者：普通用户双击 .pkg 安装，开发者可手动拖 .app。
+LIGHTBOOKINPUT_VERSION="$VERSION" apps/macos/scripts/bundle.sh --pkg
 
 # ---------- DMG 包装 ----------
 DMG="$ROOT/target/pkg/lightbookinput-$VERSION-macos-$ARCH.dmg"
@@ -47,6 +48,12 @@ mkdir -p "$DMG_DIR"
 
 # 不带扩展属性复制，否则载荷里全是 ._ 元数据文件
 ditto --noextattr --norsrc --noacl "$APP" "$DMG_DIR/$APP_NAME.app"
+
+# PKG 安装器（普通用户双击安装到 /Library/Input Methods/）
+PKG="$ROOT/target/pkg/lightbookinput-$VERSION-macos-$ARCH.pkg"
+if [[ -f "$PKG" ]]; then
+  cp "$PKG" "$DMG_DIR/"
+fi
 
 # Applications 快捷方式
 ln -s /Applications "$DMG_DIR/Applications"
@@ -71,12 +78,13 @@ tell application "Finder"
     set current view of container window to icon view
     set toolbar visible of container window to false
     set statusbar visible of container window to false
-    set bounds of container window to {400, 100, 885, 430}
+    set bounds of container window to {400, 100, 1085, 430}
     set viewOptions to icon view options of container window
     set arrangement of viewOptions to not arranged
     set icon size of viewOptions to 72
     set position of item "$APP_NAME.app" of container window to {100, 100}
-    set position of item "Applications" of container window to {375, 100}
+    set position of item "lightbookinput-$VERSION-macos-$ARCH.pkg" of container window to {375, 100}
+    set position of item "Applications" of container window to {650, 100}
     close
   end tell
 end tell
