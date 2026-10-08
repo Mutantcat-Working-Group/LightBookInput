@@ -10,9 +10,9 @@ use crate::panel::{Message, Settings};
 /// LIGHTBOOKINPUT_VERSION 由 build.rs 给：-dev 版接 git 短哈希。
 pub(crate) const VERSION: &str = env!("LIGHTBOOKINPUT_VERSION");
 
-pub(crate) const WEBSITE_URL: &str = "https://lightbookinput.app";
+pub(crate) const WEBSITE_URL: &str = "https://www.mutantcat.org/software/lightbookinput";
 
-pub(crate) const REPOSITORY_URL: &str = "https://github.com/mutantcat-working-group";
+pub(crate) const REPOSITORY_URL: &str = "https://github.com/Mutantcat-Working-Group/LightBookInput";
 
 /// 与仓库根 `LICENSE` 一致。
 const LICENSE_NOTE: &str = "自由软件，GPL-3.0-or-later 许可证：可以自由使用、修改与再分发，修改后分发须同样开源。官方渠道免费。";

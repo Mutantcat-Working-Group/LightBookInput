@@ -5,7 +5,7 @@
 ## 目标与边界
 
 - 用户不用再从群里拿包：发了新版，已装的轻书一天内自己知道。测试者把渠道切到「测试版」就能收到 beta / rc。
-- 输入法不替换自己：只提示，点了打开 [下载页](https://lightbookinput.app/download)，安装仍由系统安装程序完成。
+- 输入法不替换自己：只提示，点了打开 [下载页](https://github.com/Mutantcat-Working-Group/LightBookInput/releases/latest)，安装仍由系统安装程序完成。
 - 更新通道等于远程代码执行通道，所以索引从第一版起就签名；客户端只认签过名的索引。
 - 隐私：请求是对静态文件的 GET，不带账号、设备标识或输入内容；`[update] check = false` 关掉后不联网。
 
@@ -16,14 +16,13 @@
   releases_json.py → releases.json
   lightbookinput-release-sign sign → releases.json.sig      私钥：CI 密钥 LIGHTBOOKINPUT_INDEX_SIGNING_KEY
   两个文件挂到本次 Release 与 GitHub latest
-官网构建（lightbookinput-web scripts/sync-releases.mjs）
-  原样拷到 static/ → https://lightbookinput.app/releases.json 与 .sig
+  上传到 version.mutantcat.org → https://version.mutantcat.org/version.json 与 .sig
 客户端（crates/lightbookinput-update）
   下载两者 → ed25519 验签 → 解析 → 按平台 / CPU / 渠道挑比当前新的最新版 → 写 update.json
 ```
 
-索引放官网域名而不是直连 GitHub：国内访问 GitHub 不稳，官网是 Cloudflare 上的静态站（非浏览器 User-Agent 实测不被拦）。
-签名是对文件字节的分离签名，所以官网必须原样拷贝，不能经 JSON 重排。
+索引放在 version.mutantcat.org 而不是直连 GitHub：国内访问 GitHub 不稳。
+签名是对文件字节的分离签名，所以必须原样拷贝，不能经 JSON 重排。
 
 ## 渠道与版本
 

@@ -16,4 +16,5 @@ pub use target::Target;
 pub use version::Version;
 
 /// 下载页，提示里点开的就是它。
-pub const DOWNLOAD_URL: &str = "https://lightbookinput.app/download";
+pub const DOWNLOAD_URL: &str =
+    "https://github.com/Mutantcat-Working-Group/LightBookInput/releases/latest";

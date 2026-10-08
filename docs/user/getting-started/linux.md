@@ -16,7 +16,7 @@ description: 在 Linux 上安装轻书，使用 Fcitx5 默认候选面板。
 sudo apt install python3 fcitx5 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 fcitx5-frontend-qt6 fcitx5-config-qt
 ```
 
-从[下载页](https://lightbookinput.app/download)下载 `lightbookinput-<版本>-linux-x86_64.tar.gz`，解压后在解出的目录里执行：
+从[官网](https://www.mutantcat.org/software/lightbookinput)下载 `lightbookinput-<版本>-linux-x86_64.tar.gz`，解压后在解出的目录里执行：
 
 ```sh
 ./install.sh

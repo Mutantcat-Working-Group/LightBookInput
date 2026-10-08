@@ -105,7 +105,7 @@ cargo 命令全 `--locked`（含 `bundle.sh`、`build-dmg.sh` 与 `build-nsis.ps
 ## 版本索引的签名
 
 软件内「检查更新」只认签过名的 `releases.json`（设计见 `docs/design/update.md`）。`publish-releases-json.sh` 生成索引后用 `tools/release-sign` 签出 `releases.json.sig`，
-两个文件一起挂到本次 Release 与 GitHub latest；官网构建时原样拷到 `https://lightbookinput.app/releases.json` 与 `.sig`。
+两个文件一起挂到本次 Release 与 GitHub latest；发布时上传到 `https://version.mutantcat.org/version.json` 与 `.sig`。
 
 - 私钥是仓库 Secret `LIGHTBOOKINPUT_INDEX_SIGNING_KEY`（base64 的 32 字节）；没配时 `release.yml` 的门禁直接失败。维护者本机留一份在 `~/.config/lightbookinput/index-signing.key`（不进仓库）。
 - 换钥：`cargo run -p lightbookinput-release-sign -- keygen --out <新文件>`，把打印的公钥加进 `crates/lightbookinput-update/src/index/signature.rs` 的 `PUBLIC_KEYS`（新旧并列），

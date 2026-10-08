@@ -39,7 +39,7 @@
 !define AppNameEN "LightBookInput"
 !define ProductName "${AppName} ${AppNameEN}"
 !define Publisher "Mutantcat Working Group"
-!define WebsiteUrl "https://lightbookinput.app"
+!define WebsiteUrl "https://www.mutantcat.org/software/lightbookinput"
 !define RegKey "Software\LightBookInput"
 !define UninstKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\LightBookInput"
 

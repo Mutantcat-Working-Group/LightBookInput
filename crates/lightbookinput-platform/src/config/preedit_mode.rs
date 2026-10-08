@@ -17,7 +17,7 @@ pub enum PreeditMode {
 
 impl PreeditMode {
     /// 全部取值，设置界面按这个顺序列出。
-    pub const ALL: [Self; 3] = [Self::Both, Self::Inline, Self::Window];
+    pub const ALL: [Self; 3] = [Self::Inline, Self::Both, Self::Window];
 
     /// 配置文件里的写法。
     pub fn key(self) -> &'static str {

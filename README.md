@@ -61,10 +61,10 @@
 
 ### 三、安装与下载
 
-1. **macOS / Windows**：从 [官网](https://lightbookinput.app/download) 下载最新安装包。
+1. **macOS / Windows**：从 [官网](https://www.mutantcat.org/software/lightbookinput) 下载最新安装包。
    - macOS：pkg 安装到 `/Library/Input Methods/`，自动注册并启用输入源
    - Windows：NSIS 安装器，含 Server 进程 + TSF DLL + WinUI 3 设置程序
-2. **Linux（Fcitx5）**：源码安装，手动启动后台服务。详见 [Linux 安装说明](https://lightbookinput.app/docs/getting-started/linux)。
+2. **Linux（Fcitx5）**：源码安装，手动启动后台服务。详见 [Linux 安装说明](https://www.mutantcat.org/software/lightbookinput)。
 3. **源码构建**：Rust >= 1.88，`cargo build --workspace`。
 
 ### 四、快速上手
@@ -73,7 +73,7 @@
 2. 需要英文时点按 `~`（·），候选右侧立即出现英文，按数字或空格上屏。
 3. 再点按一次 `~`（或按 `Esc`、直接打别的键）即回到中文输入，不需要切换输入法或改任何设置。
 
-详细用法见 [使用文档](https://lightbookinput.app/docs)。
+详细用法见 [使用文档](https://www.mutantcat.org/software/lightbookinput)。
 
 ### 五、开发进度
 
@@ -94,7 +94,7 @@
 
 - [开发文档](docs/)：架构设计与实现要点
 - [开发约定](docs/contributing.md)：代码组织、命名、提交信息、文档同步
-- [反馈问题或建议](https://github.com/mutantcat-working-group/lightbookinput/issues/new/choose)
+- [反馈问题或建议](https://github.com/Mutantcat-Working-Group/LightBookInput/issues/new/choose)
 
 代码采用 [GPL-3.0-or-later](LICENSE) 许可；项目名称与 logo 不包含在代码授权中。随包数据有各自的来源与许可，见 [数据来源清单](docs/design/landscape.md)。
 

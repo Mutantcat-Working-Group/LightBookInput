@@ -41,5 +41,5 @@ cargo run --release -q -p lightbookinput-dict-convert -- --out-dir "$MODEL_DIR" 
   --output "$OUT" \
   --name "$name" --license "GPL-3.0-or-later" \
   --attribution "$attribution" \
-  --source "https://github.com/mutantcat-working-group/lightbookinput" --data-version "$model_id-small"
+  --source "https://github.com/Mutantcat-Working-Group/LightBookInput" --data-version "$model_id-small"
 ls -la "$OUT"

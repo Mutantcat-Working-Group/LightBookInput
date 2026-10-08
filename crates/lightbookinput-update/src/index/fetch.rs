@@ -4,7 +4,7 @@ use super::{Index, signature};
 use crate::UpdateError;
 
 /// 官网上的版本索引与它的分离签名；`LIGHTBOOKINPUT_UPDATE_INDEX` 可以换成别的地址（测试用，签名照验）。
-const INDEX_URL: &str = "https://lightbookinput.app/releases.json";
+const INDEX_URL: &str = "https://version.mutantcat.org/version.json";
 
 const MAX_INDEX_BYTES: usize = 2 * 1024 * 1024;
 

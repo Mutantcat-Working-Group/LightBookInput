@@ -60,10 +60,10 @@ Core value:
 
 ### 3. Installation & Downloads
 
-1. **macOS / Windows**: download the latest installer from the [website](https://lightbookinput.app/download).
+1. **macOS / Windows**: download the latest installer from the [website](https://www.mutantcat.org/software/lightbookinput).
     - macOS: the pkg installs into `/Library/Input Methods/`, registering and enabling the input source automatically.
     - Windows: the NSIS installer includes the server process, the TSF DLL, and the WinUI 3 settings app.
-2. **Linux (Fcitx5)**: install from source and start the background server manually. See the [Linux guide](https://lightbookinput.app/docs/getting-started/linux).
+2. **Linux (Fcitx5)**: install from source and start the background server manually. See the [Linux guide](https://www.mutantcat.org/software/lightbookinput).
 3. **Build from source**: Rust >= 1.88, then `cargo build --workspace`.
 
 ### 4. Quick Start
@@ -72,7 +72,7 @@ Core value:
 2. When you need English, tap `~` (·) and the candidates flip to their English spellings; press a number or `Space` to commit.
 3. Tap `~` once more, press `Esc`, or type anything else and you are back in Chinese input, with no input-method switching and no settings to change.
 
-Full usage documentation is at [the docs site](https://lightbookinput.app/docs).
+Full usage documentation is at [the docs site](https://www.mutantcat.org/software/lightbookinput).
 
 ### 5. Roadmap
 

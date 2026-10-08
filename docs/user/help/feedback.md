@@ -4,7 +4,7 @@ order: 3
 description: 反馈问题时需提供的材料：当天的日志、「复制诊断信息」的内容，以及常见情况的自查。
 ---
 
-问题与建议请提到 [GitHub Issues](https://github.com/mutantcat-working-group/lightbookinput/issues/new/choose)，按表单填写即可；表单会要求下面这些材料。
+问题与建议请提到 [GitHub Issues](https://github.com/Mutantcat-Working-Group/LightBookInput/issues/new/choose)，按表单填写即可；表单会要求下面这些材料。
 也可以加 QQ 群 [902314603](https://qm.qq.com/q/jBvn2gGTxm)（轻书输入法用户内测体验交流群）直接交流。
 
 ## 反馈时请提供
@@ -20,7 +20,7 @@ description: 反馈问题时需提供的材料：当天的日志、「复制诊�
 ## 常见情况
 
 - **安装后输入法列表中没有轻书**：macOS 到「系统设置 → 键盘 → 输入法 → 编辑 → +」在简体中文下添加，仍没有则注销后重新登录；
-  Windows 注销后重新登录。重启后仍然没有，请[提交 issue](https://github.com/mutantcat-working-group/lightbookinput/issues/new/choose)并附系统版本与安装方式。
+  Windows 注销后重新登录。重启后仍然没有，请[提交 issue](https://github.com/Mutantcat-Working-Group/LightBookInput/issues/new/choose)并附系统版本与安装方式。
 - **开始菜单、任务栏搜索框、「设置」中候选窗口被压在下面**（Windows）：这类系统界面层级高于普通窗口，轻书靠 Windows 的 uiAccess 机制把候选窗口抬到它们之上，
   而系统只对装在 `C:\Program Files`（`%ProgramFiles%`）里的程序启用它，装到其他目录或其他盘会静默失效。请卸载后重装到默认目录。测试版没有正式代码签名，同样会失效，将在签名版中解决；两种情况上屏本身都正常。
 - **装了新版输入法后行为没变**（Windows）：输入法 DLL 会被装进每个程序的进程，**装新版之前就开着的程序要重启**才会用上新代码——在其中切走输入法再切回没有用（模块已经加载进进程了）；资源管理器同理，重启后任务栏搜索框才生效。

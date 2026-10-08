@@ -42,10 +42,10 @@ pub const ATTRIBUTIONS: &[(&str, &str)] = &[
 ];
 
 /// 官网。
-pub const WEBSITE_URL: &str = "https://lightbookinput.app";
+pub const WEBSITE_URL: &str = "https://www.mutantcat.org/software/lightbookinput";
 
 /// 源码与问题反馈。
-pub const REPOSITORY_URL: &str = "https://github.com/mutantcat-working-group";
+pub const REPOSITORY_URL: &str = "https://github.com/Mutantcat-Working-Group/LightBookInput";
 
 /// 隐私说明。
 pub const PRIVACY_NOTE: &str = "轻书不上传任何数据。开着「自动检查更新」时每天向官网读一次版本列表，请求不带任何标识，上面可以关。开着云联想时，光标附近的文字与拼音会发给你在「云服务」页填的 AI 服务商（缺省 DeepSeek）的服务器，不经过作者；程序员模式的候选英文只在本机查表，不联网。「高级」页的输入日志只写在这台电脑的数据目录里，可以关掉或清空。";
