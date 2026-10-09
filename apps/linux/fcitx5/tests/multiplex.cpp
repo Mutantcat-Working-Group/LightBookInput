@@ -8,7 +8,8 @@
 #include <cassert>
 
 int main() {
-    Server server("shift_letter = \"compose\"\n");
+    // 缺省翻页键是 `-` `=`，这里要的是直输段里的连字符，换回方括号那一套。
+    Server server("page_keys = \"[]\"\nshift_letter = \"compose\"\n");
     char program[] = "lightbookinput-real"; char disable[] = "--disable=all";
     char *arguments[] = {program, disable, nullptr};
     fcitx::Instance instance(2, arguments); instance.initialize();
