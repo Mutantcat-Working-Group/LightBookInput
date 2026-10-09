@@ -1,6 +1,6 @@
 | `.github/workflows/ci.yml` | push main、PR | `core`（Linux）fmt / clippy / 全 workspace 测试（排除 IMK 壳）；`macos` 编 IMK 壳并跑它的测试；`windows` 编 Server / TSF DLL / Settings 并跑测试。仓库公开，Actions 不计费 |
 | `.github/workflows/audit.yml` | 每周一、Cargo.lock 变动 | `cargo audit`（RustSec 已知漏洞） |
-| `.github/workflows/package.yml` | 推 `v*` 标签 | 下载产品数据 → 三平台打「可直接装」的包（Linux AppImage、macOS 双架构 dmg、Windows 双架构 NSIS）→ 建 Release、上传、传 `SHA256SUMS`。不签名索引、不触发官网，见下文 |
+| `.github/workflows/package.yml` | 推 `v*` 标签 | 下载产品数据 → 三平台打「可直接装」的包（Linux AppImage、macOS 双架构 dmg、Windows 双架构 NSIS）→ 建并发布 Release、上传、传 `SHA256SUMS`。不签名索引、不触发官网，见下文 |
 | `.github/dependabot.yml` | 每周一 | Cargo 依赖与钉 commit 的 actions 的更新 PR |
 
 # 发版流程
@@ -82,7 +82,7 @@ cargo 命令全 `--locked`（含 `bundle.sh`、`build-dmg.sh` 与 `build-nsis.ps
 |---|---|---|
 | `.github/workflows/ci.yml` | push main、PR | Linux 上 `cargo fmt --check` / clippy / test，排除 `lightbookinput-macos`（IMK 外壳只能在 macOS 编译，macOS runner 计费是 Linux 的 10 倍） |
 | `.github/workflows/release.yml` | 推 `v*`（三个平台）或 `macos-v*` / `windows-v*` / `linux-v*`（单平台）标签 | `prepare` 门禁并建草稿 Release → `macos` / `windows` / `linux` 并行打包上传 → `publish` 合并摘要、转正、生成 `releases.json`、触发官网构建（见上文） |
-| `.github/workflows/package.yml` | 推 `v*` 标签（三个平台）或 `macos-v*` / `windows-v*` / `linux-v*`（单平台） | 三平台打可直接安装的包——Linux AppImage、macOS 双架构 dmg（ad-hoc 签名、带 Applications 快捷方式）、Windows 双架构 NSIS——各平台传 `SHA256SUMS-<平台>` 片段，`checksums` job 合成一份 `SHA256SUMS`。不碰索引签名与官网，正式发版仍走 `release.yml` |
+| `.github/workflows/package.yml` | 推 `v*` 标签（三个平台）或 `macos-v*` / `windows-v*` / `linux-v*`（单平台） | 三平台打可直接安装的包——Linux AppImage、macOS 双架构 dmg（ad-hoc 签名、带 Applications 快捷方式）、Windows 双架构 NSIS——各平台传 `SHA256SUMS-<平台>` 片段，`checksums` job 合成一份 `SHA256SUMS`。打包成功即发布、不留草稿；不碰索引签名与官网，正式发版仍走 `release.yml` |
 
 ## 产品数据从哪来
 

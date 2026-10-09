@@ -1,5 +1,5 @@
 # 多平台打包 CI：推 v<版本> 标签触发，产出 macOS DMG（双架构）、Windows NSIS 安装包（双架构）、Linux AppImage，
-# 全部传到同一个 GitHub Release（草稿，人工核对后再发布）。版本号格式：1.0.20261006（语义版本 + 日期）。
+# 全部传到同一个 GitHub Release（打包成功即发布，不留草稿）。版本号格式：1.0.20261006（语义版本 + 日期）。
 #
 # 安装包都带自签名：macOS 是 ad-hoc 签名（带图标与 Applications 快捷方式），Windows 是自签名证书；
 # 分发时用户侧分别要过 Gatekeeper / SmartScreen，正式发版流水线（签名索引、公证）见 release.yml。
@@ -50,13 +50,13 @@ jobs:
             echo "$platform=$on" >> "$GITHUB_OUTPUT"
           done
 
-      - name: Create draft release
+      - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           # 同一标签重跑或补打平台时 Release 已存在，create 失败也照常往下传
-          gh release create "$GITHUB_REF_NAME" --draft --verify-tag \
+          gh release create "$GITHUB_REF_NAME" --verify-tag \
             --title "轻书输入法 $VERSION" \
             --notes "轻书输入法 $VERSION 安装包：macOS DMG（arm64 / x86_64）、Windows 安装包（64 位 / 32 位）、Linux AppImage。" || true
 
@@ -217,7 +217,7 @@ jobs:
           (cd target/linux-package && sha256sum *.AppImage) | tee "$RUNNER_TEMP/SHA256SUMS-linux"
           gh release upload "$GITHUB_REF_NAME" target/linux-package/*.AppImage "$RUNNER_TEMP/SHA256SUMS-linux" --clobber
 
-  # 三个平台的片段合成一份 SHA256SUMS（与 finish-release.sh 同一格式）；有平台失败就停在草稿，不出半套包。
+  # 三个平台的片段合成一份 SHA256SUMS（与 finish-release.sh 同一格式）。
   # 只下载片段、不下载安装包本身，所以不用 checkout。
   checksums:
     needs: [prepare, macos, windows, linux]
