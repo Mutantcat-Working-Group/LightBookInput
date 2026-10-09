@@ -357,7 +357,7 @@ bigram 语言模型 + Viterbi，加上简拼、模糊音、双拼。没有整句
   模式显示名在 `InfoPlist.strings` 按模式 ID 给，缺了对话框里显示裸 ID。没有模式时标准文本视图（备忘录等）切不过去、
   「添加输入法」列表也不出现（#31）。
   **图标**：顶层 `tsInputMethodIconFileKey` 与模式里的 Menu / AlternateMenu / Palette 三个图标键都指向同一张 22×16pt 模板 PDF
-  （品牌雪山的单峰剪影：一座尖主峰加山顶一枚 V 形雪线缺口、没有实心底，`TISIconIsTemplate` 让系统只取 alpha
+  （品牌雪山剪影：左肩、尖主峰、右峰三座山、没有实心底，`TISIconIsTemplate` 让系统只取 alpha
   按深浅色反色），鼠须管、Fcitx5 同此尺寸与形式，小了整体偏小、
   非模式路径会被非等比压进 16×16。系统自带输入法下拉菜单里的「拼」「あ」是苹果私有素材（KeyboardLayouts.framework），
   `TISIconLabels` 第三方写了不生效（鼠须管 #776 自 2023 挂着；goliajp/inputx、nvalleo/nagi 各自真机验过），别再试。
