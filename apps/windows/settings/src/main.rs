@@ -19,9 +19,9 @@ fn main() {
         log::error(format!("设置界面启动失败: {error:?}"));
         rfd::MessageDialog::new()
             .set_level(rfd::MessageLevel::Error)
-            .set_title("轻书设置")
+            .set_title("轻书输入法设置")
             .set_description(format!(
-                "设置界面启动失败，请重新安装轻书；仍不行请把日志目录发给作者。\n\n{error}"
+                "设置界面启动失败，请重新安装轻书输入法；仍不行请把日志目录发给作者。\n\n{error}"
             ))
             .set_buttons(rfd::MessageButtons::Ok)
             .show();

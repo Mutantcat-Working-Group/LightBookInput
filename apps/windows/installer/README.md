@@ -3,7 +3,7 @@
 用 [NSIS](https://nsis.sourceforge.io/)（makensis）打的安装包，把 TSF DLL（64 位与 32 位各一份）、Server、设置程序与随包数据一起装进
 `C:\Program Files\LightBookInput`，注册文本服务，并设登录自启。对应 macOS 的 pkg。
 
-安装界面是简体中文，左下角显示「轻书 LightBookInput \<版本\>」而不是 NullSoft 的署名。
+安装界面是简体中文，左下角显示「轻书输入法 \<版本\>」而不是 NullSoft 的署名。
 
 ## 安装布局
 
@@ -96,7 +96,7 @@ lightbookinput-<版本>-windows-x86-setup.exe       32 位包
 - **NSIS 版本**：开发机与 CI 都用 NSIS **3.x**（CI 上 `choco install nsis`）。`lightbookinput.nsi` 的安装界面文案由
   `MUI2` + `SimpChinese.nsh` 提供简体中文；`WinVer.nsh` 用来在 Windows 10 上给提示。别退回 2.x，MUI2 与多语言支持都不一样。
 - **界面署名**：NSIS 缺省在左下角写 `NullSoft Install System v3.xx`，本脚本用 `BrandingText` 改成
-  `轻书 LightBookInput <版本>`（脚本里那段说明来自原 Inno 脚本，迁移时保留）。
+  `轻书输入法 <版本>`（脚本里那段说明来自原 Inno 脚本，迁移时保留）。
 - **UTF-8 BOM**：`lightbookinput.nsi` 必须以 **UTF-8 with BOM** 保存。NSIS 3 会把带 BOM 的 `.nsi` 当 UTF-8 解，
   中文文案才不会乱码；单引号与双引号里的字符串都会展开变量。
 - **签名**：发版证书就绪后把 `signtool` 那一步换成正式证书（对应 mac 的 Developer ID）；开发期用 `-NoSign` 之外的自签证书。

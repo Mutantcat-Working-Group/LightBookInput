@@ -182,7 +182,7 @@ if ($doSign) {
     }
     Write-Host "签名 $($produced.Count) 个源二进制（signtool $signTool）…" -ForegroundColor Cyan
     foreach ($item in $produced) {
-        & $signTool sign /f $certPath /p $certPwd /fd sha256 /d "轻书 LightBookInput" $item.Path
+        & $signTool sign /f $certPath /p $certPwd /fd sha256 /d "轻书输入法" $item.Path
         if ($LASTEXITCODE -ne 0) { throw "signtool 签名失败：$($item.Path)（退出码 $LASTEXITCODE）" }
     }
 } else {
@@ -222,7 +222,7 @@ foreach ($arch in $ArchList) {
 if ($doSign) {
     foreach ($out in $outputs) {
         if (-not (Test-Path -LiteralPath $out)) { throw "makensis 说成了但没找到 $out" }
-        & $signTool sign /f $certPath /p $certPwd /fd sha256 /d "轻书 LightBookInput" $out
+        & $signTool sign /f $certPath /p $certPwd /fd sha256 /d "轻书输入法" $out
         if ($LASTEXITCODE -ne 0) { throw "signtool 签名安装包失败：$out（退出码 $LASTEXITCODE）" }
     }
     Write-Host '安装包已签名（自签证书，只证明来源一致；Windows 仍会标未知发布者）。' -ForegroundColor Cyan

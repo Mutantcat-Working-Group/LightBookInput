@@ -16,7 +16,7 @@ pub(crate) fn acquire() -> bool {
         return true;
     }
     // 第一个实例还没建出窗口（连点两下）就找不到，直接退出即可。
-    if let Ok(hwnd) = unsafe { FindWindowW(None, w!("轻书设置")) } {
+    if let Ok(hwnd) = unsafe { FindWindowW(None, w!("轻书输入法设置")) } {
         unsafe {
             if IsIconic(hwnd).as_bool() {
                 let _ = ShowWindow(hwnd, SW_RESTORE);

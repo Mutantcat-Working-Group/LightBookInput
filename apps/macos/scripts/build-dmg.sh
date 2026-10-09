@@ -60,7 +60,7 @@ ln -s /Applications "$DMG_DIR/Applications"
 
 # 临时 DMG
 TEMP_DMG="$ROOT/target/pkg/.tmp-$ARCH.dmg"
-hdiutil create -volname "LightBookInput" -srcfolder "$DMG_DIR" -ov -format UDRW "$TEMP_DMG"
+hdiutil create -volname "轻书输入法" -srcfolder "$DMG_DIR" -ov -format UDRW "$TEMP_DMG"
 
 # 挂载 DMG 配置图标布局
 MOUNT_POINT="$(hdiutil attach "$TEMP_DMG" -nobrowse -noverify | grep -o '/Volumes/.*' | head -1)"
@@ -73,7 +73,7 @@ fi
 # 配置图标布局（通过 AppleScript）
 osascript <<EOF
 tell application "Finder"
-  tell disk "LightBookInput"
+  tell disk "轻书输入法"
     open
     set current view of container window to icon view
     set toolbar visible of container window to false

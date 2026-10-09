@@ -1,5 +1,5 @@
 ﻿/* Name shown in the input source list and the input method menu */
-CFBundleName = "LIGHTBOOKINPUT";
-CFBundleDisplayName = "LIGHTBOOKINPUT";
+CFBundleName = "轻书输入法";
+CFBundleDisplayName = "轻书输入法";
 /* Input mode display name, keyed by the mode ID in Info.plist */
-"org.mutantcat.lightbookinput.Hans" = "LightBookInput";
+"org.mutantcat.lightbookinput.Hans" = "轻书输入法";

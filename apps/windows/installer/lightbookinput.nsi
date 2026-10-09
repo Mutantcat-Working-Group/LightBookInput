@@ -36,8 +36,7 @@
 !endif
 
 !define AppName "轻书输入法"
-!define AppNameEN "LightBookInput"
-!define ProductName "${AppName} ${AppNameEN}"
+!define ProductName "${AppName}"
 !define Publisher "Mutantcat Working Group"
 !define WebsiteUrl "https://www.mutantcat.org/software/lightbookinput"
 !define RegKey "Software\LightBookInput"
@@ -65,7 +64,7 @@ InstallDir "$PROGRAMFILES\LightBookInput"
 !endif
 InstallDirRegKey HKLM "${RegKey}" "InstallDir"
 ; 左下角显示软件信息与版本号（取代默认的 NullSoft Install System ...）
-BrandingText "轻书 LightBookInput ${AppVersion}"
+BrandingText "轻书输入法 ${AppVersion}"
 RequestExecutionLevel admin
 
 VIProductVersion "${AppVersionNumeric}"
@@ -85,17 +84,17 @@ SetCompressor /SOLID lzma
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_FUNCTION LaunchServer
 
-!define MUI_TEXT_WELCOME_INFO_TITLE "欢迎安装轻书 ${AppVersion}"
-!define MUI_TEXT_WELCOME_INFO_TEXT "本向导将引导你安装轻书（LightBookInput）${AppVersion}。$\r$\n$\r$\n轻书是一款跨平台中文输入法，安装前请保存好其它程序里的工作。$\r$\n$\r$\n点击「下一步」继续。"
+!define MUI_TEXT_WELCOME_INFO_TITLE "欢迎安装轻书输入法 ${AppVersion}"
+!define MUI_TEXT_WELCOME_INFO_TEXT "本向导将引导你安装轻书输入法 ${AppVersion}。$\r$\n$\r$\n轻书输入法是一款跨平台中文输入法，安装前请保存好其它程序里的工作。$\r$\n$\r$\n点击「下一步」继续。"
 !define MUI_TEXT_DIRECTORY_TITLE "选择安装位置"
-!define MUI_TEXT_DIRECTORY_SUBTITLE "选择轻书的安装文件夹。"
-!define MUI_TEXT_INSTALLING_TITLE "正在安装轻书"
+!define MUI_TEXT_DIRECTORY_SUBTITLE "选择轻书输入法的安装文件夹。"
+!define MUI_TEXT_INSTALLING_TITLE "正在安装轻书输入法"
 !define MUI_TEXT_INSTALLING_SUBTITLE "正在安装 ${ProductName} ${AppVersion}，请稍候…"
 !define MUI_TEXT_FINISH_TITLE "安装完成"
-!define MUI_TEXT_FINISH_SUBTITLE "轻书 ${AppVersion} 已安装到你的电脑。"
-!define MUI_TEXT_FINISH_INFO_TEXT "安装完成。请注销后重新登录（或重启电脑），轻书才会在所有应用里生效。$\r$\n$\r$\n不方便注销的话，先关掉再重新打开要打字的应用也可以。"
-!define MUI_TEXT_FINISH_RUN "运行轻书(&R)"
-!define MUI_TEXT_ABORTWARNING "确定要退出轻书安装程序吗？"
+!define MUI_TEXT_FINISH_SUBTITLE "轻书输入法 ${AppVersion} 已安装到你的电脑。"
+!define MUI_TEXT_FINISH_INFO_TEXT "安装完成。请注销后重新登录（或重启电脑），轻书输入法才会在所有应用里生效。$\r$\n$\r$\n不方便注销的话，先关掉再重新打开要打字的应用也可以。"
+!define MUI_TEXT_FINISH_RUN "运行轻书输入法(&R)"
+!define MUI_TEXT_ABORTWARNING "确定要退出轻书输入法安装程序吗？"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
@@ -202,12 +201,12 @@ Function .onInit
   Call HoldInstallerMutex
   SetShellVarContext all
   ${IfNot} ${AtLeastBuild} 17763
-    MessageBox MB_OK|MB_ICONSTOP "轻书需要 Windows 10 版本 1809 或更高版本。"
+    MessageBox MB_OK|MB_ICONSTOP "轻书输入法需要 Windows 10 版本 1809 或更高版本。"
     Abort
   ${EndIf}
 !ifdef BUILD_X64
   ${IfNot} ${RunningX64}
-    MessageBox MB_OK|MB_ICONSTOP "这是轻书 64 位安装包，需要 64 位 Windows。请改用 32 位安装包。"
+    MessageBox MB_OK|MB_ICONSTOP "这是轻书输入法 64 位安装包，需要 64 位 Windows。请改用 32 位安装包。"
     Abort
   ${EndIf}
   SetRegView 64
@@ -284,10 +283,13 @@ Section "安装" SecMain
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
   ; 4) 快捷方式（所有用户开始菜单 + 登录「启动」）
+  Delete "$SMPROGRAMS\LightBookInput\轻书设置.lnk"
+  Delete "$SMPROGRAMS\LightBookInput\卸载轻书.lnk"
+  Delete "$SMSTARTUP\轻书 Server.lnk"
   CreateDirectory "$SMPROGRAMS\LightBookInput"
-  CreateShortcut "$SMPROGRAMS\LightBookInput\轻书设置.lnk" "$INSTDIR\lightbookinput-settings.exe" "" "$INSTDIR\lightbookinput.ico"
-  CreateShortcut "$SMPROGRAMS\LightBookInput\卸载轻书.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\lightbookinput.ico"
-  CreateShortcut "$SMSTARTUP\轻书 Server.lnk" "$INSTDIR\lightbookinput-server.exe" "" "$INSTDIR\lightbookinput.ico"
+  CreateShortcut "$SMPROGRAMS\LightBookInput\轻书输入法设置.lnk" "$INSTDIR\lightbookinput-settings.exe" "" "$INSTDIR\lightbookinput.ico"
+  CreateShortcut "$SMPROGRAMS\LightBookInput\卸载轻书输入法.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\lightbookinput.ico"
+  CreateShortcut "$SMSTARTUP\轻书输入法服务.lnk" "$INSTDIR\lightbookinput-server.exe" "" "$INSTDIR\lightbookinput.ico"
 
   ; 5) 安装后：清旧任务 / 旧 DLL / 腾位文件，配权限，注册文本服务
   Call DeleteLegacyLogonTask
@@ -338,9 +340,12 @@ Section "Uninstall"
     FindClose $0
 
   ; 快捷方式
+  Delete "$SMPROGRAMS\LightBookInput\轻书输入法设置.lnk"
+  Delete "$SMPROGRAMS\LightBookInput\卸载轻书输入法.lnk"
   Delete "$SMPROGRAMS\LightBookInput\轻书设置.lnk"
   Delete "$SMPROGRAMS\LightBookInput\卸载轻书.lnk"
   RMDir "$SMPROGRAMS\LightBookInput"
+  Delete "$SMSTARTUP\轻书输入法服务.lnk"
   Delete "$SMSTARTUP\轻书 Server.lnk"
 
   ; 注册表
