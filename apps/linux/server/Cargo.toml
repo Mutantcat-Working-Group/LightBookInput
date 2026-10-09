@@ -1,7 +1,7 @@
 [package]
 name = "lightbookinput-linux-server"
 description = "Linux Fcitx5 输入法的 Rust Server"
-version = "1.0.20261012"
+version = "1.0.20261013"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
