@@ -31,6 +31,7 @@ Core value:
 - Fuzzy pinyin: z/zh, c/ch, s/sh, n/l, f/h, l/r, an/ang, en/eng, in/ing.
 - Mixed Chinese and English typing: English candidates appear as soon as the string matches the English word list.
 - English mode: exact matches, prefix completion, and single-edit correction.
+- Chinese/English switching: `Caps Lock` on macOS, a single `Shift` on Windows and Linux (Windows also offers a single `Ctrl` or `Ctrl + Alt + Space` in settings). The macOS menu bar icon and the Windows status bar show which mode you are in.
 - Emoji candidates follow the matching word and label the word itself.
 - Quick candidates: `rq`, `sj`, and `xq` produce date, time, and weekday; `v` starts expression mode for arithmetic.
 
@@ -69,8 +70,9 @@ Core value:
 ### 4. Quick Start
 
 1. Type as usual: enter pinyin, choose candidates, write whole sentences.
-2. When you need English, tap `~` (·) and the candidates flip to their English spellings; press a number or `Space` to commit.
-3. Tap `~` once more, press `Esc`, or type anything else and you are back in Chinese input, with no input-method switching and no settings to change.
+2. When you need English: press `Caps Lock` on macOS, or tap `Shift` on Windows and Linux, then just type.
+3. To see candidate English right away, tap `~` (·) and the English appears beside each candidate; press a number or `Space` to commit.
+4. Tap `~` once more, press `Esc`, or type anything else and you are back in Chinese input, with no input-method switching and no settings to change.
 
 Full usage documentation is at [the docs site](https://www.mutantcat.org/software/lightbookinput).
 
