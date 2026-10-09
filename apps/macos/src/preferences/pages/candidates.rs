@@ -55,7 +55,7 @@ impl CandidatesPage {
         note(
             layout,
             mtm,
-            "勾上后横排下 ↑ / ↓ 把一行展开成 6 行矩阵并换行，← / → 在候选之间移动（拼音光标用 ⌥← / ⌥→），Esc 第一下先收回；不勾（缺省）按键与以前一样。",
+            "勾上后横排下 ↑ / ↓ 把一行展开成 6 行矩阵并换行，← / → 在候选之间移动（拼音光标用 ⌥← / ⌥→），Esc 第一下先收回；缺省已勾选，不勾时 ↑ / ↓ 逐个移动高亮、← / → 移动拼音光标，与以前一样。",
         );
         let renderer_titles: Vec<String> = CandidateRenderer::ALL
             .iter()

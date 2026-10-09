@@ -120,7 +120,7 @@ pub struct Host {
     /// 候选窗口竖排 / 横排（配置 `[general] layout`）。
     pub layout: LayoutMode,
 
-    /// 横排时上下键展开成矩阵的开关（配置 `[general] horizontal_grid`，缺省关）。
+    /// 横排时上下键展开成矩阵的开关（配置 `[general] horizontal_grid`，缺省开）。
     pub horizontal_grid: bool,
 
     /// 英文模式是否给英文候选（配置 `[general] english_candidates`）。
