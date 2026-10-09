@@ -8,9 +8,9 @@ use crate::panel::{Message, Settings};
 
 /// 翻页键对：界面名 + 配置写法。
 pub(crate) const PAGE_KEYS: [(&str, &str); 3] = [
+    ("减号等号 - =", "-="),
     ("方括号 [ ]", "[]"),
     ("逗号句号 , .", ",."),
-    ("减号等号 - =", "-="),
 ];
 
 /// 可当模式键的字母（与 Core `ModeKeys::CANDIDATES` 一致）。
@@ -54,7 +54,7 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
     let rows = [
         field(
             "翻页键",
-            "选「, .」或「- =」时组句中敲对应符号是翻页，不再是上屏加标点。",
+            "选「[ ]」或「, .」时组句中敲对应符号是翻页，不再是上屏加标点；按 ⇧+= 送来的 + 与 = 一样是下一页。",
             ComboBox::new()
                 .items_source(PAGE_KEYS.iter().map(|(label, _)| *label))
                 .selected_index(index_of(&PAGE_KEYS, &settings.config.general.page_keys))

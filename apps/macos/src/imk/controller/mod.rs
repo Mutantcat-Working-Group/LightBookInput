@@ -4,7 +4,7 @@
 //! **这里不允许出现排序、词库或文本变换逻辑。** 会话状态（候选、高亮、页码）在 [`crate::host::Session`]。
 
 use lightbookinput_core::{Candidate, CandidateKind, QUESTION_PREFIX};
-use lightbookinput_platform::Modifiers;
+use lightbookinput_platform::{Modifiers, is_page_key};
 use objc2::rc::{Allocated, Retained};
 use objc2::runtime::{AnyObject, Sel};
 use objc2::{define_class, msg_send, sel};

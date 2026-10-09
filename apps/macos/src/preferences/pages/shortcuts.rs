@@ -49,7 +49,7 @@ impl ShortcutsPage {
         note(
             layout,
             mtm,
-            "选「，  。」时组句中敲逗号句号是翻页，不再是上屏加标点。",
+            "选「，  。」或「方括号 [ ]」时组句中敲对应符号是翻页，不再是上屏加标点；按 ⇧+= 送来的 + 与 = 一样是下一页。",
         );
         let key_titles: Vec<String> = ModeKeys::CANDIDATES.iter().map(char::to_string).collect();
         let expression = row_popup(

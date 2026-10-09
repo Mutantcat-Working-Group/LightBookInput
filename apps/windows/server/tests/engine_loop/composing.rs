@@ -213,6 +213,11 @@ fn minus_equals_page_keys_preserve_expression_input() {
     let (_, _, frame) = press(&mut router, punct('-'));
     assert_eq!(frame.page, 0);
     assert_eq!(preedit(&frame), "ni");
+    // ⇧+= 送来的是 `+`，与 `=` 一样翻下一页，preedit 不动
+    let (outcome, commit, frame) = press(&mut router, punct('+'));
+    assert_eq!((outcome, commit), (KeyOutcome::Consumed, None));
+    assert_eq!(frame.page, 1);
+    assert_eq!(preedit(&frame), "ni");
     press(&mut router, KeyEvent::new(0x1B, None, Default::default()));
 
     type_letters(&mut router, "v");
@@ -291,7 +296,11 @@ fn learning_data_persists_to_user_dir() {
 #[test]
 fn raw_segment_takes_digits_and_keeps_the_space() {
     // `-` 进英文直输段之后数字是内容不是选词键，空格整段原样上屏并保留空格（#28 排查时发现 `gpt-6` 丢了 6）。
-    let mut router = router();
+    // 缺省翻页键是 `-` `=`，这里要的是直输段里的连字符，换成方括号那一套
+    let mut router = router_with(RouterConfig {
+        page_keys: ('[', ']'),
+        ..RouterConfig::default()
+    });
     let mut frame = Frame::default();
     for c in "gpt-6".chars() {
         let (outcome, commit, next) = press(&mut router, letter(c));

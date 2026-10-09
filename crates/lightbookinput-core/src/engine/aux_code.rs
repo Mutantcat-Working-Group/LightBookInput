@@ -4,7 +4,7 @@ use super::{AuxSegment, Engine};
 use crate::parser;
 
 /// 触发键校验：单字符、ASCII 可打印、不是字母数字、不是 `'`（拼音隔音符）、不是当前翻页键。
-/// 翻页键按当前配置动态排除（`[ ]`、`,.` 只有真配成 `[general] page_keys` 才拒）。设置页与配置加载共用。
+/// 翻页键按当前配置动态排除（缺省 `-` `=`；`[ ]`、`,.` 只有真配成 `[general] page_keys` 才拒）。设置页与配置加载共用。
 pub fn is_valid_aux_code_key(key: char, page_keys: (char, char)) -> bool {
     key.is_ascii_graphic()
         && !key.is_ascii_alphanumeric()

@@ -415,7 +415,7 @@ fn the_enabled_gate_defaults_off() {
 }
 
 /// 触发键校验：单字符标点、非字母数字、非 `'`（拼音隔音符）、非**当前**翻页键——
-/// `[ ]`、`,.` 只有真配成 `[general] page_keys` 才拒，换一套就放行。
+/// `[ ]`、`,.` 只有真配成 `[general] page_keys` 才拒（缺省是 `-` `=`），换一套就放行。
 #[test]
 fn trigger_key_validation() {
     let paging = ('[', ']');

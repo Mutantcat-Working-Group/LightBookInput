@@ -20,6 +20,8 @@ fn absent_slot_keeps_digit_in_buffer_and_raw_submission() {
 #[test]
 fn raw_segment_preserves_digit_and_space_exactly_once() {
     let mut router = router(5);
+    // 缺省翻页键是 `-` `=`，这里要的是直输段里的连字符，换成方括号那一套
+    router.config.page_keys = ('[', ']');
     let normal = KeyModifiers::default();
     compose(&mut router, "gpt-6", normal);
     let result = key(&mut router, 32, Some(' '), normal);
@@ -30,6 +32,8 @@ fn raw_segment_preserves_digit_and_space_exactly_once() {
 #[test]
 fn english_candidates_select_current_page_and_preserve_trailing_space() {
     let mut router = router(1);
+    // 这一条看的是翻到第二页后选词，按键用方括号那一套，与缺省 `-` `=` 无关
+    router.config.page_keys = ('[', ']');
     router.config.english_candidates = true;
     let english = KeyModifiers {
         english_mode: true,

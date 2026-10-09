@@ -10,10 +10,16 @@ pub const MAX_PAGE_SIZE: usize = 9;
 /// 翻页键对的可选值，第一项是缺省：第一个键向前、第二个向后。
 /// 缺省不用 `,` `.`：组句中敲逗号句号应该把首选上屏再补一个全角标点（`nihao,zaima` 一气打完），
 /// 拿它们翻页就得先按空格再敲标点。选 `-` `=` 时组句中的 `-` 是翻页，不再进英文直输段（#43）。
-pub const PAGE_KEY_OPTIONS: [&str; 3] = ["[]", ",.", "-="];
+pub const PAGE_KEY_OPTIONS: [&str; 3] = ["-=", ",.", "[]"];
 
 /// 缺省翻页键对，与 [`PAGE_KEY_OPTIONS`] 第一项一致。
-pub const DEFAULT_PAGE_KEYS: (char, char) = ('[', ']');
+pub const DEFAULT_PAGE_KEYS: (char, char) = ('-', '=');
+
+/// 敲出来的字符 `c` 算不算翻页键 `key`。`=` 上按 Shift 送来的是 `+`，同样当下一页：
+/// 组句里 `+` 不是内容，翻不动页却打出个加号反而莫名。只有 `=` 认这个别名。
+pub fn is_page_key(c: char, key: char) -> bool {
+    c == key || (key == '=' && c == '+')
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
@@ -30,7 +36,7 @@ pub struct GeneralConfig {
     /// 候选窗口竖排 / 横排。
     pub layout: LayoutMode,
 
-    /// 横排时上 / 下键把单行展开成多行矩阵（左 / 右键改为移动候选高亮，Esc 第一下先收回）。缺省关：横排下的按键与以前一样。只有 macOS 用。
+    /// 横排时上 / 下键把单行展开成多行矩阵（左 / 右键改为移动候选高亮，Esc 第一下先收回）。缺省开。只有 macOS 用。
     pub horizontal_grid: bool,
 
     /// 候选窗口由轻书渲染器还是系统原生绘制。
@@ -116,7 +122,7 @@ impl Default for GeneralConfig {
             page_keys: PAGE_KEY_OPTIONS[0].to_owned(),
             theme: ThemeMode::default(),
             layout: LayoutMode::default(),
-            horizontal_grid: false,
+            horizontal_grid: true,
             renderer: CandidateRenderer::default(),
             font: String::new(),
             preedit: PreeditMode::default(),
@@ -259,10 +265,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn horizontal_grid_is_off_unless_switched_on() {
-        assert!(!GeneralConfig::default().horizontal_grid);
+    fn horizontal_grid_is_on_unless_switched_off() {
+        assert!(GeneralConfig::default().horizontal_grid);
         let general: GeneralConfig = toml::from_str("layout = \"horizontal\"\n").unwrap();
-        assert!(!general.horizontal_grid);
+        assert!(general.horizontal_grid);
         let general: GeneralConfig = toml::from_str("horizontal_grid = true\n").unwrap();
         assert!(general.horizontal_grid);
     }
@@ -271,7 +277,7 @@ mod tests {
     fn page_size_and_keys_are_sanitized() {
         let mut general = GeneralConfig::default();
         assert_eq!(general.page_size(), 9);
-        assert_eq!(general.page_keys(), ('[', ']'));
+        assert_eq!(general.page_keys(), ('-', '='));
         general.page_size = 0;
         general.page_keys = ",.".to_owned();
         assert_eq!(general.page_size(), 1);
@@ -279,9 +285,30 @@ mod tests {
         general.page_size = 42;
         general.page_keys = "ab".to_owned();
         assert_eq!(general.page_size(), 9);
-        assert_eq!(general.page_keys(), ('[', ']'));
+        assert_eq!(general.page_keys(), ('-', '='));
         general.page_keys = ",,".to_owned();
-        assert_eq!(general.page_keys(), ('[', ']'));
+        assert_eq!(general.page_keys(), ('-', '='));
+    }
+
+    /// 缺省翻页键对就是设置界面里的第一项，写坏时退回的也是它。
+    #[test]
+    fn default_page_keys_are_the_first_option() {
+        let general = GeneralConfig::default();
+        assert_eq!(general.page_keys, PAGE_KEY_OPTIONS[0]);
+        assert_eq!(general.page_keys(), DEFAULT_PAGE_KEYS);
+        assert_eq!(PAGE_KEY_OPTIONS[0], "-=");
+    }
+
+    /// ⇧+= 送来的是 `+`，与 `=` 一样翻下一页；`-` 不认别名。
+    #[test]
+    fn plus_pages_like_equals() {
+        let (previous, next) = GeneralConfig::default().page_keys();
+        assert!(is_page_key('-', previous));
+        assert!(is_page_key('=', next));
+        assert!(is_page_key('+', next));
+        assert!(!is_page_key('+', previous));
+        assert!(!is_page_key('=', previous));
+        assert!(!is_page_key('-', next));
     }
 
     #[test]
@@ -291,7 +318,8 @@ mod tests {
         assert!(!general.aux_code_show);
         general.aux_code_key = "/".to_owned();
         assert_eq!(general.aux_code_key(), '/');
-        for bad in ["", "ab", "a", "1", "[", "中"] {
+        // `'` 是拼音隔音符，`-` 是当前翻页键，都不能当触发键
+        for bad in ["", "ab", "a", "1", "'", "-", "中"] {
             general.aux_code_key = bad.to_owned();
             assert_eq!(general.aux_code_key(), ';', "{bad}");
         }

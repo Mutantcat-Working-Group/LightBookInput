@@ -18,6 +18,6 @@ pub use config::{
     DEFAULT_ENGLISH_CANDIDATES_OFF_MACOS, DEFAULT_ENGLISH_CANDIDATES_OFF_WINDOWS,
     DEFAULT_PAGE_KEYS, DictionariesConfig, GeneralConfig, LayoutMode, LocalModelConfig, LogLevel,
     MAX_PAGE_SIZE, Modifiers, PAGE_KEY_OPTIONS, PreeditMode, Scheme, ShiftLetter, ShortcutConfig,
-    SwitchKey, SwitchKeys, ThemeMode, UpdateChannel, UpdateConfig, scheme_label,
+    SwitchKey, SwitchKeys, ThemeMode, UpdateChannel, UpdateConfig, is_page_key, scheme_label,
 };
 pub use error::ConfigError;

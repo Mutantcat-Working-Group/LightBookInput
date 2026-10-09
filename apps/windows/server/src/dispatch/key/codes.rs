@@ -22,9 +22,9 @@ pub(crate) const TILDE: u32 = 0xC0;
 /// 翻页键对 `(上一页, 下一页)`：返回 -1 / +1。
 pub(crate) fn page_key(event: &KeyEvent, page_keys: (char, char)) -> Option<isize> {
     let c = event.character?;
-    if c == page_keys.0 {
+    if lightbookinput_platform::is_page_key(c, page_keys.0) {
         Some(-1)
-    } else if c == page_keys.1 {
+    } else if lightbookinput_platform::is_page_key(c, page_keys.1) {
         Some(1)
     } else {
         None
