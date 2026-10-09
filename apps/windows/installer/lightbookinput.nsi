@@ -35,7 +35,7 @@
   !define AppArch "x86_64"
 !endif
 
-!define AppName "轻书"
+!define AppName "轻书输入法"
 !define AppNameEN "LightBookInput"
 !define ProductName "${AppName} ${AppNameEN}"
 !define Publisher "Mutantcat Working Group"

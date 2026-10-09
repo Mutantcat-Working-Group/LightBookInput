@@ -11,9 +11,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>LightBookInput</string>
+	<string>轻书输入法</string>
 	<key>CFBundleDisplayName</key>
-	<string>轻书</string>
+	<string>轻书输入法</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleIconFile</key>
