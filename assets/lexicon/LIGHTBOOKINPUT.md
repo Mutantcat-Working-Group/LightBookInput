@@ -34,7 +34,7 @@ cargo run --release -p lightbookinput-dict-convert -- lexicon --pinyin data/gene
 #     词库已并入过短语时重跑要加 --refresh assets/lexicon/phrases.tsv（先把上次的短语从分词词表摘掉，否则 我的 是一个词、挖不出 我 + 的）
 cargo run --release -p lightbookinput-dict-convert -- phrases data/corpus/*.txt   # 重跑：--refresh assets/lexicon/phrases.tsv
 cp data/generated/phrases.tsv assets/lexicon/phrases.tsv
-cargo run --release -p lightbookinput-dict-convert -- lexicon --pinyin data/generated/pinyin-llm.jsonl --frequency data/generated/lm-unigram.tsv --extra-words assets/lexicon/mined_words.tsv --extra-words assets/lexicon/phrases.tsv --extra-words assets/lexicon/brand.tsv --extra-words assets/lexicon/domain_words.tsv --extra-words assets/lexicon/mixed_words.tsv
+cargo run --release -p lightbookinput-dict-convert -- lexicon --pinyin data/generated/pinyin-llm.jsonl --frequency data/generated/lm-unigram.tsv --extra-words assets/lexicon/mined_words.tsv --extra-words assets/lexicon/phrases.tsv --extra-words assets/lexicon/brand.tsv --extra-words assets/lexicon/domain_words.tsv --extra-words assets/lexicon/mixed_words.tsv --extra-words-domain it_computing=assets/lexicon/developer_words.tsv
 #     语言模型不把短语当 token 统计（那样 而 + 是 的二元证据没了，二十 会压过 而是）：--phrases 让分词跳过短语、统计完按成分合成它们的计数，
 #     短语在整句与词级排序里的得分与原来走两个词的路径完全一样，只是多了个能整块选的词（见 tools/dict-convert/src/bigram.rs 模块注释）
 cargo run --release -p lightbookinput-dict-convert -- bigram --phrases assets/lexicon/phrases.tsv --phrases assets/lexicon/domain_words.tsv --brand assets/lexicon/brand.tsv --brand assets/lexicon/mixed_words.tsv data/corpus/*.txt

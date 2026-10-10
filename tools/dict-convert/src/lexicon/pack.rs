@@ -41,6 +41,9 @@ pub struct DomainRow {
     /// 来自 `03_domains/` 的哪个文件（文件名主干，如 `law`）；语料挖出的额外词为 `None`，一律留在基础词库。
     pub domain: Option<String>,
 
+    /// 是否强制归入 `domain`：产品维护的领域覆盖层即使词频超过 `domain_keep_min` 也不升入基础词库。
+    pub force_domain: bool,
+
     /// 给定的读音（短语层由成分词拼出）；`None` 按字推。
     pub syllables: Option<Vec<String>>,
 }
@@ -123,6 +126,7 @@ impl Pack {
                     text,
                     df,
                     domain: Some(stem.clone()),
+                    force_domain: false,
                     syllables: None,
                 });
             }

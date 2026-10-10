@@ -16,7 +16,7 @@
 - [x] 简拼（声母缩写 `kf` → 开发，与全拼混用，marked text 自动补 `'`）
 - [x] 开发测试词库：曾用雾凇拼音（GPL，不可发布）；2026-09-05 起换成自建词库，见 Phase 2 末尾「产品词库」
 - [x] 中→英释义：`tools/dict-convert` 从 CC-CEDICT 生成 11.5 万条（CC BY-SA 4.0，可发布）
-- [x] 带词性的中英释义表：LLM 批量生成（2026-09-05 起覆盖整个自建词库 23.9 万词，词性 + 英文释义，`assets/glossary/`）；取代 CC-CEDICT 表做随包数据
+- [x] 带词性的中英释义表：LLM 批量生成（2026-09-05 起覆盖整个自建词库 23.9 万词，2026-10-10 并入开发者术语后为 23.2 万词，词性 + 英文释义，`assets/glossary/`）；取代 CC-CEDICT 表做随包数据
 - [x] 整段切不动时取能切分的最长前缀出候选，剩余字母作为未切分尾部保留（`kaifv` → `kai'f'v`）
 - [x] 整句转换（bigram + Viterbi），含简拼整句（`wxqcf` → 我想去蹭饭 / `jttqhh` → 今天天气很好）
 - [x] 模糊音（Core `fuzzy`，配置 `[fuzzy]`）：z/zh、c/ch、s/sh、n/l、f/h、l/r、an/ang、en/eng、in/ing，

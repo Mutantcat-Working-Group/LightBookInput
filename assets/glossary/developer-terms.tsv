@@ -1,0 +1,280 @@
+# 轻书开发者术语补充表：程序设计与语法、并发与分布式、数据库、网络、安全、架构、测试、研发流程、人工智能等专业词。词	[词性. ]译词
+一致性	n. consistency
+三阶段提交	n. three-phase commit
+上下文窗口	n. context window
+不可变基础设施	n. immutable infrastructure
+不可变引用	n. immutable reference
+不可变性	n. immutability
+不可重复读	n. non-repeatable read
+丢失更新	n. lost update
+两阶段提交	n. two-phase commit
+主干开发	n. trunk-based development
+乐观锁	n. optimistic locking
+事件循环	n. event loop
+事件溯源	n. event sourcing
+事件驱动	adj. event-driven
+事务隔离	n. transaction isolation
+事后复盘	n. postmortem
+互联网协议	n. Internet Protocol
+代码冻结	n. code freeze
+代码审查	n. code review
+代码覆盖率	n. code coverage
+传输层安全	n. Transport Layer Security
+传输控制协议	n. Transmission Control Protocol
+伪共享	n. false sharing
+位置编码	n. positional encoding
+供应链攻击	n. supply-chain attack
+依赖注入	n. dependency injection
+借用检查器	n. borrow checker
+值对象	n. value object
+元编程	n. metaprogramming
+公钥	n. public key
+六边形架构	n. hexagonal architecture
+共识算法	n. consensus algorithm
+内存屏障	n. memory barrier
+内存泄漏	n. memory leak
+写偏斜	n. write skew
+冲突解决	n. conflict resolution
+分区容错性	n. partition tolerance
+分层架构	n. layered architecture
+分布式事务	n. distributed transaction
+分布式拒绝服务	n. distributed denial of service
+分库分表	n. sharding
+前馈网络	n. feed-forward network
+功能分支	n. feature branch
+加盐哈希	n. salted hash
+动态分析	n. dynamic analysis
+动态类型	n. dynamic type
+匿名函数	n. anonymous function
+协程	n. coroutine
+单例模式	n. singleton pattern
+单元测试	n. unit test
+单点登录	n. single sign-on
+即时编译	n. just-in-time compilation
+原子性	n. atomicity
+原子操作	n. atomic operation
+反向代理	n. reverse proxy
+反向传播	n. backpropagation
+反序列化	v. deserialize
+发布订阅	n. publish-subscribe
+变基	v. rebase
+变异测试	n. mutation test
+变更数据捕获	n. change data capture
+变更窗口	n. change window
+变量作用域	n. variable scope
+可变引用	n. mutable reference
+可用性	n. availability
+可观测性	n. observability
+合并请求	n. merge request
+向量数据库	n. vector database
+吞吐量	n. throughput
+告警风暴	n. alert storm
+命令式编程	n. imperative programming
+命令查询职责分离	n. command-query responsibility segregation
+哈希冲突	n. hash collision
+哈希函数	n. hash function
+哈希表	n. hash table
+回调函数	n. callback
+垂直分片	n. vertical partitioning
+垃圾回收	n. garbage collection
+埋点	n. instrumentation
+域名系统	n. Domain Name System
+基础设施即代码	n. infrastructure as code
+声明式编程	n. declarative programming
+复制日志	n. replicated log
+多因素认证	n. multi-factor authentication
+多头注意力	n. multi-head attention
+大模型	n. large model
+大语言模型	n. large language model
+契约测试	n. contract test
+威胁建模	n. threat modeling
+子网掩码	n. subnet mask
+字节码	n. bytecode
+学习率	n. learning rate
+安全审计	n. security audit
+实体对象	n. entity object
+实参	n. argument
+容器化	n. containerization
+密钥轮换	n. key rotation
+对称加密	n. symmetric encryption
+对齐训练	n. alignment training
+尾调用	n. tail call
+尾递归	n. tail recursion
+属性测试	n. property-based test
+工厂模式	n. factory pattern
+带宽限制	n. bandwidth limit
+幂等性	n. idempotency
+幻觉	n. hallucination
+幻读	n. phantom read
+序列化	v. serialize
+建造者模式	n. builder pattern
+异步函数	n. async function
+强一致性	n. strong consistency
+形参	n. parameter
+彩虹表	n. rainbow table
+微调	v. fine-tune
+心跳检测	n. heartbeat detection
+快照测试	n. snapshot test
+思维链	n. chain of thought
+悬垂指针	n. dangling pointer
+悲观锁	n. pessimistic locking
+惰性求值	n. lazy evaluation
+所有权	n. ownership
+执行计划	n. execution plan
+批处理	n. batch processing
+批归一化	n. batch normalization
+抽象语法树	n. abstract syntax tree
+拒绝服务	n. denial of service
+拣选提交	v. cherry-pick
+持久性	n. durability
+持续交付	n. continuous delivery
+持续部署	n. continuous deployment
+持续集成	n. continuous integration
+指令微调	n. instruction tuning
+指标监控	n. metrics monitoring
+损失函数	n. loss function
+接口网关	n. API gateway
+控制反转	n. inversion of control
+推理延迟	n. inference latency
+提交信息	n. commit message
+提示词	n. prompt
+攻击面	n. attack surface
+故障转移	n. failover
+数字签名	n. digital signature
+数字证书	n. digital certificate
+数据仓库	n. data warehouse
+数据包	n. data packet
+数据帧	n. data frame
+数据标注	n. data annotation
+数据流	n. data stream
+数据湖	n. data lake
+数据竞争	n. data race
+数据管道	n. data pipeline
+数据迁移	n. data migration
+断线重连	n. automatic reconnection
+日志聚合	n. log aggregation
+星型模型	n. star schema
+暴力破解	n. brute-force attack
+最小权限	n. least privilege
+最终一致性	n. eventual consistency
+服务发现	n. service discovery
+服务端请求伪造	n. server-side request forgery
+权限提升	n. privilege escalation
+查询计划	n. query plan
+根证书	n. root certificate
+桩对象	n. stub object
+梯度下降	n. gradient descent
+检查点	n. checkpoint
+检索增强生成	n. retrieval-augmented generation
+模型服务	n. model serving
+模式匹配	n. pattern matching
+模式迁移	n. schema migration
+模拟对象	n. mock object
+模糊测试	n. fuzz test
+欠拟合	n. underfitting
+正则化	n. regularization
+死代码	n. dead code
+死信队列	n. dead-letter queue
+死锁	n. deadlock
+死锁检测	n. deadlock detection
+残差连接	n. residual connection
+水平分片	n. horizontal sharding
+泛型	n. generics
+注入攻击	n. injection attack
+注意力机制	n. attention mechanism
+活锁	n. livelock
+流处理	n. stream processing
+测试夹具	n. test fixture
+测试替身	n. test double
+测试驱动开发	n. test-driven development
+消息队列	n. message queue
+清洁架构	n. clean architecture
+滚动发布	n. rolling release
+激活函数	n. activation function
+灰度发布	n. gradual rollout
+熔断	n. circuit breaking
+物理删除	n. hard delete
+特征存储	n. feature store
+特征工程	n. feature engineering
+生命周期	n. lifetime
+用户数据报协议	n. User Datagram Protocol
+盐值	n. salt
+知识蒸馏	n. knowledge distillation
+短路求值	n. short-circuit evaluation
+私钥	n. private key
+秘密管理	n. secrets management
+空指针	n. null pointer
+竞态条件	n. race condition
+端到端加密	n. end-to-end encryption
+端到端测试	n. end-to-end test
+端口映射	n. port mapping
+端口转发	n. port forwarding
+策略模式	n. strategy pattern
+类型推导	n. type inference
+类型注解	n. type annotation
+纯函数	n. pure function
+线程饥饿	n. thread starvation
+维度建模	n. dimensional modeling
+缓存一致性	n. cache coherence
+缓慢变化维	n. slowly changing dimension
+编排调度	n. orchestration
+编译期	n. compile time
+网关	n. gateway
+网络地址转换	n. Network Address Translation
+网络延迟	n. network latency
+联合索引	n. composite index
+联机事务处理	n. online transaction processing
+联机分析处理	n. online analytical processing
+聚合根	n. aggregate root
+聚集索引	n. clustered index
+背压	n. backpressure
+脏读	n. dirty read
+自注意力	n. self-attention
+蓝绿发布	n. blue-green deployment
+虚拟专用网络	n. virtual private network
+行为驱动开发	n. behavior-driven development
+行级锁	n. row-level lock
+表级锁	n. table-level lock
+覆盖索引	n. covering index
+观察者	n. observer
+证书链	n. certificate chain
+词嵌入	n. word embedding
+词法作用域	n. lexical scope
+负载均衡	n. load balancing
+跨站脚本	n. cross-site scripting
+跨站请求伪造	n. cross-site request forgery
+过拟合	n. overfitting
+过程式编程	n. procedural programming
+运行期	n. runtime
+返回值	n. return value
+连接池	n. connection pool
+连接泄漏	n. connection leak
+适配器	n. adapter
+逻辑删除	n. soft delete
+配置中心	n. configuration center
+配置漂移	n. configuration drift
+重试策略	n. retry policy
+量化推理	n. quantized inference
+金丝雀发布	n. canary release
+鉴权	n. authentication
+链路追踪	n. distributed tracing
+闭包	n. closure
+间隙锁	n. gap lock
+防腐层	n. anti-corruption layer
+降级	n. degradation
+限流	n. rate limiting
+限界上下文	n. bounded context
+随机梯度下降	n. stochastic gradient descent
+隔离性	n. isolation
+集成测试	n. integration test
+雪花模型	n. snowflake schema
+零信任	n. zero trust
+静态分析	n. static analysis
+静态类型	n. static type
+非对称加密	n. asymmetric encryption
+非聚集索引	n. non-clustered index
+预写日志	n. write-ahead log
+预训练	v. pretrain
+领域驱动设计	n. domain-driven design
+领导者选举	n. leader election
+高阶函数	n. higher-order function

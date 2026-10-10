@@ -47,6 +47,10 @@ pub enum Command {
         #[arg(long)]
         extra_words: Vec<PathBuf>,
 
+        /// 额外并入指定领域词库的词（`领域=文件`，格式同 --extra-words，可给多个）：即使词频达到 --domain-keep-min 也强制归入该领域，并覆盖同名词频
+        #[arg(long, value_name = "DOMAIN=PATH", value_parser = parse_domain_extra_words)]
+        extra_words_domain: Vec<(String, PathBuf)>,
+
         /// 领域词在语料里出现不少于这个次数就留在基础词库，否则拆到 dicts/<领域>.qj
         #[arg(long, default_value_t = 50)]
         domain_keep_min: u64,
@@ -232,6 +236,40 @@ pub enum Command {
         #[arg(long, default_value = "")]
         data_version: String,
     },
+}
+
+/// 解析 `--extra-words-domain` 的 `领域=文件`。
+fn parse_domain_extra_words(value: &str) -> Result<(String, PathBuf), String> {
+    let Some((domain, path)) = value.split_once('=') else {
+        return Err(
+            "要写成 领域=文件，例如 it_computing=assets/lexicon/developer_words.tsv".to_owned(),
+        );
+    };
+    let domain = domain.trim();
+    let path = path.trim();
+    if domain.is_empty() || path.is_empty() {
+        return Err("领域与文件都不能为空".to_owned());
+    }
+    Ok((domain.to_owned(), PathBuf::from(path)))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_domain_extra_words;
+
+    #[test]
+    fn parses_domain_extra_words() {
+        let (domain, path) =
+            parse_domain_extra_words("it_computing=assets/lexicon/developer_words.tsv").unwrap();
+        assert_eq!(domain, "it_computing");
+        assert_eq!(
+            path,
+            std::path::PathBuf::from("assets/lexicon/developer_words.tsv")
+        );
+        assert!(parse_domain_extra_words("assets/lexicon/developer_words.tsv").is_err());
+        assert!(parse_domain_extra_words("=assets/lexicon/developer_words.tsv").is_err());
+        assert!(parse_domain_extra_words("it_computing=").is_err());
+    }
 }
 
 /// `pack` 能打的数据种类。

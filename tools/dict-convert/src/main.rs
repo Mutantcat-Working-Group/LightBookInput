@@ -63,6 +63,7 @@ fn run() -> Result<(), ConvertError> {
             frequency,
             emit_ambiguous,
             extra_words,
+            extra_words_domain,
             domain_keep_min,
         } => lexicon::convert(
             &pack,
@@ -71,6 +72,7 @@ fn run() -> Result<(), ConvertError> {
             frequency.as_deref(),
             emit_ambiguous.as_deref(),
             &extra_words,
+            &extra_words_domain,
             domain_keep_min,
             &args.out_dir,
         ),

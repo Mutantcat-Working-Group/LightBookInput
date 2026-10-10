@@ -1,4 +1,4 @@
-# 由 LLM（DeepSeek）离线批量生成，说明见同目录 README.md。词	[词性. ]译词	[词性. ]译词
+# 轻书中英释义表：由 LLM（DeepSeek）离线批量生成，并并入轻书开发者术语补充表；说明见同目录 README.md。词	[词性. ]译词	[词性. ]译词
 㕮	v. chew
 㘎	v. roar
 㙘	adj. beautiful
@@ -3435,6 +3435,7 @@
 三阴	n. three yin
 三阴交	n. SP6 acupoint
 三阴交穴	n. Sanyinjiao point
+三阶段提交	n. three-phase commit
 三陂	n. Sanpi
 三院	n. third-hospital
 三陪	n. escort service
@@ -3515,6 +3516,7 @@
 上下文分析	n. context analysis
 上下文切换	n. context switch
 上下文属性	n. context attribute
+上下文窗口	n. context window
 上下文菜单	n. context menu
 上下水	n. water supply and drainage
 上下滑动	v. scroll up and down
@@ -5354,7 +5356,10 @@
 不可偏废	phr. cannot neglect
 不可分之债	n. indivisible obligation
 不可动摇	adj. unshakable
+不可变基础设施	n. immutable infrastructure
 不可变对象	n. immutable object
+不可变引用	n. immutable reference
+不可变性	n. immutability
 不可变类	n. immutable class
 不可名状	phr. indescribable
 不可否认	phr. undeniable
@@ -8862,6 +8867,7 @@
 丢在	v. left at
 丢失	v. lose
 丢失了	v. lost
+丢失更新	n. lost update
 丢弃	v. discard
 丢掉	v. throw away
 丢的	adj. lost
@@ -9116,6 +9122,7 @@
 两间	n. two rooms
 两间房乡	n. Liangjianfang Township
 两队	n. two teams
+两阶段提交	n. two-phase commit
 两院	n. two houses
 两院制	n. bicameral system
 两难	adj. dilemma
@@ -11815,6 +11822,7 @@
 主席树	n. chairman tree
 主席红烧肉	n. Chairman Mao's braised pork
 主干	n. trunk	n. main
+主干开发	n. trunk-based development
 主干线	n. main line
 主干道	n. main road
 主序	n. main sequence
@@ -12789,7 +12797,7 @@
 乐观	adj. optimistic
 乐观主义	n. optimism
 乐观的	adj. optimistic
-乐观锁	n. optimistic lock
+乐观锁	n. optimistic locking
 乐视	n. LeTV
 乐视手机	n. LeTV phone
 乐视电视	n. LeTV TV
@@ -14258,6 +14266,7 @@
 事件模型	n. event model
 事件流	n. event flow
 事件源	n. event source
+事件溯源	n. event sourcing
 事件监听	n. event listener
 事件监听器	n. event listener
 事件相关电位	n. event-related potential
@@ -14307,6 +14316,7 @@
 事后	adv. afterwards	adv. after the event
 事后不可罚行为	n. subsequent unpunishable act
 事后不能	phr. cannot afterwards
+事后复盘	n. postmortem
 事后诸葛亮	phr. Monday morning quarterback
 事在人为	phr. human effort
 事多	adj. busy
@@ -18791,6 +18801,7 @@
 代码优化	n. code optimization
 代码优化技巧	n. code optimization techniques
 代码健壮性	n. code robustness
+代码冻结	n. code freeze
 代码分享	n. code sharing
 代码分析	n. code analysis
 代码区	n. code segment
@@ -20441,6 +20452,7 @@
 传输协议	n. transfer protocol
 传输媒体	n. transmission medium
 传输层	n. transport layer
+传输层安全	n. Transport Layer Security
 传输延迟	n. transmission delay
 传输损耗	n. transmission loss
 传输控制协议	n. Transmission Control Protocol
@@ -20599,6 +20611,7 @@
 伪作	n. forgery
 伪像	n. artifact
 伪元素	n. pseudo-element
+伪共享	n. false sharing
 伪军	n. puppet army
 伪分布	n. pseudo-distribution
 伪分布式	n. pseudo-distributed
@@ -21077,6 +21090,7 @@
 位置服务	n. location service
 位置灯	n. position light
 位置的	adj. positional
+位置编码	n. positional encoding
 位置透明性	n. location transparency
 位能	n. potential energy
 位赛	n. placement match
@@ -23135,6 +23149,7 @@
 供应处	n. supply department
 供应点	n. supply point
 供应站	n. supply station
+供应链攻击	n. supply-chain attack
 供应链管理	n. supply chain management
 供应链风险管理	n. supply chain risk management
 供弹	v. feed ammunition
@@ -24703,6 +24718,7 @@
 借母溪林蛙	n. Jiemuxi frog
 借用	v. borrow
 借用合同	n. loan contract
+借用检查器	n. borrow checker
 借由	prep. by means of
 借的	adj. borrowed
 借着	prep. by means of
@@ -28282,6 +28298,7 @@
 公道合理	phr. fair and reasonable
 公道镇	n. Gongdao Town
 公里	m. kilometer
+公钥	n. public key
 公钥加密	n. public-key encryption
 公钥密码	n. public-key cryptography
 公铁两用车	n. road-rail vehicle
@@ -28522,6 +28539,7 @@
 六角门臂虫	n. hexagonal arm worm
 六诏星居初琐碎	n. Six Zhao stars scattered
 六边形	n. hexagon
+六边形架构	n. hexagonal architecture
 六连	n. six consecutive
 六道口	n. Liudaokou
 六道口社区	n. Liudaokou Community
@@ -28815,6 +28833,7 @@
 共计	v. total	v. amount to
 共设	v. jointly set up
 共识	n. consensus
+共识算法	n. consensus algorithm
 共话	v. talk together
 共谋	v. conspire
 共谋共同正犯	n. co-principal
@@ -30448,6 +30467,7 @@
 写保护	n. write protection
 写信	v. write a letter
 写信给	v. write to
+写偏斜	n. write skew
 写入	v. write in
 写入文件	v. write file
 写内存	v. write memory
@@ -33162,6 +33182,7 @@
 分化因子	n. differentiation factor
 分化瓦解	phr. disintegrate
 分区	n. partition	n. zone
+分区容错性	n. partition tolerance
 分区表	n. partition table
 分厂	n. branch factory
 分压	n. partial pressure
@@ -33211,6 +33232,7 @@
 分层	v. stratify
 分层图	n. layered graph
 分层抽样	n. stratified sampling
+分层架构	n. layered architecture
 分层遍历	n. level-order traversal
 分居	v. separate
 分居不离婚	phr. separated but not divorced
@@ -33233,6 +33255,7 @@
 分布式应用	n. distributed application
 分布式开发	n. distributed development
 分布式技术	n. distributed technology
+分布式拒绝服务	n. distributed denial of service
 分布式排序	n. distributed sorting
 分布式控制	n. distributed control
 分布式数据库	n. distributed database
@@ -33257,7 +33280,7 @@
 分布计算	n. distributed computing
 分布负载	n. distributed load
 分布透明性	n. distribution transparency
-分库分表	n. database sharding
+分库分表	n. sharding
 分店	n. branch
 分庭抗礼	phr. stand as an equal
 分开	v. separate
@@ -36195,6 +36218,7 @@
 前风窗玻璃	n. windshield
 前馈	n. feedforward
 前馈控制	n. feedforward control
+前馈网络	n. feed-forward network
 前首相	n. former prime minister
 前马厂	n. Qianmachang
 前马厂胡同	n. Qianmachang Hutong
@@ -36735,6 +36759,7 @@
 功能	n. function
 功能位	n. functional position
 功能关闭	n. disable function
+功能分支	n. feature branch
 功能分解	n. functional decomposition
 功能区	n. functional area
 功能块	n. function block
@@ -37013,6 +37038,7 @@
 加班费	n. overtime pay
 加登	n. Kato
 加盐	v. add salt
+加盐哈希	n. salted hash
 加盖	v. stamp
 加盖蜻蜓	n. capped skimmer
 加盟	v. join
@@ -40845,6 +40871,7 @@
 协理	n. assistant manager
 协理员	n. assistant manager
 协盛	adj. prosperous
+协程	n. coroutine
 协管	v. assist in managing
 协约	n. agreement
 协约国	n. Allied Powers
@@ -43483,6 +43510,7 @@
 即时压缩	n. real-time compression
 即时搜索	n. real-time search
 即时查询	n. real-time query
+即时编译	n. just-in-time compilation
 即时编译器	n. JIT compiler
 即时聊天	n. instant messaging
 即时解压缩	v. instant decompression
@@ -44117,6 +44145,7 @@
 原子变量	n. atomic variable
 原子广播	n. atomic broadcast
 原子弹	n. atomic bomb
+原子性	n. atomicity
 原子操作	n. atomic operation
 原子核	n. atomic nucleus
 原子武器	n. nuclear weapon
@@ -45807,7 +45836,7 @@
 反差	n. contrast
 反差萌	n. gap moe
 反常	adj. abnormal
-反序列化	n. deserialization
+反序列化	v. deserialize
 反应	n. reaction
 反应堆	n. reactor
 反应性	n. reactivity
@@ -46679,6 +46708,7 @@
 变址寄存器	n. index register
 变坏	v. turn bad
 变型	v. deform
+变基	v. rebase
 变声	v. change voice
 变大	v. become big
 变大了	v. became bigger
@@ -46705,6 +46735,7 @@
 变异	v. mutate
 变异体	n. variant
 变异性	n. variability
+变异测试	n. mutation test
 变异系数	n. coefficient of variation
 变强	v. become stronger
 变形	v. deform	v. transform
@@ -46755,8 +46786,10 @@
 变更为	v. change to
 变更产权	v. transfer property
 变更企业性质	phr. change enterprise nature
+变更数据捕获	n. change data capture
 变更注册商标公告	n. notice of trademark change
 变更登记	phr. change registration
+变更窗口	n. change window
 变本加厉	phr. intensify
 变样	v. change
 变棘棘隙吸虫	n. spiny fluke
@@ -47932,6 +47965,7 @@
 可变参数模板	n. variadic template
 可变字符串	n. mutable string
 可变字长	n. variable word length
+可变引用	n. mutable reference
 可变数组	n. dynamic array
 可变比特率	n. variable bitrate
 可变长参数	n. variable-length argument
@@ -48105,6 +48139,7 @@
 可用	adj. available	adj. usable
 可用于	v. can be used for
 可用作	phr. can be used as
+可用性	n. availability
 可用来	v. can be used to
 可用资产	n. available assets
 可由	v. can be
@@ -48185,6 +48220,7 @@
 可见点	n. visible point
 可观	adj. considerable
 可观察性	n. observability
+可观测性	n. observability
 可视分析	n. visual analytics
 可视化工具	n. visualization tool
 可视化管理器	n. visual manager
@@ -49703,6 +49739,7 @@
 合并文件	v. merge files
 合并流	n. merge stream
 合并症	n. complication
+合并请求	n. merge request
 合并资产负债表	n. consolidated balance sheet
 合并边框	v. merge borders
 合并链表	n. merge linked list
@@ -51207,6 +51244,7 @@
 向量化	v. vectorize
 向量处理器	n. vector processor
 向量指令	n. vector instruction
+向量数据库	n. vector database
 向量数据结构	n. vector data structure
 向量显示	n. vector display
 向量空间	n. vector space
@@ -52327,6 +52365,7 @@
 告老	v. retire
 告老还乡	phr. retire to hometown
 告警	v. warn
+告警风暴	n. alert storm
 告诉	v. tell	v. inform
 告诉他	phr. tell him
 告诉你	v. tell you
@@ -52939,9 +52978,11 @@
 命令主义	n. commandism
 命令处理程序	n. command processor
 命令大全	n. command reference
+命令式编程	n. imperative programming
 命令接口	n. command interface
 命令提示符	n. command prompt
 命令操作	n. command operation
+命令查询职责分离	n. command-query responsibility segregation
 命令模式	n. command mode
 命令窗口	n. command window
 命令系统	n. command system
@@ -53724,10 +53765,12 @@
 哈布斯堡	n. Habsburg
 哈希	n. hash
 哈希冲突	n. hash collision
+哈希函数	n. hash function
 哈希加密	n. hash encryption
 哈希映射	n. hash map
 哈希查找	n. hash lookup
 哈希算法	n. hash algorithm
+哈希表	n. hash table
 哈弗曼编码	n. Huffman coding
 哈德利	n. Hadley
 哈德森	n. Hudson
@@ -56809,7 +56852,7 @@
 回话	v. reply	v. answer
 回请	v. return a dinner
 回调	v. pullback
-回调函数	n. callback function
+回调函数	n. callback
 回调接口	n. callback interface
 回调方法	n. callback method
 回调机制	n. callback mechanism
@@ -60736,6 +60779,7 @@
 埋怨	v. complain	v. blame
 埋汰	adj. dirty
 埋没	v. bury	v. conceal
+埋点	n. instrumentation
 埋葬	v. bury
 埋藏	v. bury	v. hide
 埋设	v. bury	v. lay
@@ -61000,7 +61044,7 @@
 域名控制器	n. domain controller
 域名服务	n. domain name service
 域名服务器	n. domain name server
-域名系统	n. DNS
+域名系统	n. Domain Name System
 域名解析	n. domain name resolution
 域外	n. outside the region
 域市	n. city
@@ -61256,6 +61300,7 @@
 基础网	n. infrastructure network
 基础药理学	n. basic pharmacology
 基础设施	n. infrastructure
+基础设施即代码	n. infrastructure as code
 基础设置	n. basic settings
 基础语法	n. basic grammar
 基础语言	n. basic language
@@ -62584,6 +62629,7 @@
 复制子	n. replicon
 复制数组	phr. copy array
 复制文件	v. copy file
+复制日志	n. replicated log
 复制构造函数	n. copy constructor
 复制粘贴	v. copy and paste
 复制起点	n. origin of replication
@@ -63625,6 +63671,7 @@
 多囊卵巢综合征	n. polycystic ovary syndrome
 多囊肝	n. polycystic liver
 多囊肾	n. polycystic kidney
+多因素认证	n. multi-factor authentication
 多国	n. many countries
 多国语言	n. multilingual
 多国语言版	n. multilingual version
@@ -63653,6 +63700,7 @@
 多大啊	phr. how big
 多天	n. many days
 多头	n. bull
+多头注意力	n. multi-head attention
 多奈哌齐	n. donepezil
 多好	phr. how nice
 多好啊	phr. how nice
@@ -65587,6 +65635,7 @@
 大概要	phr. probably need
 大榆树	n. big elm tree
 大樟村	n. Dazhang Village
+大模型	n. large model
 大模大样	phr. with swagger
 大模拟	n. large-scale simulation
 大横	n. Daheng
@@ -66337,6 +66386,7 @@
 大许	n. Daxu
 大话	n. big talk	n. boast
 大话设计	n. big talk design
+大语言模型	n. large language model
 大课	n. large class
 大调	n. major key
 大谬不然	phr. completely wrong
@@ -68884,6 +68934,7 @@
 契税	n. deed tax
 契约	n. contract
 契约型基金	n. contractual fund
+契约测试	n. contract test
 契约登记	n. contract registration
 契诃夫	n. Chekhov
 契诺	n. Chino
@@ -71121,6 +71172,7 @@
 威胁	v. threaten
 威胁分析	n. threat analysis
 威胁利诱	phr. threats and bribes
+威胁建模	n. threat modeling
 威胁性	n. threat
 威胁情报	n. threat intelligence
 威胜集团	n. Wasion Group
@@ -72636,6 +72688,7 @@
 学乖	v. learn to be good
 学习	v. study	v. learn
 学习机	n. learning machine
+学习率	n. learning rate
 学习班	n. study class
 学习障碍	n. learning disability
 学习驾驶技术	phr. learn driving skills
@@ -74872,6 +74925,7 @@
 实体型	n. entity type
 实体完整性	n. entity integrity
 实体容器	n. physical container
+实体对象	n. entity object
 实体店	n. physical store
 实体数据模型	n. Entity Data Model
 实体映射	n. entity mapping
@@ -74905,6 +74959,7 @@
 实力派	n. powerhouse
 实务	n. practice
 实卡	n. physical card
+实参	n. argument
 实名	n. real name
 实名制	n. real-name system
 实在	adv. really	adv. indeed
@@ -75715,6 +75770,7 @@
 容华若桃李	phr. beautiful as peach blossom
 容器	n. container
 容器云	n. container cloud
+容器化	n. containerization
 容器控件	n. container control
 容器类	n. container class
 容国团	n. Rong Guotuan
@@ -76145,6 +76201,7 @@
 密钥短语	n. key phrase
 密钥管理	n. key management
 密钥证书	n. key certificate
+密钥轮换	n. key rotation
 密钥长度	n. key length
 密锣紧鼓	phr. intense preparation
 密闭	adj. airtight
@@ -76860,6 +76917,7 @@
 对骂	v. exchange insults
 对齐	v. align
 对齐线	n. alignment line
+对齐训练	n. alignment training
 对齿兽目	n. Symmetrodonta
 寺	n. temple
 寺上	n. Sishang
@@ -80341,6 +80399,7 @@
 尾蕨	n. tail fern
 尾藓	n. tail moss
 尾角贝虫	n. ostracod
+尾调用	n. tail call
 尾足螨亚目	n. mite
 尾身茂	n. Omi Shigeru
 尾追	v. chase
@@ -80826,6 +80885,7 @@
 属性字符串	n. attributed string
 属性文件	n. property file
 属性注入	n. property injection
+属性测试	n. property-based test
 属性继承	n. attribute inheritance
 属性表	n. attribute table
 属性设置	n. attribute setting
@@ -84517,6 +84577,7 @@
 带它	v. take it
 带宽	n. bandwidth
 带宽速率	n. bandwidth rate
+带宽限制	n. bandwidth limit
 带尾锯鲂鮄	n. banded searobin
 带带	v. bring along
 带带我	phr. carry me
@@ -84942,7 +85003,7 @@
 幂	n. power
 幂的	adj. power
 幂等	adj. idempotent
-幂等性	n. idempotence
+幂等性	n. idempotency
 幄	n. tent
 幅	m. width
 幅员	n. territory	n. area
@@ -86056,6 +86117,7 @@
 幻觉	n. hallucination
 幻觉犯	n. hallucination offender
 幻觉错误	n. hallucination error
+幻读	n. phantom read
 幻象	n. illusion
 幼	adj. young
 幼体	n. larva
@@ -88737,6 +88799,7 @@
 异步传输	n. asynchronous transmission
 异步传输模式	n. asynchronous transfer mode
 异步传送	n. asynchronous transmission
+异步函数	n. async function
 异步刷新	v. asynchronous refresh
 异步加载	n. asynchronous loading
 异步加载图片	phr. async image loading
@@ -90786,6 +90849,7 @@
 形势与政策	n. situation and policy
 形势逼人	phr. situation presses
 形单影只	phr. lonely
+形参	n. parameter
 形变	n. deformation
 形变而有生	phr. Transformation gives life
 形只影单	phr. alone
@@ -90925,6 +90989,7 @@
 彩虹溅水鱼	n. rainbow splash fish
 彩虹精灵	n. rainbow sprite
 彩虹蜂虎	n. rainbow bee-eater
+彩虹表	n. rainbow table
 彩虹路	n. Rainbow Road
 彩虹錩螺	n. rainbow top shell
 彩虹长臂天牛	n. rainbow longhorn beetle
@@ -93073,6 +93138,7 @@
 心跳	n. heartbeat
 心跳加速	phr. heart racing
 心跳包	n. heartbeat packet
+心跳检测	n. heartbeat detection
 心身医学	n. psychosomatic medicine
 心身疾病	n. psychosomatic disease
 心软	adj. soft-hearted
@@ -93553,6 +93619,7 @@
 快点快点	phr. hurry up
 快点睡觉	phr. go to sleep quickly
 快照	n. snapshot
+快照测试	n. snapshot test
 快班	n. fast class
 快生了	phr. about to give birth
 快疯	v. go crazy
@@ -94055,6 +94122,7 @@
 思维方式	n. way of thinking
 思维方法	n. thinking method
 思维训练	n. thinking training
+思维链	n. chain of thought
 思维障碍	n. thought disorder
 思绵绵而增慕	phr. longing endlessly
 思考	v. think
@@ -95271,6 +95339,7 @@
 悬停	v. hover
 悬吊	v. hang	v. suspend
 悬垂	v. hang down
+悬垂指针	n. dangling pointer
 悬崖	n. cliff
 悬崖峭壁	n. cliff
 悬崖绝壁	n. precipice
@@ -95359,7 +95428,7 @@
 悲观	adj. pessimistic
 悲观主义	n. pessimism
 悲观厌世	phr. pessimistic and world-weary
-悲观锁	n. pessimistic lock
+悲观锁	n. pessimistic locking
 悲酸	adj. sad
 悲鸣	v. wail
 悴	adj. haggard
@@ -95731,6 +95800,7 @@
 惯贼	n. habitual thief
 惰	adj. lazy	adj. sluggish
 惰性	n. inertia
+惰性求值	n. lazy evaluation
 想	v. think	v. want
 想一下	phr. think about it
 想一想	v. think about
@@ -100454,6 +100524,7 @@
 批处理文件	n. batch file
 批处理系统	n. batch processing system
 批复	v. approve
+批归一化	n. batch normalization
 批捕	v. approve arrest
 批改	v. correct
 批文	n. official approval
@@ -101922,6 +101993,7 @@
 抽象方法	n. abstract method
 抽象类	n. abstract class
 抽象行政行为	n. abstract administrative act
+抽象语法树	n. abstract syntax tree
 抽身	v. extricate oneself
 抽逃出资	v. withdraw capital
 抽逃出资罪	n. crime of capital withdrawal
@@ -102805,6 +102877,7 @@
 拣	v. pick	v. choose
 拣择	v. choose
 拣选	v. select
+拣选提交	v. cherry-pick
 拤	v. pinch
 拥	v. hug
 拥军	v. support the army
@@ -103139,6 +103212,7 @@
 持续时间	n. duration
 持续更新	phr. continuously updated
 持续痛	n. persistent pain
+持续部署	n. continuous deployment
 持续集成	n. continuous integration
 持续集成系统	n. continuous integration system
 持股	v. hold shares
@@ -103245,6 +103319,7 @@
 指令处理	n. instruction processing
 指令字	n. instruction word
 指令寄存器	n. instruction register
+指令微调	n. instruction tuning
 指令性措施	n. mandatory measures
 指令性计划	n. mandatory plan
 指令控制单元	n. instruction control unit
@@ -103348,6 +103423,7 @@
 指望	v. count on	v. expect
 指标	n. indicator	n. target
 指标体系	n. indicator system
+指标监控	n. metrics monitoring
 指标股	n. benchmark stock
 指桑骂槐	phr. indirect accusation	phr. veiled criticism
 指梯形蟹	n. crab
@@ -104571,6 +104647,7 @@
 接口文档	n. API documentation
 接口服务	n. interface service
 接口测试	n. interface testing
+接口网关	n. API gateway
 接口规约	n. interface specification
 接口设计	n. interface design
 接口调用	n. interface call
@@ -104748,7 +104825,7 @@
 控制依赖	n. control dependency
 控制关系	n. control relationship
 控制冲突	n. control conflict
-控制反转	n. Inversion of Control
+控制反转	n. inversion of control
 控制变量	n. control variable
 控制台程序	n. console application
 控制台输入	n. console input
@@ -104880,6 +104957,7 @@
 推特	n. Twitter
 推理	n. reasoning	n. inference
 推理小说	n. mystery novel
+推理延迟	n. inference latency
 推理方法	n. reasoning method
 推理模型	n. reasoning model
 推理策略	n. reasoning strategy
@@ -105044,6 +105122,7 @@
 提交	v. submit
 提交事务	v. commit transaction
 提交代码	phr. commit code
+提交信息	n. commit message
 提交审核	v. submit for review
 提交数据	v. submit data
 提交状态	n. submission status
@@ -105131,6 +105210,7 @@
 提示信息	n. prompt message
 提示框	n. prompt box
 提示窗口	n. prompt window
+提示词	n. prompt
 提神	v. refresh
 提箱	n. suitcase
 提篮	n. basket
@@ -106694,6 +106774,7 @@
 攻击的	adj. offensive
 攻击程序	n. attack program
 攻击者	n. attacker
+攻击面	n. attack surface
 攻势	n. offensive
 攻占	v. capture	v. occupy
 攻取	v. capture
@@ -107116,6 +107197,7 @@
 故障解决	n. troubleshooting
 故障记录	n. fault record
 故障诊断	n. fault diagnosis
+故障转移	n. failover
 故障隔离	n. fault isolation
 效	v. imitate
 效为	v. serve as
@@ -107771,6 +107853,7 @@
 数据加密标准	n. Data Encryption Standard
 数据加密算法	n. data encryption algorithm
 数据加载	n. data loading
+数据包	n. data packet
 数据区	n. data area
 数据压缩	n. data compression
 数据去重	n. data deduplication
@@ -107891,6 +107974,7 @@
 数据机构	n. data organization
 数据架构	n. data architecture
 数据查询	n. data query
+数据标注	n. data annotation
 数据校验	n. data validation
 数据格式	n. data format
 数据格式转换	n. data format conversion
@@ -107898,12 +107982,14 @@
 数据段	n. data segment
 数据汇	n. data hub
 数据泵	n. data pump
+数据流	n. data stream
 数据流分析	n. data flow analysis
 数据流图	n. data flow diagram
 数据流计算机	n. dataflow computer
 数据流语言	n. dataflow language
 数据测试	n. data testing
 数据清洗	n. data cleaning
+数据湖	n. data lake
 数据源	n. data source
 数据源控件	n. data source control
 数据源配置	n. data source configuration
@@ -107916,9 +108002,11 @@
 数据科学家	n. data scientist
 数据空间	n. data space
 数据窗	n. data window
+数据竞争	n. data race
 数据算法	n. data algorithm
 数据管理	n. data management
 数据管理程序	n. data management program
+数据管道	n. data pipeline
 数据类型	n. data type
 数据类型转换	n. data type conversion
 数据精度	n. data precision
@@ -109189,6 +109277,7 @@
 断签	v. break streak
 断粮	v. run out of food
 断线	n. broken line	n. disconnection
+断线重连	n. automatic reconnection
 断线风筝	n. broken kite
 断绝	v. cut off	v. sever
 断绝往来	phr. break off relations
@@ -111999,6 +112088,7 @@
 日志监控	n. log monitoring
 日志管理	n. log management
 日志系统	n. logging system
+日志聚合	n. log aggregation
 日志记录	n. log record
 日志输出	n. log output
 日志配置	n. logging configuration
@@ -113469,6 +113559,7 @@
 星君	n. star lord
 星团	n. star cluster
 星图	n. star map
+星型模型	n. star schema
 星城	n. Star City
 星城商厦	n. Xingcheng Mall
 星夜	n. starry night
@@ -115267,7 +115358,7 @@
 暴力死	n. violent death
 暴力求解法	phr. brute-force method
 暴力法	n. brute force
-暴力破解	phr. brute-force attack
+暴力破解	n. brute-force attack
 暴力行为	n. violent act
 暴力解法	n. brute-force solution
 暴力解题	phr. brute-force solution
@@ -116286,6 +116377,7 @@
 最小宽度	phr. minimum width
 最小支配集	n. minimum dominating set
 最小权匹配	n. minimum weight matching
+最小权限	n. least privilege
 最小树形图	n. minimum arborescence
 最小点覆盖	phr. minimum vertex cover
 最小特权	n. least privilege
@@ -116394,6 +116486,7 @@
 最累	adj. tiredest
 最红	adj. reddest	adj. most popular
 最终	adv. finally
+最终一致性	n. eventual consistency
 最终产品法	n. final product method
 最终以	phr. end with	phr. finally by
 最终决定	phr. final decision
@@ -117623,6 +117716,7 @@
 服务端开发	n. backend development
 服务端架构	n. server-side architecture
 服务端编程	n. server-side programming
+服务端请求伪造	n. server-side request forgery
 服务范围	n. service scope
 服务营销	n. service marketing
 服务设施	n. service facilities
@@ -119366,6 +119460,7 @@
 权限分配	n. permission assignment
 权限对象	n. permission object
 权限控制	n. access control
+权限提升	n. privilege escalation
 权限框架	n. permission framework
 权限管理	n. access control
 权限类	n. permission class
@@ -123141,6 +123236,7 @@
 查询模式	n. query mode
 查询缓存	n. query cache
 查询表达式	n. query expression
+查询计划	n. query plan
 查询语句	n. query statement
 查询语言	n. query language
 查谟	n. Jammu
@@ -124142,6 +124238,7 @@
 根苗	n. root and shoot	n. origin
 根茎	n. rhizome
 根葱	n. scallion
+根证书	n. root certificate
 根足鞭毛虫目	n. Rhizomastigida
 根轨迹	n. root locus
 根达	n. Genda
@@ -125063,6 +125160,7 @@
 桩	m. pile
 桩冠	n. post crown
 桩子	n. stake	n. pile
+桩对象	n. stub object
 桫	n. tree fern
 桫椤	n. tree fern
 桯	n. table	n. bed
@@ -125770,6 +125868,7 @@
 检票	v. check tickets
 检票口	n. ticket gate
 检索	v. search	v. retrieve
+检索增强生成	n. retrieval-augmented generation
 检索技术	n. search technology
 检索机制	n. search mechanism
 检索树	n. search tree
@@ -126921,6 +127020,7 @@
 模型	n. model
 模型变换	n. model transformation
 模型库	n. model library
+模型服务	n. model serving
 模型材料	n. model material
 模型生成器	n. model generator
 模型简化	n. model simplification
@@ -126953,6 +127053,7 @@
 模式设计	n. pattern design
 模式识别	n. pattern recognition
 模式识别算法	n. pattern recognition algorithm
+模式迁移	n. schema migration
 模态	n. modality
 模态框	n. modal box
 模态窗口	n. modal window
@@ -126961,6 +127062,7 @@
 模拟	v. simulate
 模拟仲裁庭	n. moot arbitration tribunal
 模拟器	n. simulator
+模拟对象	n. mock object
 模拟按键	n. simulated keypress
 模拟民事审判庭	n. mock civil court
 模拟法庭训练	n. moot court training
@@ -127018,6 +127120,7 @@
 模糊	adj. vague	adj. blurry
 模糊了	v. blur
 模糊仿隐绵蟹	n. crab
+模糊测试	n. fuzz test
 模糊的	adj. vague
 模糊网纹蚤	n. water flea
 模糊隐绵蟹	n. crab
@@ -127478,6 +127581,7 @@
 欠我	v. owe me
 欠扁	adj. asking for a beating
 欠打	adj. deserving a beating
+欠拟合	n. underfitting
 欠揍	adj. asking for a beating
 欠收拾	phr. needs discipline
 欠条	n. IOU
@@ -128718,10 +128822,12 @@
 死产	n. stillbirth
 死人	n. dead person
 死人了	phr. someone died
+死代码	n. dead code
 死伤	n. casualties
 死你	phr. die
 死侍	n. Deadpool
 死信	n. dead letter
+死信队列	n. dead-letter queue
 死党	n. crony	n. close friend
 死刑	n. death penalty
 死刑不引渡	phr. non-extradition for death penalty
@@ -128872,6 +128978,7 @@
 残存	v. remain	v. survive
 残害	v. harm
 残局	n. endgame
+残差连接	n. residual connection
 残年	n. remaining years
 残废	n. disabled person
 残忍	adj. cruel	adj. brutal
@@ -135304,7 +135411,7 @@
 泛化	v. generalize
 泛化关系	n. generalization relationship
 泛北部湾	n. Pan-Beibu Gulf
-泛型	n. generic
+泛型	n. generics
 泛型接口	n. generic interface
 泛型方法	n. generic method
 泛型算法	n. generic algorithm
@@ -135623,6 +135730,7 @@
 注	v. pour	v. note
 注二	n. Note 2
 注入	v. inject	v. pour into
+注入攻击	n. injection attack
 注册	v. register
 注册会计师	n. certified public accountant
 注册会计师法	n. CPA law
@@ -135732,6 +135840,7 @@
 注意分配	n. attention allocation
 注意到	v. notice
 注意力	n. attention
+注意力机制	n. attention mechanism
 注意力经济	n. attention economy
 注意力聚焦	n. attention focus
 注意增强	n. increased attention
@@ -136873,6 +136982,7 @@
 活过来	v. revive
 活钱儿	n. cash
 活钻鲤鱼	n. live carp
+活锁	n. livelock
 活门	n. valve
 活雷锋	n. living Lei Feng
 活靶	n. moving target
@@ -137326,6 +137436,7 @@
 测试台	n. test bench
 测试命令	n. test command
 测试响应	n. test response
+测试夹具	n. test fixture
 测试工具	n. test tool
 测试工程师	n. test engineer
 测试开发	n. test development
@@ -137339,6 +137450,7 @@
 测试方法	n. test method
 测试日志	n. test log
 测试时间	n. test time
+测试替身	n. test double
 测试有效性	n. test validity
 测试机	n. test machine
 测试杂志	n. test magazine
@@ -139938,6 +140050,7 @@
 清泰路	n. Qingtai Road
 清洁	v. clean
 清洁工	n. cleaner
+清洁架构	n. clean architecture
 清洁灌肠	n. cleansing enema
 清洁能源汽车	n. clean energy vehicle
 清洁车	n. street sweeper
@@ -141650,6 +141763,7 @@
 滚	v. roll
 滚刀肉	n. troublemaker
 滚动	v. roll
+滚动发布	n. rolling release
 滚动字幕	n. scrolling subtitles
 滚动式	adj. rolling
 滚动效果	n. scrolling effect
@@ -143348,6 +143462,7 @@
 灰度	n. grayscale
 灰度值	n. gray value
 灰度共生矩阵	n. gray-level co-occurrence matrix
+灰度发布	n. gradual rollout
 灰度变换	n. grayscale transformation
 灰度图	n. grayscale image
 灰度图像	n. grayscale image
@@ -145489,7 +145604,7 @@
 熔于一炉	phr. melt in one furnace	phr. blend together
 熔化	v. melt
 熔岩	n. lava
-熔断	v. circuit break
+熔断	n. circuit breaking
 熔炉	n. furnace	n. crucible
 熔炉芋螺	n. cone snail
 熔点	n. melting point
@@ -146855,6 +146970,7 @@
 物理信号	n. physical signal
 物理内存	n. physical memory
 物理分页	n. physical paging
+物理删除	n. hard delete
 物理化学	n. physical chemistry
 物理医学	n. physical medicine
 物理因子疗法	n. physical therapy
@@ -147098,6 +147214,7 @@
 特征分析	n. feature analysis
 特征匹配	n. feature matching
 特征向量	n. eigenvector
+特征存储	n. feature store
 特征工程	n. feature engineering
 特征抽取	n. feature extraction
 特征提取	n. feature extraction
@@ -151667,7 +151784,7 @@
 生命值	n. health points
 生命力	n. vitality
 生命危险	n. life-threatening
-生命周期	n. life cycle
+生命周期	n. lifetime
 生命周期管理	n. lifecycle management
 生命活动	n. life activities
 生命科学	n. life science
@@ -152113,6 +152230,7 @@
 用户控件	n. user control
 用户提供	phr. user-provided
 用户故事	n. user story
+用户数据报协议	n. User Datagram Protocol
 用户文件目录	n. user file directory
 用户文档	n. user documentation
 用户日志	n. user log
@@ -156453,6 +156571,7 @@
 盐亭	n. Yanting
 盐仓村	n. Yancang village
 盐仓街	n. Yancang street
+盐值	n. salt
 盐分	n. salt content
 盐务	n. salt administration
 盐卤	n. bittern
@@ -159266,6 +159385,7 @@
 知识经济	n. knowledge economy
 知识结构	n. knowledge structure
 知识获取	n. knowledge acquisition
+知识蒸馏	n. knowledge distillation
 知识薪酬	n. knowledge pay
 知识表示	n. knowledge representation
 知识详解	n. detailed knowledge
@@ -159536,6 +159656,7 @@
 短距离	n. short distance
 短路	v. short circuit
 短路故障	n. short circuit fault
+短路求值	n. short-circuit evaluation
 短身拳海龙	n. short-bodied pipefish
 短连接	n. short link
 短途	adj. short-distance
@@ -162965,6 +163086,7 @@
 私车	n. private car
 私通	v. have an affair
 私邸	n. private residence
+私钥	n. private key
 私闯民宅	phr. trespass
 私隐	n. privacy
 秃	adj. bald
@@ -163412,6 +163534,7 @@
 秘密密钥	n. secret key
 秘密拘捕	n. secret arrest
 秘密权行为	n. secret right act
+秘密管理	n. secrets management
 秘方	n. secret recipe
 秘本	n. rare book	n. secret edition
 秘笈	n. secret manual
@@ -165354,6 +165477,7 @@
 竞价	v. bid	v. compete
 竞卖	v. auction
 竞品分析	n. competitive analysis
+竞态条件	n. race condition
 竞技	n. competition
 竞技体操	n. artistic gymnastics
 竞技体育	n. competitive sports
@@ -165530,6 +165654,8 @@
 端	n. end	n. edge
 端丽	adj. elegant	adj. graceful
 端倪	n. clue	n. inkling
+端到端加密	n. end-to-end encryption
+端到端测试	n. end-to-end test
 端午	n. Dragon Boat Festival
 端午安康	phr. Dragon Boat Festival greetings
 端午快乐	phr. Happy Dragon Boat Festival
@@ -167512,9 +167638,11 @@
 类型安全	n. type safety
 类型实参	n. type argument
 类型形参	n. type parameter
+类型推导	n. type inference
 类型推断	n. type inference
 类型推理	n. type inference
 类型擦除	n. type erasure
+类型注解	n. type annotation
 类型系统	n. type system
 类型约束	n. type constraint
 类型论	n. type theory
@@ -170203,6 +170331,7 @@
 纯代码	n. pure code
 纯净	adj. pure
 纯净水	n. pure water
+纯函数	n. pure function
 纯利	n. net profit
 纯化	v. purify
 纯合子	n. homozygote
@@ -170729,6 +170858,7 @@
 线程间的通信	n. inter-thread communication
 线程间通信	n. inter-thread communication
 线程阻塞	n. thread blocking
+线程饥饿	n. thread starvation
 线筛	n. linear sieve
 线粒体	n. mitochondrion
 线粒体遗传	n. mitochondrial inheritance
@@ -172371,6 +172501,7 @@
 维希拉猎犬	n. Vizsla
 维库溴铵	n. vecuronium
 维度	n. dimension
+维度建模	n. dimensional modeling
 维德	n. Vader
 维托	n. Vito
 维扬忆旧游	phr. remember old travels
@@ -172797,6 +172928,7 @@
 缓和	v. ease	v. relieve
 缓坡	n. gentle slope
 缓存	n. cache
+缓存一致性	n. cache coherence
 缓存文件	n. cache file
 缓存服务器	n. cache server
 缓存机制	n. cache mechanism
@@ -172807,6 +172939,7 @@
 缓征	v. postpone conscription
 缓急	n. urgency
 缓慢	adj. slow
+缓慢变化维	n. slowly changing dimension
 缓慢的	adj. slow
 缓期	v. postpone
 缓步	adv. slowly
@@ -172861,6 +172994,7 @@
 编录	v. compile
 编成	v. compile
 编排	v. arrange	v. choreograph
+编排调度	n. orchestration
 编撰	v. compile	v. write
 编曲	v. arrange
 编校	v. edit and proofread
@@ -172990,6 +173124,7 @@
 编译报错	phr. compile error
 编译指令	n. compiler directive
 编译时错误	n. compile-time error
+编译期	n. compile time
 编译源码	v. compile source code
 编译环境	n. build environment
 编译程序	n. compiler
@@ -173378,6 +173513,7 @@
 网下	n. offline
 网付	v. pay online
 网兜	n. string bag
+网关	n. gateway
 网具	n. net
 网剧	n. web drama
 网包鳜鱼	n. net-wrapped mandarin fish
@@ -173527,6 +173663,7 @@
 网络命令	n. network command
 网络图片	n. web image
 网络地址	n. network address
+网络地址转换	n. Network Address Translation
 网络基本功	n. network basics
 网络多线程	n. network multithreading
 网络字节序	n. network byte order
@@ -173546,6 +173683,7 @@
 网络常识	n. network common sense
 网络平台	n. online platform
 网络应用	n. network application
+网络延迟	n. network latency
 网络开发	n. network development
 网络异常	n. network anomaly
 网络引擎	n. network engine
@@ -176635,8 +176773,8 @@
 联春	n. Lianchun
 联春村	n. Lianchun Village
 联机	v. go online
-联机事务处理	n. OLTP
-联机分析处理	n. OLAP
+联机事务处理	n. online transaction processing
+联机分析处理	n. online analytical processing
 联机分析挖掘	n. OLAM
 联机处理	n. online processing
 联机查询	n. online query
@@ -176768,6 +176906,7 @@
 聚合函数	n. aggregate function
 聚合性痤疮	n. conglobate acne
 聚合数据	n. aggregated data
+聚合根	n. aggregate root
 聚合物	n. polymer
 聚合酶	n. polymerase
 聚合酶链反应	n. polymerase chain reaction
@@ -178256,6 +178395,7 @@
 背包袱	v. carry a burden
 背包问题	n. knapsack problem
 背单词	v. memorize words
+背压	n. backpressure
 背叉触角鳚	n. Antennablennius
 背叛	v. betray
 背叛了	v. betrayed
@@ -179359,6 +179499,7 @@
 脏腑学说	n. zang-fu theory
 脏腑辨证	n. zang-fu differentiation
 脏话	n. swear word
+脏读	n. dirty read
 脏象学说	n. visceral manifestation theory
 脏躁	n. visceral agitation
 脏辫	n. dreadlocks
@@ -180895,6 +181036,7 @@
 自治省	n. autonomous province
 自治系统	n. autonomous system
 自治领	n. dominion
+自注意力	n. self-attention
 自流	v. flow by itself
 自流井	n. artesian well
 自流灌溉	n. gravity irrigation
@@ -187796,6 +187938,7 @@
 蓝线	n. blue line
 蓝绍敏	n. Lan Shaomin
 蓝绿	n. blue and green
+蓝绿发布	n. blue-green deployment
 蓝绿藻	n. blue-green algae
 蓝翅笑翠鸟	n. blue-winged kookaburra
 蓝翅负泥虫	n. blue-winged leaf beetle
@@ -188740,7 +188883,7 @@
 虚报	v. falsely report
 虚拟	adj. virtual
 虚拟专用网	n. virtual private network
-虚拟专用网络	n. VPN
+虚拟专用网络	n. virtual private network
 虚拟串口	n. virtual serial port
 虚拟主机	n. virtual host
 虚拟人	n. virtual human
@@ -190298,6 +190441,7 @@
 行为识别	n. action recognition
 行为遗传学	n. behavioral genetics
 行为障碍	n. behavioral disorder
+行为驱动开发	n. behavior-driven development
 行为默示形式	n. implied form of act
 行之有效	phr. effective	phr. proven
 行乐	v. seek pleasure
@@ -190468,6 +190612,7 @@
 行程长度编码	n. run-length encoding
 行窃	v. steal
 行笔	v. write
+行级锁	n. row-level lock
 行纪	n. commission agency
 行纪人	n. commission agent
 行纪合同	n. agency contract
@@ -190898,6 +191043,7 @@
 表示行为	n. display behavior
 表空间	n. tablespace
 表约束	n. table constraint
+表级锁	n. table-level lock
 表结构	n. table structure
 表脸	v. show face
 表视图	n. table view
@@ -193501,6 +193647,7 @@
 覆盖测试	n. coverage testing
 覆盖物	n. covering
 覆盖率	n. coverage
+覆盖索引	n. covering index
 覆盖范围	n. coverage
 覆盖面	n. coverage
 覆舟	v. capsize
@@ -195747,6 +195894,7 @@
 词切分	n. word segmentation
 词句	n. words	n. phrases
 词向量	n. word vector
+词嵌入	n. word embedding
 词序	n. word order
 词形	n. word form
 词性	n. part of speech
@@ -195760,6 +195908,7 @@
 词汇分析	n. lexical analysis
 词汇学	n. lexicology
 词法	n. morphology
+词法作用域	n. lexical scope
 词法分析	n. lexical analysis
 词法分析器	n. lexical analyzer
 词法范围	n. lexical scope
@@ -201163,6 +201312,8 @@
 跨界	v. cross over
 跨省	v. cross province
 跨站	v. cross-site
+跨站脚本	n. cross-site scripting
+跨站请求伪造	n. cross-site request forgery
 跨类保护	n. cross-class protection
 跨线	v. cross the line
 跨线桥	n. overpass
@@ -203822,6 +203973,7 @@
 过程分享	n. process sharing
 过程分析	n. process analysis
 过程同步	n. process synchronization
+过程式编程	n. procedural programming
 过程控制	n. process control
 过程控制仪表技术	n. process control instrumentation
 过程改进	n. process improvement
@@ -204095,6 +204247,7 @@
 运行时诊断	n. runtime diagnostics
 运行时错误	n. runtime error
 运行时间	n. runtime
+运行期	n. runtime
 运行机制	n. operating mechanism
 运行模式	n. operation mode
 运行测试	v. run tests
@@ -204230,6 +204383,7 @@
 返厂	v. return to factory
 返台	v. return to Taiwan
 返回	v. return	v. go back
+返回值	n. return value
 返回函数	n. return function
 返回恢复	v. return and recover
 返回按钮	n. back button
@@ -205623,6 +205777,7 @@
 连接机制	n. connection mechanism
 连接查询	n. join query
 连接池	n. connection pool
+连接泄漏	n. connection leak
 连接点	n. connection point
 连接端点	n. connection endpoint
 连接管	n. connecting pipe
@@ -206283,6 +206438,7 @@
 适逢其会	phr. happen to be present
 适逢其时	phr. at the right time
 适配	v. adapt
+适配器	n. adapter
 适配器模式	n. adapter pattern
 适配层	n. adaptation layer
 适配移动端	phr. mobile adaptation
@@ -207184,6 +207340,7 @@
 逻辑分析	n. logical analysis
 逻辑分页	n. logical paging
 逻辑划分	n. logical partition
+逻辑删除	n. soft delete
 逻辑判断	n. logical judgment
 逻辑卷	n. logical volume
 逻辑地址	n. logical address
@@ -209629,6 +209786,7 @@
 配给制	n. rationing system
 配绿	v. match green
 配置	n. configuration
+配置中心	n. configuration center
 配置使用	v. configure and use
 配置信息	n. configuration info
 配置参数	n. configuration parameter
@@ -209639,6 +209797,7 @@
 配置文件属性	n. configuration file attribute
 配置文档	n. configuration document
 配置标识	n. configuration identifier
+配置漂移	n. configuration drift
 配置状态	n. configuration status
 配置状态报告	n. configuration status report
 配置环境	n. configuration environment
@@ -210740,6 +210899,7 @@
 重言式	n. tautology
 重译	v. retranslate
 重试	v. retry
+重试策略	n. retry policy
 重读	v. reread
 重负	n. heavy burden
 重责	v. severely punish
@@ -210945,6 +211105,7 @@
 量力而行	phr. act according to ability
 量化	v. quantify
 量化交易	n. quantitative trading
+量化推理	n. quantized inference
 量反应	n. graded response
 量变	n. quantitative change
 量大	adj. large quantity
@@ -210989,6 +211150,7 @@
 金丝蜜枣	n. candied jujube
 金丝酥雀	n. golden-thread crispy sparrow
 金丝雀	n. canary
+金丝雀发布	n. canary release
 金丝饼	n. shredded pancake
 金中	n. Jinzhong
 金中村	n. Jinzhong Village
@@ -212101,6 +212263,7 @@
 鉴定	v. appraise
 鉴定书	n. certificate
 鉴戒	n. lesson	n. warning
+鉴权	n. authentication
 鉴海小学	n. Jianhai Primary School
 鉴湖新村	n. Jianhu New Village
 鉴真	n. Jianzhen
@@ -213624,6 +213787,7 @@
 链路加密	n. link encryption
 链路层	n. link layer
 链路管理	n. link management
+链路追踪	n. distributed tracing
 链队列	n. linked queue
 链霉素	n. streptomycin
 铿	v. clang
@@ -215479,6 +215643,7 @@
 闭会	v. adjourn
 闭关	v. seclude
 闭关锁国	phr. closed-door policy
+闭包	n. closure
 闭卷	adj. closed-book
 闭口	v. shut up
 闭口不言	phr. keep silent
@@ -215756,6 +215921,7 @@
 间隔计时器	n. interval timer
 间隙	n. gap
 间隙连接	n. gap junction
+间隙锁	n. gap lock
 闵	n. Min
 闵家村	n. Minjiacun
 闵家镇	n. Minjia Town
@@ -216259,6 +216425,7 @@
 防脱	v. anti-hair loss
 防腐	v. preserve	v. anticorrosion
 防腐剂	n. preservative
+防腐层	n. anti-corruption layer
 防芷鼻炎片	n. Fangzhi rhinitis tablet
 防范	v. guard against
 防虏寨乡	n. Fangluzhai Township
@@ -218175,7 +218342,7 @@
 降糖通脉胶囊	n. Jiangtang Tongmai Capsule
 降红木素	n. bixin
 降纤酶	n. defibrase
-降级	v. demote	v. downgrade
+降级	n. degradation
 降级运行	v. degrade
 降结肠	n. descending colon
 降耗	v. reduce consumption
@@ -218224,9 +218391,10 @@
 限期	n. deadline
 限期险额结报制度	n. time-limited insurance reporting system
 限止	v. limit	v. restrict
-限流	v. rate limit
+限流	n. rate limiting
 限电	v. power rationing
 限界	n. limit
+限界上下文	n. bounded context
 限聚	v. limit gathering
 限聚令	n. gathering ban
 限行	v. restrict traffic
@@ -218945,6 +219113,7 @@
 隔离墩	n. barrier block
 隔离室	n. isolation room
 隔离带	n. buffer zone
+隔离性	n. isolation
 隔离服	n. isolation gown
 隔离机制	n. isolation mechanism
 隔离级	n. isolation level
@@ -219669,6 +219838,7 @@
 雪花	n. snowflake
 雪花大如手	phr. snowflakes big as hands
 雪花桃泥	n. snowflake peach paste
+雪花模型	n. snowflake schema
 雪花照芙蓉	phr. snowflakes shine on hibiscus
 雪花糕	n. snowflake cake
 雪花羊肉	n. snowflake lamb
@@ -219724,6 +219894,7 @@
 零件	n. part	n. component
 零件图	n. part drawing
 零件库	n. parts library
+零信任	n. zero trust
 零八	n. zero eight
 零分	n. zero score
 零卖	v. retail
@@ -220852,6 +221023,7 @@
 静态注册	n. static registration
 静态测试	n. static testing
 静态类	n. static class
+静态类型	n. static type
 静态绑定	n. static binding
 静态缓冲	n. static buffer
 静态缓冲区	n. static buffer
@@ -222547,6 +222719,7 @@
 预兆	n. omen	n. sign
 预先	adv. in advance
 预先披露制度	n. advance disclosure system
+预写日志	n. write-ahead log
 预决算	n. budget and final accounts
 预分配	v. preallocate
 预制	v. prefabricate
@@ -222627,6 +222800,7 @@
 预警机	n. AWACS
 预计	v. estimate	v. expect
 预订	v. reserve	v. book
+预训练	v. pretrain
 预设	v. preset
 预设管理器	n. preset manager
 预谋	v. premeditate
@@ -222720,6 +222894,7 @@
 领导干部	n. leading cadre
 领导班子	n. leadership team
 领导者	n. leader
+领导者选举	n. leader election
 领导职位权	n. leadership position power
 领工	n. foreman
 领巾	n. scarf

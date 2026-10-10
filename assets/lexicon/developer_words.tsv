@@ -1,0 +1,280 @@
+# 轻书开发者词库：程序设计与语法、并发与分布式、数据库、网络、安全、架构、测试、研发流程、人工智能等专业词。词	次数	拼音
+一致性	60	yi zhi xing
+三阶段提交	60	san jie duan ti jiao
+上下文窗口	60	shang xia wen chuang kou
+不可变基础设施	60	bu ke bian ji chu she shi
+不可变引用	60	bu ke bian yin yong
+不可变性	60	bu ke bian xing
+不可重复读	60	bu ke chong fu du
+丢失更新	60	diu shi geng xin
+两阶段提交	60	liang jie duan ti jiao
+主干开发	60	zhu gan kai fa
+乐观锁	60	le guan suo
+事件循环	60	shi jian xun huan
+事件溯源	60	shi jian su yuan
+事件驱动	60	shi jian qu dong
+事务隔离	60	shi wu ge li
+事后复盘	60	shi hou fu pan
+互联网协议	60	hu lian wang xie yi
+代码冻结	60	dai ma dong jie
+代码审查	60	dai ma shen cha
+代码覆盖率	60	dai ma fu gai lv
+传输层安全	60	chuan shu ceng an quan
+传输控制协议	60	chuan shu kong zhi xie yi
+伪共享	60	wei gong xiang
+位置编码	60	wei zhi bian ma
+供应链攻击	60	gong ying lian gong ji
+依赖注入	60	yi lai zhu ru
+借用检查器	60	jie yong jian cha qi
+值对象	60	zhi dui xiang
+元编程	60	yuan bian cheng
+公钥	60	gong yao
+六边形架构	60	liu bian xing jia gou
+共识算法	60	gong shi suan fa
+内存屏障	60	nei cun ping zhang
+内存泄漏	60	nei cun xie lou
+写偏斜	60	xie pian xie
+冲突解决	60	chong tu jie jue
+分区容错性	60	fen qu rong cuo xing
+分层架构	60	fen ceng jia gou
+分布式事务	60	fen bu shi shi wu
+分布式拒绝服务	60	fen bu shi ju jue fu wu
+分库分表	60	fen ku fen biao
+前馈网络	60	qian kui wang luo
+功能分支	60	gong neng fen zhi
+加盐哈希	60	jia yan ha xi
+动态分析	60	dong tai fen xi
+动态类型	60	dong tai lei xing
+匿名函数	60	ni ming han shu
+协程	60	xie cheng
+单例模式	60	dan li mo shi
+单元测试	60	dan yuan ce shi
+单点登录	60	dan dian deng lu
+即时编译	60	ji shi bian yi
+原子性	60	yuan zi xing
+原子操作	60	yuan zi cao zuo
+反向代理	60	fan xiang dai li
+反向传播	60	fan xiang chuan bo
+反序列化	60	fan xu lie hua
+发布订阅	60	fa bu ding yue
+变基	60	bian ji
+变异测试	60	bian yi ce shi
+变更数据捕获	60	bian geng shu ju bu huo
+变更窗口	60	bian geng chuang kou
+变量作用域	60	bian liang zuo yong yu
+可变引用	60	ke bian yin yong
+可用性	60	ke yong xing
+可观测性	60	ke guan ce xing
+合并请求	60	he bing qing qiu
+向量数据库	60	xiang liang shu ju ku
+吞吐量	60	tun tu liang
+告警风暴	60	gao jing feng bao
+命令式编程	60	ming ling shi bian cheng
+命令查询职责分离	60	ming ling cha xun zhi ze fen li
+哈希冲突	60	ha xi chong tu
+哈希函数	60	ha xi han shu
+哈希表	60	ha xi biao
+回调函数	60	hui diao han shu
+垂直分片	60	chui zhi fen pian
+垃圾回收	60	la ji hui shou
+埋点	60	mai dian
+域名系统	60	yu ming xi tong
+基础设施即代码	60	ji chu she shi ji dai ma
+声明式编程	60	sheng ming shi bian cheng
+复制日志	60	fu zhi ri zhi
+多因素认证	60	duo yin su ren zheng
+多头注意力	60	duo tou zhu yi li
+大模型	60	da mo xing
+大语言模型	60	da yu yan mo xing
+契约测试	60	qi yue ce shi
+威胁建模	60	wei xie jian mo
+子网掩码	60	zi wang yan ma
+字节码	60	zi jie ma
+学习率	60	xue xi lv
+安全审计	60	an quan shen ji
+实体对象	60	shi ti dui xiang
+实参	60	shi can
+容器化	60	rong qi hua
+密钥轮换	60	mi yao lun huan
+对称加密	60	dui chen jia mi
+对齐训练	60	dui qi xun lian
+尾调用	60	wei diao yong
+尾递归	60	wei di gui
+属性测试	60	shu xing ce shi
+工厂模式	60	gong chang mo shi
+带宽限制	60	dai kuan xian zhi
+幂等性	60	mi deng xing
+幻觉	60	huan jue
+幻读	60	huan du
+序列化	60	xu lie hua
+建造者模式	60	jian zao zhe mo shi
+异步函数	60	yi bu han shu
+强一致性	60	qiang yi zhi xing
+形参	60	xing can
+彩虹表	60	cai hong biao
+微调	60	wei tiao
+心跳检测	60	xin tiao jian ce
+快照测试	60	kuai zhao ce shi
+思维链	60	si wei lian
+悬垂指针	60	xuan chui zhi zhen
+悲观锁	60	bei guan suo
+惰性求值	60	duo xing qiu zhi
+所有权	60	suo you quan
+执行计划	60	zhi xing ji hua
+批处理	60	pi chu li
+批归一化	60	pi gui yi hua
+抽象语法树	60	chou xiang yu fa shu
+拒绝服务	60	ju jue fu wu
+拣选提交	60	jian xuan ti jiao
+持久性	60	chi jiu xing
+持续交付	60	chi xu jiao fu
+持续部署	60	chi xu bu shu
+持续集成	60	chi xu ji cheng
+指令微调	60	zhi ling wei tiao
+指标监控	60	zhi biao jian kong
+损失函数	60	sun shi han shu
+接口网关	60	jie kou wang guan
+控制反转	60	kong zhi fan zhuan
+推理延迟	60	tui li yan chi
+提交信息	60	ti jiao xin xi
+提示词	60	ti shi ci
+攻击面	60	gong ji mian
+故障转移	60	gu zhang zhuan yi
+数字签名	60	shu zi qian ming
+数字证书	60	shu zi zheng shu
+数据仓库	60	shu ju cang ku
+数据包	60	shu ju bao
+数据帧	60	shu ju zhen
+数据标注	60	shu ju biao zhu
+数据流	60	shu ju liu
+数据湖	60	shu ju hu
+数据竞争	60	shu ju jing zheng
+数据管道	60	shu ju guan dao
+数据迁移	60	shu ju qian yi
+断线重连	60	duan xian chong lian
+日志聚合	60	ri zhi ju he
+星型模型	60	xing xing mo xing
+暴力破解	60	bao li po jie
+最小权限	60	zui xiao quan xian
+最终一致性	60	zui zhong yi zhi xing
+服务发现	60	fu wu fa xian
+服务端请求伪造	60	fu wu duan qing qiu wei zao
+权限提升	60	quan xian ti sheng
+查询计划	60	cha xun ji hua
+根证书	60	gen zheng shu
+桩对象	60	zhuang dui xiang
+梯度下降	60	ti du xia jiang
+检查点	60	jian cha dian
+检索增强生成	60	jian suo zeng qiang sheng cheng
+模型服务	60	mo xing fu wu
+模式匹配	60	mo shi pi pei
+模式迁移	60	mo shi qian yi
+模拟对象	60	mo ni dui xiang
+模糊测试	60	mo hu ce shi
+欠拟合	60	qian ni he
+正则化	60	zheng ze hua
+死代码	60	si dai ma
+死信队列	60	si xin dui lie
+死锁	60	si suo
+死锁检测	60	si suo jian ce
+残差连接	60	can cha lian jie
+水平分片	60	shui ping fen pian
+泛型	60	fan xing
+注入攻击	60	zhu ru gong ji
+注意力机制	60	zhu yi li ji zhi
+活锁	60	huo suo
+流处理	60	liu chu li
+测试夹具	60	ce shi jia ju
+测试替身	60	ce shi ti shen
+测试驱动开发	60	ce shi qu dong kai fa
+消息队列	60	xiao xi dui lie
+清洁架构	60	qing jie jia gou
+滚动发布	60	gun dong fa bu
+激活函数	60	ji huo han shu
+灰度发布	60	hui du fa bu
+熔断	60	rong duan
+物理删除	60	wu li shan chu
+特征存储	60	te zheng cun chu
+特征工程	60	te zheng gong cheng
+生命周期	60	sheng ming zhou qi
+用户数据报协议	60	yong hu shu ju bao xie yi
+盐值	60	yan zhi
+知识蒸馏	60	zhi shi zheng liu
+短路求值	60	duan lu qiu zhi
+私钥	60	si yao
+秘密管理	60	mi mi guan li
+空指针	60	kong zhi zhen
+竞态条件	60	jing tai tiao jian
+端到端加密	60	duan dao duan jia mi
+端到端测试	60	duan dao duan ce shi
+端口映射	60	duan kou ying she
+端口转发	60	duan kou zhuan fa
+策略模式	60	ce lve mo shi
+类型推导	60	lei xing tui dao
+类型注解	60	lei xing zhu jie
+纯函数	60	chun han shu
+线程饥饿	60	xian cheng ji e
+维度建模	60	wei du jian mo
+缓存一致性	60	huan cun yi zhi xing
+缓慢变化维	60	huan man bian hua wei
+编排调度	60	bian pai diao du
+编译期	60	bian yi qi
+网关	60	wang guan
+网络地址转换	60	wang luo di zhi zhuan huan
+网络延迟	60	wang luo yan chi
+联合索引	60	lian he suo yin
+联机事务处理	60	lian ji shi wu chu li
+联机分析处理	60	lian ji fen xi chu li
+聚合根	60	ju he gen
+聚集索引	60	ju ji suo yin
+背压	60	bei ya
+脏读	60	zang du
+自注意力	60	zi zhu yi li
+蓝绿发布	60	lan lv fa bu
+虚拟专用网络	60	xu ni zhuan yong wang luo
+行为驱动开发	60	xing wei qu dong kai fa
+行级锁	60	xing ji suo
+表级锁	60	biao ji suo
+覆盖索引	60	fu gai suo yin
+观察者	60	guan cha zhe
+证书链	60	zheng shu lian
+词嵌入	60	ci qian ru
+词法作用域	60	ci fa zuo yong yu
+负载均衡	60	fu zai jun heng
+跨站脚本	60	kua zhan jiao ben
+跨站请求伪造	60	kua zhan qing qiu wei zao
+过拟合	60	guo ni he
+过程式编程	60	guo cheng shi bian cheng
+运行期	60	yun xing qi
+返回值	60	fan hui zhi
+连接池	60	lian jie chi
+连接泄漏	60	lian jie xie lou
+适配器	60	shi pei qi
+逻辑删除	60	luo ji shan chu
+配置中心	60	pei zhi zhong xin
+配置漂移	60	pei zhi piao yi
+重试策略	60	chong shi ce lve
+量化推理	60	liang hua tui li
+金丝雀发布	60	jin si que fa bu
+鉴权	60	jian quan
+链路追踪	60	lian lu zhui zong
+闭包	60	bi bao
+间隙锁	60	jian xi suo
+防腐层	60	fang fu ceng
+降级	60	jiang ji
+限流	60	xian liu
+限界上下文	60	xian jie shang xia wen
+随机梯度下降	60	sui ji ti du xia jiang
+隔离性	60	ge li xing
+集成测试	60	ji cheng ce shi
+雪花模型	60	xue hua mo xing
+零信任	60	ling xin ren
+静态分析	60	jing tai fen xi
+静态类型	60	jing tai lei xing
+非对称加密	60	fei dui chen jia mi
+非聚集索引	60	fei ju ji suo yin
+预写日志	60	yu xie ri zhi
+预训练	60	yu xun lian
+领域驱动设计	60	ling yu qu dong she ji
+领导者选举	60	ling dao zhe xuan ju
+高阶函数	60	gao jie han shu

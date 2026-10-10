@@ -79,22 +79,31 @@ pub fn convert(
     frequency: Option<&Path>,
     emit_ambiguous: Option<&Path>,
     extra_words: &[std::path::PathBuf],
+    extra_words_domain: &[(String, std::path::PathBuf)],
     domain_keep_min: u64,
     out_dir: &Path,
 ) -> Result<(), ConvertError> {
     let mut pack = Pack::load(pack_dir)?;
-    // 语料挖出来的词当作一类领域词并入：次数当文档频次（也就是没有语料词频时的底值来源）
+    // 普通额外词按语料挖词处理；带领域的额外词强制归入指定领域，并覆盖同名词频。
+    let mut extra = Vec::new();
     for path in extra_words {
-        let before = pack.domain.len();
-        for word in corpus::extra_words(path)? {
-            pack.domain.push(pack::DomainRow {
-                text: word.text,
-                df: word.count,
-                domain: None,
-                syllables: word.syllables,
-            });
-        }
-        tracing::info!(path = %path.display(), rows = pack.domain.len() - before, "额外词已读取");
+        let words = corpus::extra_words(path)?;
+        tracing::info!(path = %path.display(), rows = words.len(), "额外词已读取");
+        extra.extend(words.into_iter().map(|word| (word, None)));
+    }
+    for (domain, path) in extra_words_domain {
+        let words = corpus::extra_words(path)?;
+        tracing::info!(domain, path = %path.display(), rows = words.len(), "领域额外词已读取");
+        extra.extend(words.into_iter().map(|word| (word, Some(domain.clone()))));
+    }
+    for (word, domain) in &extra {
+        pack.domain.push(pack::DomainRow {
+            text: word.text.clone(),
+            df: word.count,
+            domain: domain.clone(),
+            force_domain: domain.is_some(),
+            syllables: word.syllables.clone(),
+        });
     }
     let readings = CharReadings::load(unihan)?;
     let annotations = match pinyin {
@@ -106,10 +115,8 @@ pub fn convert(
         None => HashMap::new(),
     };
     // 挖出来的词在语料里的次数就是它的词频（分词时它被拆成单字，一元表里没有）
-    for path in extra_words {
-        for word in corpus::extra_words(path)? {
-            counts.entry(word.text).or_insert(word.count);
-        }
+    for (word, _) in &extra {
+        counts.entry(word.text.clone()).or_insert(word.count);
     }
     tracing::info!(
         chars = pack.chars.len(),
@@ -150,7 +157,7 @@ pub fn convert(
     let mut chars: Vec<(char, Option<u8>)> =
         pack.chars.iter().map(|c| (c.ch, Some(c.level))).collect();
     let listed: HashSet<char> = chars.iter().map(|c| c.0).collect();
-    let mut extra: Vec<char> = pack
+    let mut extra_chars: Vec<char> = pack
         .common
         .iter()
         .flat_map(|row| row.text.chars())
@@ -158,8 +165,8 @@ pub fn convert(
         .collect::<HashSet<_>>()
         .into_iter()
         .collect();
-    extra.sort_unstable();
-    chars.extend(extra.into_iter().map(|c| (c, None)));
+    extra_chars.sort_unstable();
+    chars.extend(extra_chars.into_iter().map(|c| (c, None)));
     for (ch, level) in &chars {
         let weighted = readings.weighted(*ch, MINOR_READING_SHARE);
         let valid: Vec<(String, f64)> = weighted
@@ -262,11 +269,14 @@ pub fn convert(
     for row in &pack.domain {
         let text = row.text.as_str();
         let chars_count = text.chars().count();
+        let forced = row.force_domain && row.domain.is_some();
         if !(2..=MAX_WORD_CHARS).contains(&chars_count)
-            || common_texts.contains(text)
-            || !seen_domain.insert(text)
+            || (!forced && (common_texts.contains(text) || !seen_domain.insert(text)))
         {
             continue;
+        }
+        if !forced {
+            seen_domain.insert(text);
         }
         // 额外词文件给了读音的（短语层由成分词拼出）直接用；否则先看 LLM 标注，再按字推
         let given_syllables = row
@@ -338,9 +348,15 @@ pub fn convert(
             syllables,
             frequency,
         };
-        // 语料里常见的领域词其实是通用词（医疗器械、侵权行为），留在基础词库；其余进各自的领域词库
-        match &row.domain {
-            Some(domain) if corpus_count.unwrap_or(0) < domain_keep_min => {
+        // 语料里常见的领域词其实是通用词（医疗器械、侵权行为），留在基础词库；强制领域词不升入基础词库。
+        match (&row.domain, row.force_domain) {
+            (Some(domain), true) => {
+                domains
+                    .entry(domain.clone())
+                    .or_default()
+                    .insert((entry.text.clone(), entry.syllables.clone()), entry);
+            }
+            (Some(domain), false) if corpus_count.unwrap_or(0) < domain_keep_min => {
                 domains
                     .entry(domain.clone())
                     .or_default()
@@ -407,8 +423,13 @@ fn write_domains(
             .iter()
             .find(|(key, _)| key == stem)
             .map_or(stem.as_str(), |(_, name)| name);
+        let origin = if stem == "it_computing" {
+            "，并并入轻书开发者专业词"
+        } else {
+            ""
+        };
         let mut tsv = format!(
-            "# 轻书领域词库：{name}，由 lightbookinput-dict-convert lexicon 从 THUOCL 拆出，基础词库里没有的部分。词\t音节\t词频\n"
+            "# 轻书领域词库：{name}，由 lightbookinput-dict-convert lexicon 从 THUOCL 拆出{origin}。词\t音节\t词频\n"
         );
         for entry in entries.values() {
             tsv.push_str(&entry.text);

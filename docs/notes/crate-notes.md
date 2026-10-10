@@ -25,6 +25,7 @@ TSV 解析、查询与生成工具把 `lue` / `nue` 统一成 `lve` / `nve`。
 一行缺词或缺释义都算坏行。与词库一样只有 TSV 一种存法，没有 `.qj`：表随 `assets/glossary/glossary-en.tsv` 提交（GPL-3.0-or-later），
 三个壳都从随包资源里找（macOS `paths::resource("glossary-en.tsv")`，Windows 与 Linux 先看生成目录再看随包 `assets/glossary/`），
 找不到只警告：点按 `~` 时数字 / 空格照常上屏中文。样例表在 `assets/sample/glossary-en.tsv`，测试用它。
+`assets/glossary/developer-terms.tsv` 是人工维护的覆盖层，按词面并入运行时表；当前表 232,388 条，覆盖语法、并发、数据库、网络、安全、架构、测试、DevOps 与 AI 等专业术语。
 一个词最多三条释义由 Core 用 `"; "` 拼成一条给出；macOS 与 Windows 壳按 `"; "` 拆回列表，`↑` / `↓` / `←` / `→` 在当前高亮候选的多条释义间循环切换（带一块光标底），
 数字 / 空格上屏选中的那条；只有一条时也保留光标。Linux Server 同样维护选中的释义，默认 Fcitx5 面板把整条释义交给系统绘制。
 
@@ -303,6 +304,7 @@ DLL 不读文件、不查 mtime。`SessionOpened` 只回过协议版本对得上
 - `lexicon`：从 `assets/lexicon/`（自建词库源：规范字 + 常用词 + THUOCL 领域词）加 Unihan 读音（`data/unihan/Unihan_Readings.txt`）、LLM 多音字标音（离线跑，产物 `data/generated/pinyin-llm.jsonl`，不进 git，
   结果 `data/generated/pinyin-llm.jsonl`，不进 git）、语料词频（`lm-unigram.tsv`）建基础词库 `dict.tsv`（8.7 万条），并把 THUOCL 领域词按语料次数 < 50 拆成
   `dicts/<领域>.tsv` + `.qj`（11 本、13 万条，`--domain-keep-min`），流程见 `assets/lexicon/LIGHTBOOKINPUT.md`；`--extra-words` 并入人工挑的领域词 `assets/lexicon/domain_words.tsv`。
+  `assets/lexicon/developer_words.tsv` 的 279 条开发者词用 `--extra-words-domain it_computing=...` 强制并入随包 `dicts/it_computing.tsv`，基础词库已有的同名词也以 IT 条目保留。
 - `english`：转 `assets/lexicon/05_english/00_all_words.tsv`；同编码优先保留含大写的专名写法（Windows ≠ windows），
   展示写法补充表 `07_display_forms.tsv` 后置读入；`cedict`：释义表备用来源。中英混杂词源在 `assets/lexicon/mixed_words.tsv`（`lexicon --extra-words`）。
 - `wubi`：Rime 形码码表（`.dict.yaml`，极点 86 五笔）→ `词\t编码\t词频`（`wubi.rs`，`--name` 决定文件名，缺省 `wubi86.tsv`）。
