@@ -1,6 +1,6 @@
 | `.github/workflows/ci.yml` | push main、PR | `core`（Linux）fmt / clippy / 全 workspace 测试（排除 IMK 壳）；`macos` 编 IMK 壳并跑它的测试；`windows` 编 Server / TSF DLL / Settings 并跑测试。仓库公开，Actions 不计费 |
 | `.github/workflows/audit.yml` | 每周一、Cargo.lock 变动 | `cargo audit`（RustSec 已知漏洞） |
-| `.github/workflows/package.yml` | 推 `v*` 标签 | 下载产品数据 → 三平台打「可直接装」的包（Linux AppImage、macOS 双架构 dmg、Windows 双架构 NSIS）→ 建并发布 Release、上传、传 `SHA256SUMS`。不签名索引、不触发官网，见下文 |
+| `.github/workflows/package.yml` | 推 `v*` 标签 | 下载产品数据 → 三平台打「可直接装」的包（Linux AppImage、macOS 双架构 dmg、Windows 双架构 NSIS）→ 建并发布 Release、上传，并附 `SHA256SUMS`、`checksum-md5.txt`、`checksum-sha1.txt`。不签名索引、不触发官网，见下文 |
 | `.github/dependabot.yml` | 每周一 | Cargo 依赖与钉 commit 的 actions 的更新 PR |
 
 # 发版流程
@@ -33,16 +33,17 @@
 
 - `prepare`（`ubuntu-26.04`）：门禁（要打的平台版本号都与标签一致、不带 `-dev`、标签在 main 上、配了索引签名密钥）→ 用 CHANGELOG 那一节加各平台未签名提示建**草稿** Release。
 - `macos`（`macos-26`）、`windows`（`windows-latest`）、`linux`（`ubuntu-26.04`）并行：下载产品数据 → 打包 → `tools/release/upload-build.sh` 把安装包和
-  这个平台的 `SHA256SUMS-<平台>`、`build-info-<平台>.json` 片段传到草稿上。
-- `publish`：三个平台都成功才跑，`tools/release/finish-release.sh` 把片段合成一份 `SHA256SUMS` 与 `build-info.json`（各平台构建机记在 `platforms` 里）、删掉片段、草稿转正
+  这个平台的 `SHA256SUMS-<平台>`、`checksum-md5-<平台>.txt`、`checksum-sha1-<平台>.txt`、`build-info-<平台>.json` 片段传到草稿上。
+- `publish`：三个平台都成功才跑，`tools/release/finish-release.sh` 把片段合成 `SHA256SUMS`、`checksum-md5.txt`、`checksum-sha1.txt` 与 `build-info.json`
+  （各平台构建机记在 `platforms` 里）、删掉片段、草稿转正
   → `publish-releases-json.sh` 生成并签名 `releases.json` → `bump-website.sh` 触发官网构建。
   任何平台失败，Release 就停在草稿、用户看不到；修好后删掉草稿与标签重推，或在 Actions 页重跑失败的 job。
 
 **单平台补丁**（只修一个平台的急事）：只改那个平台的版本号，打 `macos-v<版本>` / `windows-v<版本>` / `linux-v<版本>`，同一套流程只打那一个平台，Release 标题带平台名。
 
-发版后 GitHub Release 上有：`lightbookinput-<版本>-macos-arm64.pkg`、`-macos-x86_64.pkg`、`-windows-x86_64-setup.exe`、`-linux-x86_64.tar.gz`、`SHA256SUMS`、`build-info.json`、`releases.json` 与 `.sig`。
+发版后 GitHub Release 上有：`lightbookinput-<版本>-macos-arm64.pkg`、`-macos-x86_64.pkg`、`-windows-x86_64-setup.exe`、`-linux-x86_64.tar.gz`、`SHA256SUMS`、`checksum-md5.txt`、`checksum-sha1.txt`、`build-info.json`、`releases.json` 与 `.sig`。
 
-`package.yml` 出来的另一套是给用户「下载就能装」的：`lightbookinput-<版本>-linux-x86_64.AppImage`、`-macos-arm64.dmg`、`-macos-x86_64.dmg`、`-windows-x86_64-setup.exe`、`-windows-x86-setup.exe` 加 `SHA256SUMS`。
+`package.yml` 出来的另一套是给用户「下载就能装」的：`lightbookinput-<版本>-linux-x86_64.AppImage`、`-macos-arm64.dmg`、`-macos-x86_64.dmg`、`-windows-x86_64-setup.exe`、`-windows-x86-setup.exe` 加 `SHA256SUMS`、`checksum-md5.txt`、`checksum-sha1.txt`。
 它和 `release.yml` 用同一份产品数据、同一个版本号，但不碰索引签名与官网，所以适合内测分发与验证打包链路本身。
 
 官网由 Cloudflare Workers Builds 按官网仓库的提交自动构建，没有可调用的构建钩子，所以主仓库靠**往官网仓库推一个小提交**来触发：
@@ -82,7 +83,7 @@ cargo 命令全 `--locked`（含 `bundle.sh`、`build-dmg.sh` 与 `build-nsis.ps
 |---|---|---|
 | `.github/workflows/ci.yml` | push main、PR | Linux 上 `cargo fmt --check` / clippy / test，排除 `lightbookinput-macos`（IMK 外壳只能在 macOS 编译，macOS runner 计费是 Linux 的 10 倍） |
 | `.github/workflows/release.yml` | 推 `v*`（三个平台）或 `macos-v*` / `windows-v*` / `linux-v*`（单平台）标签 | `prepare` 门禁并建草稿 Release → `macos` / `windows` / `linux` 并行打包上传 → `publish` 合并摘要、转正、生成 `releases.json`、触发官网构建（见上文） |
-| `.github/workflows/package.yml` | 推 `v*` 标签（三个平台）或 `macos-v*` / `windows-v*` / `linux-v*`（单平台） | 三平台打可直接安装的包——Linux AppImage、macOS 双架构 dmg（ad-hoc 签名、带 Applications 快捷方式）、Windows 双架构 NSIS——各平台传 `SHA256SUMS-<平台>` 片段，`checksums` job 合成一份 `SHA256SUMS`。打包成功即发布、不留草稿；不碰索引签名与官网，正式发版仍走 `release.yml` |
+| `.github/workflows/package.yml` | 推 `v*` 标签（三个平台）或 `macos-v*` / `windows-v*` / `linux-v*`（单平台） | 三平台打可直接安装的包——Linux AppImage、macOS 双架构 dmg（ad-hoc 签名、带 Applications 快捷方式）、Windows 双架构 NSIS——各平台传 `SHA256SUMS-<平台>`、`checksum-md5-<平台>.txt`、`checksum-sha1-<平台>.txt` 片段，`checksums` job 合成 `SHA256SUMS`、`checksum-md5.txt`、`checksum-sha1.txt`。打包成功即发布、不留草稿；不碰索引签名与官网，正式发版仍走 `release.yml` |
 
 ## 产品数据从哪来
 
@@ -161,7 +162,7 @@ Apple Developer 账号有了以后，在仓库 Secrets 里配齐 `release.yml` �
   `arch` 给人看（Apple Silicon / Intel / x64），`cpu` 给程序比对。
 - `schema_version` 现在是 1：只加字段不用动，改了已有字段的含义或结构才加一。
 - `mirrors` 来自 CHANGELOG 那一节的「网盘：」行，没有就是空数组；官网在下载按钮旁单独显示。
-- `SHA256SUMS` 与 `releases.json` 自己不列进 `assets`。
+- `SHA256SUMS`、`checksum-md5.txt`、`checksum-sha1.txt`、`build-info.json` 与 `releases.json` 自己不列进 `assets`。
 - 官网侧要做的：构建时下载这个文件替代手写的 `releases` 数组（与拉 `docs/user` 的 `sync-docs.mjs` 同一处、同一个令牌），
   `downloadsOpen` 开关仍由官网自己控制。
 

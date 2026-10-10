@@ -4,7 +4,8 @@
 # 安装包都带自签名：macOS 是 ad-hoc 签名（带图标与 Applications 快捷方式），Windows 是自签名证书；
 # 分发时用户侧分别要过 Gatekeeper / SmartScreen，正式发版流水线（签名索引、公证）见 release.yml。
 # 单平台补打可用 macos-v / windows-v / linux-v<版本> 标签，只跑那一个平台。
-# 每个平台传一个 SHA256SUMS-<平台> 片段，checksums job 合成一份 SHA256SUMS 挂到 Release 上。
+# 每个平台传 SHA256SUMS-<平台>、checksum-md5-<平台>.txt、checksum-sha1-<平台>.txt 片段，
+# checksums job 分别合成 SHA256SUMS、checksum-md5.txt、checksum-sha1.txt 挂到 Release 上。
 name: package
 
 on:
@@ -106,7 +107,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           (cd target/pkg && sha256sum *.dmg) | tee "$RUNNER_TEMP/SHA256SUMS-macos"
-          gh release upload "$GITHUB_REF_NAME" target/pkg/*.dmg "$RUNNER_TEMP/SHA256SUMS-macos" --clobber
+          (cd target/pkg && md5 -r *.dmg | awk '{print $1 "  " $2}') | tee "$RUNNER_TEMP/checksum-md5-macos.txt"
+          (cd target/pkg && shasum -a 1 *.dmg) | tee "$RUNNER_TEMP/checksum-sha1-macos.txt"
+          gh release upload "$GITHUB_REF_NAME" target/pkg/*.dmg \
+            "$RUNNER_TEMP/SHA256SUMS-macos" \
+            "$RUNNER_TEMP/checksum-md5-macos.txt" \
+            "$RUNNER_TEMP/checksum-sha1-macos.txt" --clobber
 
   windows:
     needs: prepare
@@ -159,19 +165,31 @@ jobs:
       - name: Compute checksums
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           $packages = @(Get-ChildItem 'target/installer/lightbookinput-*-windows-*-setup.exe' | ForEach-Object { $_.FullName })
           if ($packages.Count -eq 0) { throw '没找到安装包' }
+          function Write-Checksums {
+            param([string]$Algorithm, [string]$Path)
+            $packages | ForEach-Object {
+              '{0}  {1}' -f (Get-FileHash -LiteralPath $_ -Algorithm $Algorithm).Hash.ToLower(), (Split-Path -Path $_ -Leaf)
+            } | Set-Content -Path $Path -Encoding UTF8
+          }
           $sums = Join-Path $env:RUNNER_TEMP 'SHA256SUMS-windows'
-          $packages | ForEach-Object {
-            '{0}  {1}' -f (Get-FileHash $_ -Algorithm SHA256).Hash.ToLower(), (Split-Path $_ -Leaf)
-          } | Set-Content -Path $sums -Encoding UTF8
-          Get-Content $sums
+          $md5 = Join-Path $env:RUNNER_TEMP 'checksum-md5-windows.txt'
+          $sha1 = Join-Path $env:RUNNER_TEMP 'checksum-sha1-windows.txt'
+          Write-Checksums -Algorithm SHA256 -Path $sums
+          Write-Checksums -Algorithm MD5 -Path $md5
+          Write-Checksums -Algorithm SHA1 -Path $sha1
+          Get-Content $sums, $md5, $sha1
 
       - name: Upload to release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "$GITHUB_REF_NAME" target/installer/lightbookinput-*-windows-*-setup.exe "$RUNNER_TEMP/SHA256SUMS-windows" --clobber
+          gh release upload "$GITHUB_REF_NAME" target/installer/lightbookinput-*-windows-*-setup.exe \
+            "$RUNNER_TEMP/SHA256SUMS-windows" \
+            "$RUNNER_TEMP/checksum-md5-windows.txt" \
+            "$RUNNER_TEMP/checksum-sha1-windows.txt" --clobber
 
   linux:
     needs: prepare
@@ -215,9 +233,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           (cd target/linux-package && sha256sum *.AppImage) | tee "$RUNNER_TEMP/SHA256SUMS-linux"
-          gh release upload "$GITHUB_REF_NAME" target/linux-package/*.AppImage "$RUNNER_TEMP/SHA256SUMS-linux" --clobber
+          (cd target/linux-package && md5sum *.AppImage) | tee "$RUNNER_TEMP/checksum-md5-linux.txt"
+          (cd target/linux-package && sha1sum *.AppImage) | tee "$RUNNER_TEMP/checksum-sha1-linux.txt"
+          gh release upload "$GITHUB_REF_NAME" target/linux-package/*.AppImage \
+            "$RUNNER_TEMP/SHA256SUMS-linux" \
+            "$RUNNER_TEMP/checksum-md5-linux.txt" \
+            "$RUNNER_TEMP/checksum-sha1-linux.txt" --clobber
 
-  # 三个平台的片段合成一份 SHA256SUMS（与 finish-release.sh 同一格式）。
+  # 三个平台的片段分别合成 SHA256SUMS、checksum-md5.txt、checksum-sha1.txt（与 finish-release.sh 同一格式）。
   # 只下载片段、不下载安装包本身，所以不用 checkout。
   checksums:
     needs: [prepare, macos, windows, linux]
@@ -232,9 +255,18 @@ jobs:
         run: |
           work="$(mktemp -d)"
           # 本 job 不 checkout，gh 解析不到仓库，显式 -R
-          gh release download "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --pattern 'SHA256SUMS-*' --dir "$work" --clobber
-          cat "$work"/SHA256SUMS-* | sort -k2 | tee "$work/SHA256SUMS"
-          gh release upload "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" "$work/SHA256SUMS" --clobber
-          for fragment in "$work"/SHA256SUMS-*; do
+          gh release download "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" \
+            --pattern 'SHA256SUMS-*' \
+            --pattern 'checksum-md5-*.txt' \
+            --pattern 'checksum-sha1-*.txt' \
+            --dir "$work" --clobber
+          cat "$work"/SHA256SUMS-* | tr -d '\r' | sort -k2 | tee "$work/SHA256SUMS"
+          cat "$work"/checksum-md5-* | tr -d '\r' | sort -k2 | tee "$work/checksum-md5.txt"
+          cat "$work"/checksum-sha1-* | tr -d '\r' | sort -k2 | tee "$work/checksum-sha1.txt"
+          gh release upload "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" \
+            "$work/SHA256SUMS" \
+            "$work/checksum-md5.txt" \
+            "$work/checksum-sha1.txt" --clobber
+          for fragment in "$work"/SHA256SUMS-* "$work"/checksum-md5-* "$work"/checksum-sha1-*; do
             gh release delete-asset "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" "$(basename "$fragment")" --yes
           done

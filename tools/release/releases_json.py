@@ -18,7 +18,7 @@ CHANGELOG.md 的格式（一个版本一节，日期与发布渠道写在标题�
 
 渠道只能是 alpha / beta / rc / stable，是**更新渠道**：定期发的版本标 stable，中间放给测试者的版本标 alpha / beta / rc，
 版本号带对应的预发布后缀（`0.1.4-beta.1`）。api-json 是 `gh api repos/<repo>/releases --paginate` 的输出（数组）。
-只取 tag 形如 [平台-]v<版本> 的非草稿发布（平台前缀可选：macos- / windows- / linux-，各平台壳版本号独立），安装包按文件名识别平台与架构，其他附件（SHA256SUMS、build-info.json、releases.json 本身）不列。
+只取 tag 形如 [平台-]v<版本> 的非草稿发布（平台前缀可选：macos- / windows- / linux-，各平台壳版本号独立），安装包按文件名识别平台与架构，其他附件（SHA256SUMS、checksum-md5.txt、checksum-sha1.txt、build-info.json、releases.json 本身）不列。
 meta-dir 下每个 tag 一个目录，放那次发布的 SHA256SUMS（每个包的 sha256）与 build-info.json（提交哈希、构建时间、工具链），
 没有就对应字段留空。输出结构与官网 src/lib/releases.ts 的 Release / Asset 类型对应：
 

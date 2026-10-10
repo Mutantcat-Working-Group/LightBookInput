@@ -4,8 +4,10 @@
 # 那条流水线不依赖下面的 Secrets，本文件则强依赖 LIGHTBOOKINPUT_INDEX_SIGNING_KEY（签名索引）与公证证书；
 # 等这些配齐、要正式发版时，把 on: 改回 push tags 即可（两边的标签监听会重叠，改回去时记得先关掉 package.yml 的触发）。
 # 版本号读各平台壳：macOS apps/macos/Cargo.toml、Windows apps/windows/server/Cargo.toml、Linux apps/linux/server/Cargo.toml，要打的平台都得与标签一致。
-# 流程：prepare 核对版本、建草稿 Release → 各平台 job 并行打包，把安装包与摘要 / 构建信息片段传到草稿上
-# → publish 合并片段、转正、生成并签名 releases.json、触发官网构建。任何平台失败都停在草稿，不会发出缺平台的版本。
+# 流程：prepare 核对版本、建草稿 Release → 各平台 job 并行打包，把安装包与摘要 / 构建信息片段
+# （SHA256SUMS-<平台>、checksum-md5-<平台>.txt、checksum-sha1-<平台>.txt、build-info-<平台>.json）传到草稿上
+# → publish 合并成 SHA256SUMS、checksum-md5.txt、checksum-sha1.txt、build-info.json，转正、生成并签名 releases.json、触发官网构建。
+# 任何平台失败都停在草稿，不会发出缺平台的版本。
 # 流程见 docs/notes/release.md。macOS 的签名与公证可选，下面的 Secrets 配齐才签，否则出 ad-hoc 包；
 # Windows 现在没有代码签名（LIGHTBOOKINPUT_UIACCESS=0 关掉 uiAccess，否则没签名的 Server 起不来），证书办下来再加 signtool。
 #   LIGHTBOOKINPUT_CERT_P12            Developer ID Application + Installer 两张证书（含私钥）导出的 .p12，base64
