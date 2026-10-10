@@ -8,12 +8,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LOCK="$ROOT/tools/release/data.lock"
 OUT="$ROOT/target/release-data"
-# 默认取上游 qingjian-team/qingjian 的 data-vN release：轻书是青简的同源分支，数据包字节一致
-# （data.lock 里的哈希就是按这份算的）。等轻书自己发 data-vN release 后用这两个环境变量指回来。
-REPO="${LIGHTBOOKINPUT_DATA_REPO:-qingjian-team/qingjian}"
-# 锁文件与 CI 里一律按本仓的规范名记；上游资产叫 qingjian-data.tar.gz，下载后改回规范名。
+# 默认取轻书自己的 data-vN release；data.lock 里的哈希按这份资产计算。
+REPO="${LIGHTBOOKINPUT_DATA_REPO:-Mutantcat-Working-Group/LightBookInput}"
 DATA_KEY=lightbookinput-data.tar.gz
-DATA_ASSET="${LIGHTBOOKINPUT_DATA_ASSET:-qingjian-data.tar.gz}"
+DATA_ASSET="${LIGHTBOOKINPUT_DATA_ASSET:-lightbookinput-data.tar.gz}"
 ASSETS=("$DATA_KEY")
 cd "$ROOT"
 
