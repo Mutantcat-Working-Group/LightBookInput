@@ -68,7 +68,8 @@ fi
 [[ "$TAG" =~ ^data-v[0-9]+$ ]] || { echo "标签要写成 data-vN：$TAG" >&2; exit 1; }
 gh -R Mutantcat-Working-Group/LightBookInput release view "$TAG" >/dev/null 2>&1 && { echo "$TAG 已存在，数据版本不覆盖" >&2; exit 1; }
 
-sha_of() { grep " ./$1\$" "$OUT/SHA256SUMS" | cut -d' ' -f1; }
+# Windows 的 Git Bash 里 shasum 按二进制模式在文件名前加 `*`（`哈希 *./文件`），两种写法都要认
+sha_of() { grep -E " \*?\./$1\$" "$OUT/SHA256SUMS" | cut -d' ' -f1; }
 gh -R Mutantcat-Working-Group/LightBookInput release create "$TAG" --prerelease --target "$TARGET" --title "产品数据 $TAG" \
   --notes "单个 lightbookinput-data.tar.gz 包含运行时词库、语言模型、英文词表、含章·通变（hanzhang-tongbian-small.qjm）和含章·知微（hanzhang-zhiwei-small.qjm）。中英释义表（程序员模式）随 assets/glossary/glossary-en.tsv 一并提交，不进数据包。仓库 tools/release/data.lock 钉住压缩包的 SHA-256。" \
   "$OUT/lightbookinput-data.tar.gz"

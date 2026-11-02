@@ -39,10 +39,16 @@ fn main() {
     }
     let _log_guard = app::logging::init();
     // panic 的位置与 backtrace 记进日志（拦截在 imk::catch_panic，这里只记不碰状态）；
-    // 后台线程（云联想）的 panic 也经过这里，否则只会打到没人看的 stderr
+    // 后台线程（云联想）的 panic 也经过这里，否则只会打到没人看的 stderr。
+    // 不记正文：切片越界之类的消息会带上用户打的字
     std::panic::set_hook(Box::new(|info| {
-        let backtrace = std::backtrace::Backtrace::force_capture();
-        tracing::error!(%info, %backtrace, "panic");
+        let location = info.location();
+        tracing::error!(
+            file = location.map(|location| location.file()),
+            line = location.map(|location| location.line()),
+            backtrace = %std::backtrace::Backtrace::force_capture(),
+            "panic; payload omitted"
+        );
     }));
     let info = app::BundleInfo::from_main_bundle();
     tracing::info!(connection = %info.connection_name, bundle = %info.identifier, "启动");

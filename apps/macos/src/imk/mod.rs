@@ -8,7 +8,6 @@ mod controller;
 pub mod modifiers;
 pub mod secure_input;
 
-use std::any::Any;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 pub use client::TextClient;
@@ -20,12 +19,8 @@ pub use controller::LightBookInputInputController;
 pub fn catch_panic<R>(what: &'static str, f: impl FnOnce() -> R) -> Option<R> {
     match catch_unwind(AssertUnwindSafe(f)) {
         Ok(value) => Some(value),
-        Err(payload) => {
-            tracing::error!(
-                what,
-                message = panic_message(&*payload),
-                "回调里 panic，已拦下"
-            );
+        Err(_) => {
+            tracing::error!(what, "回调里 panic，已拦下");
             None
         }
     }
@@ -52,13 +47,4 @@ pub fn recover_from_panic(client: Option<TextClient<'_>>) {
     if recovered.is_err() {
         tracing::error!("panic 善后又 panic，放弃本次会话状态");
     }
-}
-
-/// panic payload 里的文字：`panic!("...")` 是 `&str` 或 `String`，别的类型给个占位。
-fn panic_message(payload: &(dyn Any + Send)) -> &str {
-    payload
-        .downcast_ref::<&str>()
-        .copied()
-        .or_else(|| payload.downcast_ref::<String>().map(String::as_str))
-        .unwrap_or("<非文字 payload>")
 }
