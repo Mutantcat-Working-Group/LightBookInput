@@ -5,16 +5,11 @@
 
 use std::fs::{self, File};
 use std::io::{self, BufWriter, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
-/// 临时文件的后缀：与目标同目录（改名不能跨文件系统），带进程号避免两个进程互相覆盖。
-fn temporary_path(path: &Path) -> PathBuf {
-    let name = path
-        .file_name()
-        .map(|name| name.to_string_lossy().into_owned())
-        .unwrap_or_default();
-    path.with_file_name(format!(".{name}.tmp-{}", std::process::id()))
-}
+mod temporary;
+
+use temporary::TemporaryFile;
 
 /// 原子地写 `path`：`write` 往缓冲写入端里写内容，写完 flush + fsync，再改名覆盖目标。
 /// 中途任何一步失败都不碰目标文件，临时文件也清掉。
@@ -38,33 +33,15 @@ fn write_atomic_with(
     private: bool,
     write: impl FnOnce(&mut BufWriter<File>) -> io::Result<()>,
 ) -> io::Result<()> {
-    let temporary = temporary_path(path);
-    let result = (|| {
-        let file = create(&temporary, private)?;
+    let (temporary, file) = TemporaryFile::new(path, private)?;
+    (|| {
         let mut writer = BufWriter::new(file);
         write(&mut writer)?;
         writer.flush()?;
         writer.get_ref().sync_all()?;
-        fs::rename(&temporary, path)
-    })();
-    if result.is_err() {
-        let _ = fs::remove_file(&temporary);
-    }
-    result
-}
-
-/// 建临时文件；`private` 时权限 0600（非 Unix 平台没有这个概念，照常建）。
-fn create(path: &Path, private: bool) -> io::Result<File> {
-    let mut options = fs::OpenOptions::new();
-    options.write(true).create(true).truncate(true);
-    #[cfg(unix)]
-    if private {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    #[cfg(not(unix))]
-    let _ = private;
-    options.open(path)
+        drop(writer);
+        temporary.persist()
+    })()
 }
 
 /// 把 `text` 原子地写进 `path`。
@@ -85,6 +62,8 @@ pub fn read_text_lossy(path: &Path) -> io::Result<Option<String>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::PathBuf;
+    use std::sync::{Arc, Barrier};
 
     /// 每个测试一个目录：测试并行跑，共用目录时一个测试的临时文件会被另一个测试的目录扫描撞见
     fn scratch(test: &str, name: &str) -> PathBuf {
@@ -105,12 +84,7 @@ mod tests {
         let leftovers: Vec<_> = fs::read_dir(path.parent().unwrap())
             .unwrap()
             .filter_map(Result::ok)
-            .filter(|entry| {
-                entry
-                    .file_name()
-                    .to_string_lossy()
-                    .ends_with(&format!("tmp-{}", std::process::id()))
-            })
+            .filter(|entry| entry.file_name().to_string_lossy().contains(".tmp-"))
             .collect();
         assert!(leftovers.is_empty(), "临时文件没清：{leftovers:?}");
     }
@@ -125,7 +99,43 @@ mod tests {
         });
         assert!(result.is_err());
         assert_eq!(fs::read_to_string(&path).unwrap(), "old\n");
-        assert!(!temporary_path(&path).exists());
+        assert!(
+            fs::read_dir(path.parent().unwrap())
+                .unwrap()
+                .filter_map(Result::ok)
+                .all(|entry| !entry.file_name().to_string_lossy().contains(".tmp-"))
+        );
+    }
+
+    #[test]
+    fn concurrent_writes_use_separate_temporary_files() {
+        let path = scratch("concurrent", "concurrent.tsv");
+        let workers = 8;
+        let barrier = Arc::new(Barrier::new(workers));
+        let mut threads = Vec::new();
+        for worker in 0..workers {
+            let path = path.clone();
+            let barrier = Arc::clone(&barrier);
+            threads.push(std::thread::spawn(move || {
+                let text = format!("worker-{worker}\n");
+                write_atomic(&path, |writer| {
+                    // 所有写端都建好临时文件后再开始写，旧实现的共享路径会在这里互相截断。
+                    barrier.wait();
+                    writer.write_all(text.as_bytes())
+                })
+            }));
+        }
+        for thread in threads {
+            thread.join().unwrap().unwrap();
+        }
+        let text = fs::read_to_string(&path).unwrap();
+        assert!(text.starts_with("worker-"), "{text:?}");
+        assert!(
+            fs::read_dir(path.parent().unwrap())
+                .unwrap()
+                .filter_map(Result::ok)
+                .all(|entry| !entry.file_name().to_string_lossy().contains(".tmp-"))
+        );
     }
 
     #[cfg(unix)]
