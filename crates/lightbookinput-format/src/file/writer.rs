@@ -1,4 +1,3 @@
-use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
 
@@ -8,6 +7,8 @@ use crate::{
     FORMAT_VERSION, FormatError, Header, Kind, MAGIC, META_TAG, Metadata, SECTION_ALIGN,
     SectionEntry,
 };
+
+use super::temporary::TemporaryFile;
 
 /// 攒分节、写文件。分节按加入顺序落盘，`META` 自动排第一。
 pub struct Writer {
@@ -38,15 +39,14 @@ impl Writer {
 
     /// 写到 `path`：先写同目录临时文件再改名，读的一方永远看不到半个文件。
     pub fn write_to(self, path: &Path) -> Result<(), FormatError> {
-        let temp = path.with_extension("qj.tmp");
+        let (temporary, file) = TemporaryFile::new(path)?;
         {
-            let file = File::create(&temp)?;
             let mut out = BufWriter::new(file);
             self.write(&mut out)?;
             out.flush()?;
             out.get_ref().sync_all()?;
         }
-        std::fs::rename(&temp, path)?;
+        temporary.persist()?;
         Ok(())
     }
 
@@ -100,4 +100,71 @@ fn write_padding(out: &mut impl Write, position: usize) -> Result<(), FormatErro
         out.write_all(&[0u8; SECTION_ALIGN][..padding])?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::{Arc, Barrier};
+
+    use super::*;
+
+    fn scratch(test: &str, name: &str) -> std::path::PathBuf {
+        let dir = std::env::temp_dir().join(format!(
+            "lightbookinput-format-writer-{}-{test}",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        dir.join(name)
+    }
+
+    #[test]
+    fn concurrent_writes_are_atomic_and_leave_no_temporary_files() {
+        let path = scratch("concurrent", "data.qj");
+        let workers = 8;
+        let barrier = Arc::new(Barrier::new(workers));
+        let mut threads = Vec::new();
+        for worker in 0..workers {
+            let path = path.clone();
+            let barrier = Arc::clone(&barrier);
+            threads.push(std::thread::spawn(move || {
+                barrier.wait();
+                Writer::new(Kind::Dictionary, &Metadata::default())
+                    .unwrap()
+                    .section(*b"DATA", format!("worker-{worker}").as_bytes())
+                    .write_to(&path)
+            }));
+        }
+        for thread in threads {
+            thread.join().unwrap().unwrap();
+        }
+
+        let container = crate::Container::open(&path, Kind::Dictionary).unwrap();
+        let data = container.text(*b"DATA").unwrap();
+        assert!(data.starts_with("worker-"), "{data:?}");
+        assert!(
+            std::fs::read_dir(path.parent().unwrap())
+                .unwrap()
+                .filter_map(Result::ok)
+                .all(|entry| !entry.file_name().to_string_lossy().contains(".tmp-"))
+        );
+        std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+
+    #[test]
+    fn failed_replace_removes_the_temporary_file() {
+        let path = scratch("failed", "target.qj");
+        std::fs::create_dir(&path).unwrap();
+        let result = Writer::new(Kind::Dictionary, &Metadata::default())
+            .unwrap()
+            .write_to(&path);
+        assert!(matches!(result, Err(FormatError::Io(_))));
+        assert!(
+            std::fs::read_dir(path.parent().unwrap())
+                .unwrap()
+                .filter_map(Result::ok)
+                .all(|entry| !entry.file_name().to_string_lossy().contains(".tmp-"))
+        );
+        std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
 }
