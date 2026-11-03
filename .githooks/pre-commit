@@ -21,6 +21,6 @@ cargo fmt --all --check
 # 其余平台排除它之后，Windows 三件套在本机也编得过（已在 Windows 上验过）。
 case "$(uname -s)" in
   Darwin) clippy_scope=(--workspace) ;;
-  *) clippy_scope=(--workspace --exclude LIGHTBOOKINPUT-macos) ;;
+  *) clippy_scope=(--workspace --exclude lightbookinput-macos) ;;
 esac
 cargo clippy "${clippy_scope[@]}" --all-targets -- -D warnings
