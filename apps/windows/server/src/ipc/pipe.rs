@@ -8,6 +8,7 @@ use std::fs::File;
 use std::io;
 use std::os::windows::io::{AsRawHandle, FromRawHandle};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender};
+use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
 use std::time::Instant;
 
@@ -19,7 +20,7 @@ use windows::Win32::Security::{PSECURITY_DESCRIPTOR, SECURITY_ATTRIBUTES};
 use windows::Win32::Storage::FileSystem::{FILE_FLAG_FIRST_PIPE_INSTANCE, PIPE_ACCESS_DUPLEX};
 use windows::Win32::System::Pipes::{
     ConnectNamedPipe, CreateNamedPipeW, DisconnectNamedPipe, PIPE_READMODE_BYTE, PIPE_TYPE_BYTE,
-    PIPE_UNLIMITED_INSTANCES, PIPE_WAIT,
+    PIPE_WAIT,
 };
 use windows::core::{HRESULT, HSTRING};
 
@@ -33,6 +34,7 @@ use crate::dispatch::Router;
 pub use lightbookinput_platform::protocol::DEFAULT_PIPE_NAME;
 
 const BUFFER_SIZE: u32 = 64 * 1024;
+const MAX_CLIENT_CONNECTIONS: usize = 64;
 
 /// 管道的 SDDL：放行 Everyone / ALL APPLICATION PACKAGES / ALL RESTRICTED APPLICATION PACKAGES，
 /// 完整性标 Low。任务栏搜索、设置这类 AppContainer 进程在默认 DACL 下连不上。
@@ -58,7 +60,10 @@ pub fn serve_pipe(
         }
         Err(error) => return Err(error),
     };
-    thread::spawn(move || accept_loop(&pipe, first, sender));
+    let limiter = Arc::new(ConnectionLimiter::new());
+    thread::Builder::new()
+        .name("pipe-accept".to_owned())
+        .spawn(move || accept_loop(&pipe, first, sender, limiter))?;
     tracing::info!(pipe = name, "命名管道监听中");
     // 按 Router 的节拍来 tick：在等本地整句模型就几十毫秒一次，否则一秒看一次配置文件。
     // 到点时间是绝对的，不随消息重新计时——前台进程里的 DLL 隔几百毫秒就问一次切模式（SyncMode），
@@ -86,7 +91,7 @@ pub fn serve_pipe(
 }
 
 /// 先在建好的第一个实例上等客户端，之后每建一个实例、等一个客户端连上，就起一条线程服务它。建实例出错才停。
-fn accept_loop(name: &HSTRING, first: File, sender: Sender<Work>) {
+fn accept_loop(name: &HSTRING, first: File, sender: Sender<Work>, limiter: Arc<ConnectionLimiter>) {
     let descriptor = pipe_security_descriptor();
     let mut instance = Ok(first);
     loop {
@@ -98,8 +103,80 @@ fn accept_loop(name: &HSTRING, first: File, sender: Sender<Work>) {
             }
         };
         let sender = sender.clone();
-        thread::spawn(move || serve_connection(stream, sender));
+        let slot = limiter.acquire();
+        if let Err(error) = thread::Builder::new()
+            .name("pipe-client".to_owned())
+            .spawn(move || {
+                let _slot = slot;
+                serve_connection(stream, sender);
+            })
+        {
+            tracing::warn!(%error, "客户端线程创建失败");
+        }
+        // 已有连接占满名额时不预建下一实例；等 worker 释放后再恢复监听。
+        limiter.wait_for_capacity();
         instance = create_instance(name, descriptor, false);
+    }
+}
+
+/// 限制同时服务的客户端，避免恶意或失控进程无限创建线程和管道实例。
+struct ConnectionLimiter {
+    active: Mutex<usize>,
+    available: Condvar,
+}
+
+impl ConnectionLimiter {
+    fn new() -> Self {
+        Self {
+            active: Mutex::new(0),
+            available: Condvar::new(),
+        }
+    }
+
+    fn acquire(self: &Arc<Self>) -> ConnectionSlot {
+        let mut active = self
+            .active
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        while *active >= MAX_CLIENT_CONNECTIONS {
+            active = self
+                .available
+                .wait(active)
+                .unwrap_or_else(|poisoned| poisoned.into_inner());
+        }
+        *active += 1;
+        ConnectionSlot {
+            limiter: Arc::clone(self),
+        }
+    }
+
+    fn wait_for_capacity(&self) {
+        let mut active = self
+            .active
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        while *active >= MAX_CLIENT_CONNECTIONS {
+            active = self
+                .available
+                .wait(active)
+                .unwrap_or_else(|poisoned| poisoned.into_inner());
+        }
+    }
+}
+
+struct ConnectionSlot {
+    limiter: Arc<ConnectionLimiter>,
+}
+
+impl Drop for ConnectionSlot {
+    fn drop(&mut self) {
+        let mut active = self
+            .limiter
+            .active
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        *active = active.saturating_sub(1);
+        self.limiter.available.notify_one();
     }
 }
 
@@ -142,7 +219,7 @@ fn create_instance(
             name,
             open_mode,
             PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,
-            PIPE_UNLIMITED_INSTANCES,
+            MAX_CLIENT_CONNECTIONS as u32,
             BUFFER_SIZE,
             BUFFER_SIZE,
             0,
