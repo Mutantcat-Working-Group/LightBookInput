@@ -31,10 +31,20 @@ pub(crate) fn fetch_index(current_version: &str) -> Result<Index, UpdateError> {
 }
 
 async fn download(client: &reqwest::Client, url: &str) -> Result<Vec<u8>, UpdateError> {
-    let response = client.get(url).send().await?.error_for_status()?;
-    let bytes = response.bytes().await?;
-    if bytes.len() > MAX_INDEX_BYTES {
+    let mut response = client.get(url).send().await?.error_for_status()?;
+    // 先看声明的长度挡掉明显超限的响应，再流式读；读到超限就停，别先把整个响应读进内存。
+    if response
+        .content_length()
+        .is_some_and(|length| length > MAX_INDEX_BYTES as u64)
+    {
         return Err(UpdateError::TooLarge(MAX_INDEX_BYTES));
     }
-    Ok(bytes.to_vec())
+    let mut body = Vec::new();
+    while let Some(chunk) = response.chunk().await? {
+        if body.len() + chunk.len() > MAX_INDEX_BYTES {
+            return Err(UpdateError::TooLarge(MAX_INDEX_BYTES));
+        }
+        body.extend_from_slice(&chunk);
+    }
+    Ok(body)
 }

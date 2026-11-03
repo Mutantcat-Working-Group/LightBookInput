@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 
 mod available;
 mod state;
+mod temporary;
 
 pub use available::Available;
 pub use state::UpdateState;
